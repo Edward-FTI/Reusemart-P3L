@@ -3,9 +3,9 @@ body {
   }
   
   .card {
-    background-color: aquamarine; /* Set background color of the card */
-    width: 200%; /* Set the width of the card to 200% */
-    max-width: 700px; /* Set a maximum width of 700px */
+    background-color: white; /* Set background color of the card */
+    width: 100%; /* Set the width of the card to 200% */
+    max-width: 400px; /* Set a maximum width of 700px */
     padding: 4rem; /* Add padding of 4rem inside the card */
   }
   
