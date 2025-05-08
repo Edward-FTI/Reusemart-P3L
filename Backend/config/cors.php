@@ -15,20 +15,10 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+'paths' => ['api/*', 'sanctum/csrf-cookie', '*'], // tambahkan '*'
+'allowed_origins' => ['*'], // atau ['http://localhost:5173'] jika ingin lebih aman
+'allowed_methods' => ['*'],
+'allowed_headers' => ['*'],
 
-    'allowed_methods' => ['*'],
-
-    'allowed_origins' => ['*'],
-
-    'allowed_origins_patterns' => [],
-
-    'allowed_headers' => ['*'],
-
-    'exposed_headers' => [],
-
-    'max_age' => 0,
-
-    'supports_credentials' => false,
 
 ];

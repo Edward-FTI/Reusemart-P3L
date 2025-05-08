@@ -7,41 +7,54 @@ use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
 
+
 class PegawaiController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $pegawai = Pegawai::all();
 
-        if(count($pegawai) > 0) {
+        if (count($pegawai) > 0) {
             return response([
                 'message' =>  'Berhasil mengambil data pegawai',
                 'data' => $pegawai
             ], 200);
         }
         return response([
-            'message' => 'Data Pegawai Kosong',
-            'data' => null
-        ], 400);
+            'message' => 'Data pegawai kosong',
+            'data' => []
+        ], 200);
     }
 
 
     public function store(Request $request)
-{
-    $pegawai = Pegawai::create([
-        'id_jabatan' => $request->id_jabatan,
-        'nama' => $request->nama,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-        'gaji' => $request->gaji,
-    ]);
+    {
+        $storeData = $request->all();
 
-    return response()->json($pegawai, 201);
-}
+        $validate = Validator::make($storeData, [
+            'id_jabatan' => 'required',
+            'nama' => 'required',
+            'email' => 'required',
+            'password' => 'required',
+            'gaji' => 'required',
+        ]);
+
+        if ($validate->fails()) {
+            return response(['message' => $validate->errors()], 400);
+        }
+        $pegawai = Pegawai::create($storeData);
+
+        return response([
+            'message' => 'Berhasil menambahkan data pegawai',
+            'data' => $pegawai
+        ], 200);
+    }
 
 
-    public function update(Request $request, string $id) {
+    public function update(Request $request, string $id)
+    {
         $pegawai = Pegawai::find($id);
-        if(is_null($pegawai)) {
+        if (is_null($pegawai)) {
             return response([
                 'message' => 'Data tidak ditemukan',
                 'data' => null
@@ -56,7 +69,7 @@ class PegawaiController extends Controller
             'gaji' => 'required',
         ]);
 
-        if($validate->fails()) {
+        if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()
             ], 400);
@@ -67,7 +80,34 @@ class PegawaiController extends Controller
         $pegawai->email = $updatePegawai['email'];
         $pegawai->gaji = $updatePegawai['gaji'];
 
-        // if($pegawai->save)
+        if ($pegawai->update($updatePegawai)) {
+            return response([
+                'message' => 'Berhasil update data pegawai',
+                'data' => $pegawai
+            ], 200);
+        }
+        return response([
+            'message' => 'Gagal upadate data pegawai',
+            'data' => null
+        ], 400);
+    }
 
+
+    public function destroy(string $id)
+    {
+        $pegawai = Pegawai::find($id);
+        if (is_null($pegawai)) {
+            return response([
+                'message' => 'Data pegawai tidak ditemukan',
+                'data' => null
+            ], 400);
+        }
+
+        if ($pegawai->delete()) {
+            return response([
+                'message' => 'Berhasil menghapus data pegawai',
+                'data' => $pegawai
+            ], 200);
+        }
     }
 }
