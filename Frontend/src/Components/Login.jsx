@@ -1,7 +1,7 @@
 import React from 'react';
 import './LoginCss.css';
 import {useState} from 'react';
-// import NavbarPage from './Navbar';
+import NavbarPage from './Navbar';
 
 const LoginForm = () => {
   function Login(){
@@ -15,19 +15,19 @@ const LoginForm = () => {
       console.log('Password:', password);
     };
 
-    // return (
-    //   <form onSubmit={handleSubmit}>
-    //     <div className="mb-3">
-    //       <label htmlFor="username" className="form-label">Username</label>
-    //       <input type="text" className="form-control" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-    //     </div>
-    //     <div className="mb-3">
-    //       <label htmlFor="password" className="form-label">Password</label>
-    //       <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-    //     </div>
-    //     <button type="submit" className="btn btn-primary">Login</button>
-    //   </form>
-    // );
+    return (
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label htmlFor="username" className="form-label">Username</label>
+          <input type="text" className="form-control" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">Password</label>
+          <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+        <button type="submit" className="btn btn-primary">Login</button>
+      </form>
+    );
 
 
   }

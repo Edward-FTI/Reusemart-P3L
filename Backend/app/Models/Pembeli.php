@@ -9,6 +9,8 @@ class Pembeli extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'nama_pembeli',
         'email',
@@ -16,4 +18,9 @@ class Pembeli extends Model
         'no_hp',
         'point',
     ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'profile_id')->where('role', 'pembeli');
+    }
 }

@@ -9,13 +9,20 @@ class Penitip extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'nama_penitip',
         'no_ktp',
         'saldo',
-        'pont',
+        'point',   // ✅ typo diperbaiki dari "pont"
         'email',
         'password',
         'badge',
     ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'profile_id')->where('role', 'penitip');
+    }
 }

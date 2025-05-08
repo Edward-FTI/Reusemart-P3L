@@ -9,7 +9,9 @@ class Organisasi extends Model
 {
     use HasFactory;
 
-    protected $fillabel = [
+    public $timestamps = false;
+
+    protected $fillable = [
         'nama',
         'alamat',
         'permintaan',
@@ -17,4 +19,9 @@ class Organisasi extends Model
         'password',
         'no_hp',
     ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'profile_id')->where('role', 'organisasi');
+    }
 }
