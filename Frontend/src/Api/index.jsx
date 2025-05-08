@@ -8,7 +8,7 @@ export const getThumbnail = (thumbnail) => {
 }
 
 const useAxios = axios.create({
-    baseURL: `${BASE_URL}/Api`,
+    baseURL: `${BASE_URL}/api`,
 });
 
 export default useAxios;
