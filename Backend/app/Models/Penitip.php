@@ -15,7 +15,7 @@ class Penitip extends Model
         'nama_penitip',
         'no_ktp',
         'saldo',
-        'point',   // ✅ typo diperbaiki dari "pont"
+        'point',
         'email',
         'password',
         'badge',
