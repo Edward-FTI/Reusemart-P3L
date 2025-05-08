@@ -1,0 +1,11 @@
+a {
+    text-decoration: none !important;
+    padding: 5px;
+}
+
+a:hover {
+    background-color: #198754;
+    /* ini warna `btn-success` biasa */
+    filter: brightness(85%);
+    border-radius: 2px;
+}
