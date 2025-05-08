@@ -39,7 +39,7 @@ const CreatePegawai = () => {
 
                 <div className="col-12">
                     <button type="submit" className="btn btn-primary">Simpan</button>
-                    <a href="" className="btn btn-primary">Batal</a>
+                    <a href="" className="btn btn-primary ms-3">Batal</a>
                 </div>
             </form>
         </div>
