@@ -9,8 +9,6 @@ class Pegawai extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-
     protected $fillable = [
         'id_jabatan',
         'nama',
@@ -18,9 +16,4 @@ class Pegawai extends Model
         'password',
         'gaji',
     ];
-
-    public function user()
-    {
-        return $this->hasOne(User::class, 'profile_id')->where('role', 'pegawai');
-    }
 }

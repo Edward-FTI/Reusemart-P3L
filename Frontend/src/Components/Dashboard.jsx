@@ -2,7 +2,7 @@ import React from "react"
 import { Navbar, Nav } from "react-bootstrap"
 import NavbardPage from "./Navbar"
 
-function Dasboard (){
+function Dahsboard (){
     return (
         <>
         <NavbardPage />
@@ -13,4 +13,4 @@ function Dasboard (){
     )
 }
 
-export default Dasboard
+export default Dahsboard
