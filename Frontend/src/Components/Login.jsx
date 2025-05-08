@@ -1,8 +1,39 @@
 import React from 'react';
 import './LoginCss.css';
+import {useState} from 'react';
+// import NavbarPage from './Navbar';
 
 const LoginForm = () => {
+  function Login(){
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      // Perform login logic here
+      console.log('Username:', username);
+      console.log('Password:', password);
+    };
+
+    // return (
+    //   <form onSubmit={handleSubmit}>
+    //     <div className="mb-3">
+    //       <label htmlFor="username" className="form-label">Username</label>
+    //       <input type="text" className="form-control" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+    //     </div>
+    //     <div className="mb-3">
+    //       <label htmlFor="password" className="form-label">Password</label>
+    //       <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+    //     </div>
+    //     <button type="submit" className="btn btn-primary">Login</button>
+    //   </form>
+    // );
+
+
+  }
   return (
+    <>
+    <NavbarPage />
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="card shadow-sm">
         <h3 className="text-center mb-3">Login</h3>
@@ -22,6 +53,7 @@ const LoginForm = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 
