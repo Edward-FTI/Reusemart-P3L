@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
+use Exception;
 use Illuminate\Http\Request;
-
+use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class PegawaiController extends Controller
 {
@@ -23,7 +24,7 @@ class PegawaiController extends Controller
         return response([
             'message' => 'Data pegawai kosong',
             'data' => []
-        ], 200);
+        ], 400);
     }
 
 
@@ -38,7 +39,6 @@ class PegawaiController extends Controller
             'password' => 'required',
             'gaji' => 'required',
         ]);
-
         if ($validate->fails()) {
             return response(['message' => $validate->errors()], 400);
         }
@@ -68,13 +68,11 @@ class PegawaiController extends Controller
             'email' => 'required',
             'gaji' => 'required',
         ]);
-
         if ($validate->fails()) {
             return response([
                 'message' => $validate->errors()
             ], 400);
         }
-
         $pegawai->id_jabatan = $updatePegawai['id_jabatan'];
         $pegawai->nama = $updatePegawai['nama'];
         $pegawai->email = $updatePegawai['email'];
@@ -102,7 +100,6 @@ class PegawaiController extends Controller
                 'data' => null
             ], 400);
         }
-
         if ($pegawai->delete()) {
             return response([
                 'message' => 'Berhasil menghapus data pegawai',
@@ -110,4 +107,95 @@ class PegawaiController extends Controller
             ], 200);
         }
     }
+
+
+    // publick function search(Request $request) {
+    //     $search = $request->search();
+
+    //     $pegawai = 
+    // }
+
+
+    public function show(string $id) {
+        $pegawai = Pegawai::find($id);
+
+        if(!is_null($pegawai)) {
+            return response([
+                'message' => 'Pegawai dengan nama ' . $pegawai->nama . ' ditemukan',
+                'data' => $pegawai,
+            ], 200);
+        }
+        return response([
+            'message' => 'Data tidak ditemukan',
+            'data' => null
+        ], 400);
+    }
+
+
+    public function searchByName($name) {
+        try {
+            $pegawai = Pegawai::where('nama', 'LIKE', '%' . $name . '%' )->get();
+            if($pegawai->isEmpty()) {
+                throw new \Exception('Pegawai dengan nama ' . $pegawai . ' tidak ditemukan');
+            }
+            return response([
+                'status' => true,
+                'message' => 'Berhasil mengambil data pegawai',
+                'data' => $pegawai,
+            ], 200);
+        }
+        catch(\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+                'data' => []
+            ], 400);
+        }
+    }
+
+
+    public function searchByJabatan($jabatan) {
+        try {
+            $pegawai = Pegawai::where('id_jabatan', $jabatan)->get();
+
+            if($pegawai->isEmpty()) {
+            throw new \Exception('pegawai dengan jabatan ' . $jabatan . ' tidak ditemukan');
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Berhasil mengambil data pegawai',
+                'data' => $pegawai
+            ], 200);
+        }
+        catch(\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+                'data' => []
+            ], 400);
+        }
+    }
+
+
+    public function searchById($id) {
+        try {
+            $pegawai = Pegawai::findOrFail($id);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Berhasil menemukan pegawai',
+                'data' => $pegawai
+            ], 200);
+        }
+        catch(\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+                'data' => []
+            ], 404);
+        }
+    }
+
+
+
 }

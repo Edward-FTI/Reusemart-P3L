@@ -5,7 +5,7 @@ const CreatePegawai = () => {
     return (
         <div className="container mt-5 table-container p-3 bg-white">
 
-            <form action="" method="" className="row g-3">
+            <form action="" method="POST" className="row g-3">
                 <div className="col-md-6">
                     <label for="nama" className="form-label">Nama Pegawai</label>
                     <input type="text" className="form-control" id="nama" name="nama" />

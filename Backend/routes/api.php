@@ -13,9 +13,9 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/pegawai', [PegawaiController::class, 'index']);
 Route::post('/pegawai', [PegawaiController::class, 'store']);
+Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
 Route::put('/pegawai/{id}', [PegawaiController::class, 'update']);
 Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy']);
-
-
-// Route::get('/pegawai/{id}', [PegawaiController::class, 'show']); // optional jika ingin tampilkan satu data
-
+Route::get('/pegawai/search/{name}', [PegawaiController::class, 'searchByName']);
+Route::get('/searchByJabatan/{jabatan}', [PegawaiController::class, 'searchBsearchByJabatanyName']);
+Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);

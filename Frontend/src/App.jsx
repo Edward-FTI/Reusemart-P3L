@@ -7,6 +7,7 @@ import Pegawai from './pegawai/pegawai'
 import CreatePegawai from './pegawai/createPegawai'
 import UpdatePegawai from './pegawai/updatePegawai'
 import Layout from './navbar/layout';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 function App() {
   return (
