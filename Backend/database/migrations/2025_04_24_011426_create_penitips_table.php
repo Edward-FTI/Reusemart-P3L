@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('no_ktp');
             $table->double('saldo');
             $table->integer('point');
-            $table->string('email');
+            $table->string('email')->unique();
             $table->string('password');
             $table->string('badge');
             $table->timestamps();
