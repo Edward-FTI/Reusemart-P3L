@@ -1,5 +1,13 @@
 import useAxios from ".";
 
+const SignUp = async (data) => {
+  try {
+    const response = await useAxios.post("/register", data);
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
 const Login = async (data) => {
     try{
         const response = await useAxios.post("/login", data);
