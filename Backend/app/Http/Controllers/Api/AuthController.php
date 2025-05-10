@@ -23,7 +23,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'username' => 'required',
+            'email' => 'required',
             'password' => 'required'
         ]);
 
@@ -31,7 +31,7 @@ class AuthController extends Controller
             return response(['message' => $validate->errors()], 400);
         }
 
-        $user = User::where('username', $request->username)->first();
+        $user = User::where('email', $request->email)->first();
 
         if (!$user || Hash::check($request->password, $user->password)) {
             return response(['message' => 'Invalid credentials'], 401);
@@ -39,11 +39,31 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // Check user role and return the corresponding model
+        $userTypeData = null;
+        switch ($user->role) {
+            case 'pegawai':
+            case 'pegawai-gudang':
+            case 'admin':
+            case 'owner':
+                $userTypeData = $user->pegawai;
+                break;
+            case 'pembeli':
+                $userTypeData = $user->pembeli;
+                break;
+            case 'penitip':
+                $userTypeData = $user->penitip;
+                break;
+            case 'organisasi':
+                $userTypeData = $user->organisasi;
+                break;
+        }
         return response()->json([
             'message' => 'Login successful',
             'access_token' => $token,
             'token_type' => 'Bearer',
             'user' => $user,
+            'role' => $userTypeData,
         ]);
     }
 
@@ -74,6 +94,7 @@ class AuthController extends Controller
             'user' => $user,
         ], 201);
     }
+
 
     public function logout(Request $request)
     {
