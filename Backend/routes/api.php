@@ -31,3 +31,4 @@ Route::get('/searchByJabatan/{jabatan}', [PegawaiController::class, 'searchBysea
 Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
 
 Route::get('/jabatan', [JabatanController::class, 'index']);
+Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);

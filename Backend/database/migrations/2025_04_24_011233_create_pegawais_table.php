@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_jabatan')->constrained('jabatans');
             $table->string('nama');
+            $table->date('tgl_lahir');
             $table->string('email')->unique();
             $table->string('password');
             $table->double('gaji');

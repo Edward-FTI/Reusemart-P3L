@@ -6,7 +6,7 @@ import App from "./App.jsx";
 
 import Login from './Components/Login.jsx';
 // import Pegawai from './pegawai'
-import CRUDPegawai from "./admin/CRUDPegawai.jsx";
+// import CRUDPegawai from "./admin/CRUDPegawai.jsx";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 // import Layout from './navbar/layout.jsx'

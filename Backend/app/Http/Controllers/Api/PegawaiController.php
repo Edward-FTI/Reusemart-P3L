@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Controller;
-use App\Models\Pegawai;
 use Exception;
+use App\Models\User;
+use App\Models\Pegawai;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class PegawaiController extends Controller
@@ -15,7 +17,7 @@ class PegawaiController extends Controller
     {
         $pegawai = Pegawai::with('jabatan')->get();
 
-                if (count($pegawai) > 0) {
+        if (count($pegawai) > 0) {
             return response([
                 'message' =>  'Berhasil mengambil data pegawai',
                 'data' => $pegawai
@@ -35,6 +37,7 @@ class PegawaiController extends Controller
         $validate = Validator::make($storeData, [
             'id_jabatan' => 'required',
             'nama' => 'required',
+            'tgl_lahir' => 'required',
             'email' => 'required',
             'password' => 'required',
             'gaji' => 'required',
@@ -42,6 +45,7 @@ class PegawaiController extends Controller
         if ($validate->fails()) {
             return response(['message' => $validate->errors()], 400);
         }
+        $storeData['password'] = Hash::make($storeData['password']);
         $pegawai = Pegawai::create($storeData);
 
         return response([
@@ -195,5 +199,26 @@ class PegawaiController extends Controller
                 'data' => []
             ], 404);
         }
+    }
+
+
+    public function resetPassword($id)
+    {
+        $pegawai = Pegawai::find($id);
+        if (!$pegawai) {
+            return response([
+                'message' => 'Data pegawai tidak ditemukan',
+                'data' => null
+            ], 404);
+        }
+
+        $defaultPassword = $pegawai->tgl_lahir;
+        $pegawai->password = Hash::make($defaultPassword);
+        $pegawai->save();
+
+        return response([
+            'message' => 'Password berhasil direset ke tanggal lahir',
+            'data' => $pegawai
+        ], 200);
     }
 }
