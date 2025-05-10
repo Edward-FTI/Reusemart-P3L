@@ -19,6 +19,6 @@ class Pegawai extends Model
     ];
 
     public function jabatan(): BelongsTo {
-        return $this->belongsTo(Jabatan::class);
+        return $this->belongsTo(Jabatan::class, 'id_jabatan');
     }
 }
