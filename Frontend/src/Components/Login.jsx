@@ -76,12 +76,14 @@ const handleSubmit = async (e) => {
     <>
       {/* <NavbarPage /> */}
       <div className="container d-flex justify-content-center align-items-center vh-100">
-        <div className="card shadow-sm p-4" style={{ minWidth: '350px' }}>
+        <div className="card shadow-sm p-4" style={{ minWidth: "350px" }}>
           <h3 className="text-center mb-3">Login</h3>
           {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email</label>
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
               <input
                 type="email"
                 className="form-control"
@@ -93,7 +95,9 @@ const handleSubmit = async (e) => {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="password" className="form-label">Password</label>
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
               <input
                 type="password"
                 className="form-control"
@@ -104,11 +108,17 @@ const handleSubmit = async (e) => {
                 required
               />
             </div>
-            <button type="submit" className="btn btn-primary w-100">Login</button>
+            <button type="submit" className="btn btn-primary w-100">
+              Login
+            </button>
           </form>
           <div className="text-center mt-3">
-            <a href="/forgot-password" className="d-block">Forgot Password?</a>
-            <span>Don't have an account? <a href="/register">Register</a></span>
+            <a href="/forgot-password" className="d-block">
+              Forgot Password?
+            </a>
+            <span>
+              Don't have an account? <a href="/register">Register</a>
+            </span>
           </div>
         </div>
       </div>
