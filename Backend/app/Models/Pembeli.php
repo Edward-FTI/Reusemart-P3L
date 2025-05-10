@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\Contracts\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Pembeli extends Model
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
+    public $timestamps = false;
+    protected $table = 'pembelis';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'nama_pembeli',
@@ -16,4 +22,15 @@ class Pembeli extends Model
         'no_hp',
         'point',
     ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 }

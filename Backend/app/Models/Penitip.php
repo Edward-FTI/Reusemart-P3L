@@ -18,4 +18,10 @@ class Penitip extends Model
         'password',
         'badge',
     ];
+
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 }
