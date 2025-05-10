@@ -8,13 +8,22 @@ const SignUp = async (data) => {
     throw error.response.data;
   }
 };
+
+const SignUpO = async (data) => {
+  try {
+    const response = await useAxios.post("/register-org", data);
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
 const Login = async (data) => {
-    try{
-        const response = await useAxios.post("/login", data);
-        return response.data;
-    }catch (error){
-        throw error.response.data;
-    }
+  try {
+    const response = await useAxios.post("/login", data);
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
 };
 
-export { Login };
+export { Login, SignUp, SignUpO };

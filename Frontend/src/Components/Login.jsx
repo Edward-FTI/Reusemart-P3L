@@ -103,7 +103,7 @@ const LoginForm = () => {
               Forgot Password?
             </a>
             <span>
-              Don't have an account? <a href="/RegisterPage">Register</a>
+              Don't have an account? <a href="/register">Register</a>
             </span>
           </div>
         </div>

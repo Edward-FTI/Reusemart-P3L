@@ -3,14 +3,14 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import InputFloatingForm from "./InputFloatingForm";
-import { SignUp } from "../../Api/apiAuth";
-// import LoginForm from "../Login";
+import { SignUpO } from "../../Api/apiAuth";
 
-const FormRegister = () => {
+const FormRegisterOrg = () => {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
   const [data, setData] = useState({
     nama: "",
+    alamat: "",
     email: "",
     no_hp: "",
     password: "",
@@ -25,9 +25,9 @@ const FormRegister = () => {
     setIsDisabled(!isChecked);
   };
 
-  const Register = (event) => {
+  const RegisterOrg = (event) => {
     event.preventDefault();
-    SignUp(data)
+    SignUpO(data)
       .then((res) => {
         navigate("/");
         toast.success(res.message);
@@ -41,7 +41,7 @@ const FormRegister = () => {
   return (
     <Form
       style={{ maxWidth: "600px", margin: "auto" }}
-      onSubmit={Register}
+      onSubmit={RegisterOrg} 
       className="p-4 rounded formContainer"
     >
       <Alert variant="primary" className="mb-4 alertColor text-center">
@@ -49,13 +49,17 @@ const FormRegister = () => {
       </Alert>
 
       <div className="d-flex flex-column gap-3">
-        {" "}
-        {/* <<< INI KUNCI SPASI */}
         <InputFloatingForm
           type="text"
           name="nama"
           onChange={handleChange}
           placeholder="Masukkan Nama"
+        />
+        <InputFloatingForm
+          type="text"
+          name="alamat"
+          onChange={handleChange}
+          placeholder="Masukkan Alamat"
         />
         <InputFloatingForm
           type="email"
@@ -96,8 +100,8 @@ const FormRegister = () => {
         Register
       </Button>
 
-      <p className="text-end mt-2">
-        Organization Account? <Link to="/register-org">Click Here!</Link>
+       <p className="text-end mt-2">
+        Personal Account? <Link to="/register">Click Here!</Link>
       </p>
 
       <p className="text-end mt-2">
@@ -107,4 +111,4 @@ const FormRegister = () => {
   );
 };
 
-export default FormRegister;
+export default FormRegisterOrg;
