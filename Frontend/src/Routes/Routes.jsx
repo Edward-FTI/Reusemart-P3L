@@ -9,6 +9,10 @@ import Register from "../Components/Register";
 import ForgetPassword from "../Components/ForgetPassword";
 import AmbilBarang from "../Components/AmbilBarang";
 
+//HOME ROLE
+import Admin from "../admin/CRUDJabatan";
+
+
 //CUSTOMER SERVICE
 import CRUDPenitip from "../Customer_Service/CRUDPenitip";
 import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
@@ -85,6 +89,10 @@ const router = createBrowserRouter([
     {
       path: "/ambil-barang",
       element: <AmbilBarang />,
+    },
+    {
+      path: "/admin",
+      elemet: <CRUDJabatan />
     },
   
     // CUSTOMER SERVICE
