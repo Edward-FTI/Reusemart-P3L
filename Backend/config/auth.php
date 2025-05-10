@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'guard' => 'web',
+        'passwords' => 'users',
     ],
 
     /*
@@ -40,6 +40,32 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'pegawai' => [
+            'driver' => 'session',
+            'provider' => 'pegawais', // Sesuaikan dengan provider pegawai
+        ],
+
+        'pembeli' => [
+            'driver' => 'session',
+            'provider' => 'pembelis', // Sesuaikan dengan provider customer
+        ],
+
+        'penitip' => [
+            'driver' => 'session',
+            'provider' => 'penitips', // Sesuaikan dengan provider penitip
+        ],
+
+        'organisasi' => [
+            'driver' => 'session',
+            'provider' => 'organisasis', // Sesuaikan dengan provider organisasi
+        ],
+
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+
     ],
 
     /*
@@ -63,6 +89,26 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+
+        'pegawais' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Pegawai::class,
+        ],
+
+        'pembelis' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Pembeli::class,
+        ],
+
+        'penitips' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Penitip::class,
+        ],
+
+        'organisasis' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Organisasi::class,
         ],
 
         // 'users' => [

@@ -3,11 +3,20 @@
 use App\Http\Controllers\Api\JabatanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PegawaiController;
+use APP\Http\Controllers\Api\PembeliController;
+use App\Http\Controllers\Api\OrganisasiController;
+use App\Http\Controllers\Api\PenitipController;
 
-Route::get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+});
+
+
+//Login
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 
 
