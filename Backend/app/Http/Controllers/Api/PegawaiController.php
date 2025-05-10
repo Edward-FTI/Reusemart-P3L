@@ -13,9 +13,9 @@ class PegawaiController extends Controller
 {
     public function index()
     {
-        $pegawai = Pegawai::all();
+        $pegawai = Pegawai::with('jabatan')->get();
 
-        if (count($pegawai) > 0) {
+                if (count($pegawai) > 0) {
             return response([
                 'message' =>  'Berhasil mengambil data pegawai',
                 'data' => $pegawai
@@ -116,10 +116,11 @@ class PegawaiController extends Controller
     // }
 
 
-    public function show(string $id) {
+    public function show(string $id)
+    {
         $pegawai = Pegawai::find($id);
 
-        if(!is_null($pegawai)) {
+        if (!is_null($pegawai)) {
             return response([
                 'message' => 'Pegawai dengan nama ' . $pegawai->nama . ' ditemukan',
                 'data' => $pegawai,
@@ -132,10 +133,11 @@ class PegawaiController extends Controller
     }
 
 
-    public function searchByName($name) {
+    public function searchByName($name)
+    {
         try {
-            $pegawai = Pegawai::where('nama', 'LIKE', '%' . $name . '%' )->get();
-            if($pegawai->isEmpty()) {
+            $pegawai = Pegawai::where('nama', 'LIKE', '%' . $name . '%')->get();
+            if ($pegawai->isEmpty()) {
                 throw new \Exception('Pegawai dengan nama ' . $pegawai . ' tidak ditemukan');
             }
             return response([
@@ -143,8 +145,7 @@ class PegawaiController extends Controller
                 'message' => 'Berhasil mengambil data pegawai',
                 'data' => $pegawai,
             ], 200);
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -154,20 +155,20 @@ class PegawaiController extends Controller
     }
 
 
-    public function searchByJabatan($jabatan) {
+    public function searchByJabatan($jabatan)
+    {
         try {
             $pegawai = Pegawai::where('id_jabatan', $jabatan)->get();
 
-            if($pegawai->isEmpty()) {
-            throw new \Exception('pegawai dengan jabatan ' . $jabatan . ' tidak ditemukan');
+            if ($pegawai->isEmpty()) {
+                throw new \Exception('pegawai dengan jabatan ' . $jabatan . ' tidak ditemukan');
             }
             return response()->json([
                 'status' => true,
                 'message' => 'Berhasil mengambil data pegawai',
                 'data' => $pegawai
             ], 200);
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -177,7 +178,8 @@ class PegawaiController extends Controller
     }
 
 
-    public function searchById($id) {
+    public function searchById($id)
+    {
         try {
             $pegawai = Pegawai::findOrFail($id);
 
@@ -186,8 +188,7 @@ class PegawaiController extends Controller
                 'message' => 'Berhasil menemukan pegawai',
                 'data' => $pegawai
             ], 200);
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -195,7 +196,4 @@ class PegawaiController extends Controller
             ], 404);
         }
     }
-
-
-
 }
