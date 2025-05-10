@@ -19,14 +19,12 @@ class Pegawai extends Model
         'gaji',
     ];
 
-    public function jabatan(): BelongsTo
-    {
-        return $this->belongsTo(Jabatan::class, 'id_jabatan', 'id');
-    }
-
     public function user()
 {
     return $this->belongsTo(User::class);
 }
 
+    public function jabatan(): BelongsTo {
+        return $this->belongsTo(Jabatan::class, 'id_jabatan');
+    }
 }

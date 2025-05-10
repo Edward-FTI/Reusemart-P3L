@@ -19,7 +19,7 @@ import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
 
 //ADMIN 
 import CRUDJabatan from "../admin/CRUDJabatan";
-import CRUDPegawai from "../admin/CRUDPegawai";
+// import CRUDPegawai from "../admin/CRUDPegawai";
 import CRUDMercandise from "../admin/CRUDMercandise";
 import CRUDOrganisasi from "../Admin/CRUDOrganisasi";
 // import ShowAdmin from "../admin/DaftarCustomer";
@@ -47,6 +47,7 @@ import PengambilanBarangKembali from "../penitip/PengambilanBarangKembali";
 //Organisasi
 import InputDataOrganisasi from "../organisasi/InputDataOrganisasi";
 import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
+import Layout from "../navbar/layout.jsx";
 
 //NOTIFIKASI
 // import ShowPenjualanBulanan from "../Owner/ShowPenjualanBulanan";
@@ -128,8 +129,9 @@ const router = createBrowserRouter([
       path: "/admin/pegawai",
       element: (
         <div>
-          <CRUDPegawai />
-          <Footer />
+          <Layout/>
+          {/* <CRUDPegawai /> */}
+          {/* <Footer /> */}
         </div>
       ),
     },
