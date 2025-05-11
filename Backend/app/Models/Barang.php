@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Barang extends Model
 {
@@ -16,6 +17,15 @@ class Barang extends Model
         'nama_barang',
         'harga_barang',
         'deskripsi',
-        'status',
+        'status_garansi',
+        'status_barang',
+        'gambar'
     ];
+
+    public function penitip(): BelongsTo {
+        return $this->belongsTo(Penitip::class, 'id_penitip');
+    }
+    public function kategori(): BelongsTo {
+        return $this->belongsTo(KategoriBarang::class, 'id_kategori');
+    }
 }

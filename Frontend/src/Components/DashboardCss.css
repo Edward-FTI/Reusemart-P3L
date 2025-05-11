@@ -1,0 +1,35 @@
+.search-box {
+    border-radius: 50px;
+}
+
+.category-links a {
+    font-size: 0.9rem;
+    margin-right: 10px;
+    color: #6c757d;
+    text-decoration: none;
+}
+
+.category-links a:hover {
+    text-decoration: underline;
+}
+
+.logo {
+    text-decoration: none
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: scale-down
+}
+
+.card-body h5 {
+    font-size: 16px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.card-body p {
+    font-size: 14px;
+}

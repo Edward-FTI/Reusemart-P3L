@@ -20,6 +20,8 @@ return new class extends Migration
             $table->double('harga_barang');
             $table->string('deskripsi');
             $table->string('status_garansi');
+            $table->string('status_barang');
+            $table->string('gambar');
             $table->timestamps();
         });
     }

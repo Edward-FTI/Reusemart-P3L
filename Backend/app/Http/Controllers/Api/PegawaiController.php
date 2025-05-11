@@ -113,17 +113,9 @@ class PegawaiController extends Controller
     }
 
 
-    // publick function search(Request $request) {
-    //     $search = $request->search();
-
-    //     $pegawai = 
-    // }
-
-
     public function show(string $id)
     {
         $pegawai = Pegawai::find($id);
-
         if (!is_null($pegawai)) {
             return response([
                 'message' => 'Pegawai dengan nama ' . $pegawai->nama . ' ditemukan',
