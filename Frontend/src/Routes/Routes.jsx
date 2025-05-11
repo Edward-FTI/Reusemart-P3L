@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "sonner";
+// import ProtectedRoute from "./ProtectedRoute.jsx";
 
 import NavbarPage from "../Components/Navbar";
 import Footer from "../Components/Footer";
@@ -14,6 +15,7 @@ import Admin from "../admin/CRUDJabatan";
 
 
 //CUSTOMER SERVICE
+import NavbarCustomer_Service from "../navbar/NavbarCustomer_Service";
 import CRUDPenitip from "../Customer_Service/CRUDPenitip";
 import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
 
@@ -30,6 +32,7 @@ import CRUDBarangTitipan from "../Pegawai_Gudang/CRUDBarangTitipan";
 import CRUDPengiriman from "../Pegawai_Gudang/CRUDPengiriman";
 
 //Customer
+import NavbarCustomer from "../navbar/NavbarCustomer";
 import ShowProfileCustomer from "../Customers/ShowProfileCustomer";
 import ShowHistoryCustomer from "../Customers/ShowHistoryCustomer";
 import CRUDDiskusiCustomer from "../Customers/CRUDDiskusiCustomer";
@@ -92,7 +95,7 @@ const router = createBrowserRouter([
     },
     {
       path: "/admin",
-      elemet: <CRUDJabatan />
+      element: <CRUDJabatan />
     },
   
     // CUSTOMER SERVICE
@@ -100,8 +103,11 @@ const router = createBrowserRouter([
       path: "/customer-service/penitip",
       element: (
         <div>
-          <CRUDPenitip />
-          <Footer />
+          {/* <ProtectedRoute> */}
+          <NavbarCustomer_Service />
+           <CRUDPenitip />
+          {/* <Footer /> */}
+        {/* </ProtectedRoute> */}
         </div>
       ),
     },
@@ -109,8 +115,10 @@ const router = createBrowserRouter([
       path: "/customer-service/diskusi",
       element: (
         <div>
+          {/* <ProtectedRoute> */}
           <CRUDDiskusi />
-          <Footer />
+          <Footer />  
+          {/* </ProtectedRoute> */}
         </div>
       ),
     },
@@ -119,19 +127,22 @@ const router = createBrowserRouter([
     {
       path: "/admin/jabatan",
       element: (
-        <div>
+          <div>
+           {/* <ProtectedRoute> */}
           <CRUDJabatan />
           <Footer />
-        </div>
+         {/* </ProtectedRoute> */}
+          </div>
+        
       ),
     },
     {
       path: "/admin/pegawai",
       element: (
         <div>
+            {/* <ProtectedRoute> */}
           <Layout/>
-          {/* <CRUDPegawai /> */}
-          {/* <Footer /> */}
+          {/* </ProtectedRoute> */}
         </div>
       ),
     },
@@ -190,9 +201,10 @@ const router = createBrowserRouter([
       path: "/customer/profile",
       element: (
         <div>
-          <NavbarPage />
+          {/* <NavbarPage /> */}
+          <NavbarCustomer />
           <ShowProfileCustomer />
-          <Footer />
+          {/* <Footer /> */}
         </div>
       ),
     },

@@ -5,44 +5,157 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Penitip;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class PenitipController extends Controller
 {
-    
     public function index()
     {
-        //
+        $penitips = Penitip::all();
+
+        return response([
+            'message' => $penitips->isEmpty() ? 'Data penitip kosong' : 'Berhasil mengambil data penitip',
+            'data' => $penitips
+        ], $penitips->isEmpty() ? 404 : 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $storeData = $request->all();
+
+        $validate = Validator::make($storeData, [
+            'nama_penitip' => 'required|string|max:255',
+            'no_ktp' => 'required|string|min:16|max:20',
+            'gambar_ktp' => 'nullable|string',
+            'email' => 'required|email|unique:penitips,email',
+            'password' => 'required|string|min:6',
+            'badge' => 'required|string',
+            'point' => 'required|integer',
+            'saldo' => 'nullable|numeric',
+        ]);
+
+        if ($validate->fails()) {
+            return response(['message' => $validate->errors()], 400);
+        }
+
+        $storeData['password'] = Hash::make($storeData['password']);
+
+        $penitip = Penitip::create($storeData);
+
+        return response([
+            'message' => 'Berhasil menambahkan data penitip',
+            'data' => $penitip
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        //
+        $penitip = Penitip::find($id);
+        if (!$penitip) {
+            return response(['message' => 'Data penitip tidak ditemukan', 'data' => null], 404);
+        }
+
+        $updateData = $request->all();
+
+        $validate = Validator::make($updateData, [
+            'nama_penitip' => 'required|string|max:255',
+            'no_ktp' => 'required|string|min:16|max:20',
+            'gambar_ktp' => 'nullable|string',
+            'email' => 'required|email|unique:penitips,email,' . $id,
+            'password' => 'nullable|string|min:6',
+            'badge' => 'required|string',
+            'point' => 'required|integer',
+            'saldo' => 'nullable|numeric',
+        ]);
+
+        if ($validate->fails()) {
+            return response(['message' => $validate->errors()], 400);
+        }
+
+        $penitip->nama_penitip = $updateData['nama_penitip'];
+        $penitip->no_ktp = $updateData['no_ktp'];
+        $penitip->gambar_ktp = $updateData['gambar_ktp'] ?? $penitip->gambar_ktp;
+        $penitip->email = $updateData['email'];
+        $penitip->badge = $updateData['badge'];
+        $penitip->point = $updateData['point'];
+        $penitip->saldo = $updateData['saldo'] ?? $penitip->saldo;
+
+        if (!empty($updateData['password'])) {
+            $penitip->password = Hash::make($updateData['password']);
+        }
+
+        $penitip->save();
+
+        return response([
+            'message' => 'Berhasil update data penitip',
+            'data' => $penitip
+        ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        $penitip = Penitip::find($id);
+        if (!$penitip) {
+            return response(['message' => 'Data penitip tidak ditemukan', 'data' => null], 404);
+        }
+
+        $penitip->delete();
+
+        return response([
+            'message' => 'Berhasil menghapus data penitip',
+            'data' => $penitip
+        ], 200);
+    }
+
+    public function show(string $id)
+    {
+        $penitip = Penitip::find($id);
+
+        if ($penitip) {
+            return response([
+                'message' => 'Penitip ditemukan',
+                'data' => $penitip
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Data tidak ditemukan',
+            'data' => null
+        ], 404);
+    }
+
+    public function searchByName($name)
+    {
+        $penitips = Penitip::where('nama_penitip', 'LIKE', '%' . $name . '%')->get();
+
+        if ($penitips->isEmpty()) {
+            return response([
+                'message' => 'Penitip dengan nama tersebut tidak ditemukan',
+                'data' => []
+            ], 404);
+        }
+
+        return response([
+            'message' => 'Berhasil mengambil data penitip',
+            'data' => $penitips
+        ], 200);
+    }
+
+    public function searchById($id)
+    {
+        $penitip = Penitip::find($id);
+
+        if (!$penitip) {
+            return response([
+                'message' => 'Penitip tidak ditemukan',
+                'data' => []
+            ], 404);
+        }
+
+        return response([
+            'message' => 'Penitip ditemukan',
+            'data' => $penitip
+        ], 200);
     }
 }

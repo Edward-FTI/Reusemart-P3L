@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PegawaiController;
 use APP\Http\Controllers\Api\PembeliController;
 use App\Http\Controllers\Api\OrganisasiController;
 use App\Http\Controllers\Api\PenitipController;
+use App\Http\Controllers\Api\BarangController;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -18,9 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-
-
-
+//Pegawai
 Route::get('/pegawai', [PegawaiController::class, 'index']);
 Route::post('/pegawai', [PegawaiController::class, 'store']);
 Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
@@ -31,3 +30,22 @@ Route::get('/searchByJabatan/{jabatan}', [PegawaiController::class, 'searchBysea
 Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
 
 Route::get('/jabatan', [JabatanController::class, 'index']);
+
+//Penitip
+Route::get('/penitip', [PenitipController::class, 'index']);
+Route::post('/penitip', [PenitipController::class, 'store']);
+Route::get('/penitip/{id}', [PenitipController::class, 'show']);
+Route::put('/penitip/{id}', [PenitipController::class, 'update']);
+Route::delete('/penitip/{id}', [PenitipController::class, 'destroy']);
+Route::get('/penitip/search/{name}', [PenitipController::class, 'searchByName']);
+Route::get('/penitip/{id}', [PenitipController::class, 'searchById']);
+
+//Organisasi
+Route::get('/organisasi', [OrganisasiController::class, 'index']);
+Route::post('/organisasi', [OrganisasiController::class, 'store']);
+Route::get('/organisasi/{id}', [OrganisasiController::class, 'show']);
+Route::put('/organisasi/{id}', [OrganisasiController::class, 'update']);
+Route::delete('/organisasi/{id}', [OrganisasiController::class, 'destroy']);
+Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByName']);
+Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
+Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
