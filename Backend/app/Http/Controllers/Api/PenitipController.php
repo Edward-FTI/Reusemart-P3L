@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Penitip;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
 class PenitipController extends Controller
@@ -18,6 +20,14 @@ class PenitipController extends Controller
             'message' => $penitips->isEmpty() ? 'Data penitip kosong' : 'Berhasil mengambil data penitip',
             'data' => $penitips
         ], $penitips->isEmpty() ? 404 : 200);
+
+        $user = User::where('role', 'penitip')->get();
+        if ($user->isNotEmpty()) {
+            return response([
+                'message' => 'Berhasil mengambil data User',
+                'data' => $user
+            ], 200);
+        }
     }
 
     public function store(Request $request)
@@ -42,6 +52,15 @@ class PenitipController extends Controller
         $storeData['password'] = Hash::make($storeData['password']);
 
         $penitip = Penitip::create($storeData);
+
+        $user = new User();
+        $user->name = $storeData['nama_penitip'];
+        $user->email = $storeData['email'];
+        $user->password = $storeData['password'];
+        $user->role = 'penitip';
+        $user->email_verified_at = now();
+        $user->remember_token = Str::random(60);
+        $user->save();
 
         return response([
             'message' => 'Berhasil menambahkan data penitip',
@@ -87,6 +106,19 @@ class PenitipController extends Controller
 
         $penitip->save();
 
+        $user = User::where('email', $penitip->email)->first();
+        if ($user) {
+            $user->name = $penitip->nama_penitip;
+            $user->email = $penitip->email;
+            if (!empty($updateData['password'])) {
+                $user->password = Hash::make($updateData['password']);
+            }
+            $user->role = 'penitip';
+            $user->email_verified_at = now();
+            $user->remember_token = Str::random(60);
+            $user->save();
+        }
+
         return response([
             'message' => 'Berhasil update data penitip',
             'data' => $penitip
@@ -101,6 +133,14 @@ class PenitipController extends Controller
         }
 
         $penitip->delete();
+        $user = User::where('email', $penitip->email)->first();
+        if ($user) {
+            $user->delete();
+        }
+        return response([
+            'message' => 'Berhasil menghapus data penitip',
+            'data' => $penitip
+        ], 200);
 
         return response([
             'message' => 'Berhasil menghapus data penitip',

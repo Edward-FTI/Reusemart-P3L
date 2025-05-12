@@ -14,63 +14,52 @@ const LoginForm = () => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await Login(data);
-    const user = res.user;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await Login(data);
+      const user = res.user;
 
-    // Simpan token dan data user
-    sessionStorage.setItem("token", res.access_token);
-    sessionStorage.setItem("user", JSON.stringify(user));
+      // Simpan token dan data user
+      sessionStorage.setItem("token", res.access_token);
+      sessionStorage.setItem("user", JSON.stringify(user));
 
-    // Cek dan simpan ID berdasarkan asal user
-    if (user.jabatan.role !== undefined) {
-      // Dari tabel karyawan
-      sessionStorage.setItem("user_id", user.jabatan.role);
-      toast.success("Login Berhasil!");
+      // Simplified role checking
+      if (user) {
+        toast.success("Login Berhasil!");
 
-      switch (user.jabatan.role) {
-        case "Admin":
-          navigate("/admin");
-          break;
-        case "CS":
-          navigate("/cs");
-          break;
-        case "Owner":
-          navigate("/owner");
-          break;
-        case "Pegawai Gudang":
-          navigate("/pegawai-gudang");
-          break;
-        default:
-          toast.error("Jabatan tidak dikenali.");
-          break;
+        // Redirecting based on user role (You can update the roles accordingly)
+        if (user.jabatan_pegawai) {
+          switch (user.jabatan_pegawai) {
+            case "Dasboard":
+              navigate("/");
+              break;
+            case "Admin":
+              navigate("/Admin");
+              break;
+            case "Customer Service":
+              navigate("/customerService");
+              break;
+            case "Penitip":
+              navigate("/penitp");
+              break;
+            default:
+              toast.error("Peran tidak dikenali.");
+              break;
+          }
+        } else {
+          // If no role, default to customer page
+          navigate("/customer");
+        }
+      } else {
+        toast.error("Peran tidak dikenali.");
       }
-
-    } else if (user.id_organisasi) {
-      sessionStorage.setItem("user_id", user.id_organisasi);
-      toast.success("Login Berhasil!");
-      navigate("/organisasi");
-    } else if (user.id_penitip) {
-      sessionStorage.setItem("user_id", user.id_penitip);
-      toast.success("Login Berhasil!");
-      navigate("/penitip");
-    } else if (user.id_customer) {
-      sessionStorage.setItem("user_id", user.id_customer);
-      toast.success("Login Berhasil!");
-      navigate("/pembeli"); // atau "/customer" tergantung naming Anda
-    } else {
-      toast.error("Peran tidak dikenali.");
+    } catch (error) {
+      console.error("Login gagal:", error);
+      setErrorMsg("Email atau Password Salah!");
+      toast.error("Email atau Password Salah!");
     }
-
-  } catch (error) {
-    console.error("Login gagal:", error);
-    setErrorMsg("Email atau Password Salah!");
-    toast.error("Email atau Password Salah!");
-  }
-};
-
+  };
 
   return (
     <>
@@ -114,7 +103,6 @@ const handleSubmit = async (e) => {
       </div>
     </>
   );
-  
 };
 
 export default LoginForm;
