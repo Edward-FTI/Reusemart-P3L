@@ -7,9 +7,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\KategoriBarangController;
 use App\Http\Controllers\Api\PegawaiController;
-use APP\Http\Controllers\Api\PembeliController;
-use App\Http\Controllers\Api\OrganisasiController;
+use App\Http\Controllers\Api\PembeliController;
 use App\Http\Controllers\Api\PenitipController;
+use App\Http\Controllers\Api\OrganisasiController;
 
 use App\Models\Barang;
 use App\Models\KategoriBarang;
@@ -26,7 +26,6 @@ Route::post('/register', [AuthController::class, 'register']);
 
 // Punya Abang Edward
 //======================= Untuk Pegawai =======================
-=======
 //Pegawai
 Route::get('/pegawai', [PegawaiController::class, 'index']);
 Route::post('/pegawai', [PegawaiController::class, 'store']);
