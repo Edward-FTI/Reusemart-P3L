@@ -10,7 +10,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const CRUDPenitip = () => {
     const [PenitipList, setPenitipList] = useState([]);
-    const [form, setForm] = useState({ id: '', nama_penitip: '', no_ktp: '', gambar_ktp: '', saldo: '', point: '', email: '', password: '', badege: '' });
+    const [form, setForm] = useState({ id: '', nama_penitip: '', no_ktp: '', gambar_ktp: '', saldo: '', point: '', email: '', password: '', badge: '' });
     const [isEdit, setIsEdit] = useState(false);
 
     const fetchPenitip = async () => {
@@ -210,6 +210,42 @@ const CRUDPenitip = () => {
                                         />
                                     </div>
                                 )}
+
+                                <label htmlFor="badge" className="form-label">Badge</label>
+                                    <div className="mb-3">
+                                        <input
+                                            name="badge"
+                                            className="form-control"
+                                            placeholder="Badge (opsional)"
+                                            value={form.badge}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+
+                                    <label htmlFor="saldo" className="form-label">Saldo</label>
+                                    <div className="mb-3">
+                                        <input
+                                            name="saldo"
+                                            type="number"
+                                            className="form-control"
+                                            placeholder="Saldo (default 0)"
+                                            value={form.saldo}
+                                            onChange={handleChange}
+                                        />
+                                </div>
+                                
+                                <label htmlFor="point" className="form-label">point</label>
+                                    <div className="mb-3">
+                                        <input
+                                            name="point"
+                                            type="number"
+                                            className="form-control"
+                                            placeholder="point (default 0)"
+                                            value={form.point}
+                                            onChange={handleChange}
+                                        />
+                                </div>
+
 
                                 <button type="submit" className="btn btn-primary">
                                     {isEdit ? 'Update' : 'Tambah'}

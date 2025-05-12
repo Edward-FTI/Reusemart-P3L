@@ -31,8 +31,8 @@ const LoginForm = () => {
         // Role-based navigation
         if (user.role) {
           switch (user.role) {
-            case "Dashboard":
-              navigate("/dashboard"); // Ensure this route exists
+            case "Pembeli":
+              navigate("/customer"); // Ensure this route exists
               break;
             case "Admin":
               navigate("/admin"); // Ensure this route exists
@@ -52,7 +52,7 @@ const LoginForm = () => {
           }
         } else {
           // If no role, default to a general user page
-          navigate("/customer"); // Ensure this route exists
+          navigate("/"); // Ensure this route exists
         }
       } else {
         toast.error("Peran tidak dikenali.");

@@ -76,13 +76,6 @@ Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByN
 Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
 Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
 
-
-//Pembeli
-Route::get('/pembeli/{id}', [PembeliController::class, 'show'] );
-Route::put('/pembeli/update/{id}', [PembeliController::class, 'update']);
-
-// Alamat Pembeli
-
 Route::middleware('auth:api')->group(function () {
     Route::get('/alamat', [AlamatPembeliController::class, 'index']);
     Route::get('/alamat/{id}', [AlamatPembeliController::class, 'show']);
@@ -90,4 +83,13 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/alamat/{id}', [AlamatPembeliController::class, 'update']);
     Route::delete('/alamat/{id}', [AlamatPembeliController::class, 'destroy']);
 });
+
+Route::get('/pembeli', [PembeliController::class, 'index']);
+Route::post('/pembeli', [PembeliController::class, 'store']);
+Route::get('/pembeli/{id}', [PembeliController::class, 'show']);
+Route::put('/pembeli/{id}', [PembeliController::class, 'update']);
+Route::delete('/pembeli/{id}', [PembeliController::class, 'destroy']);
+Route::get('/pembeli/search/{name}', [PembeliController::class, 'searchByName']);
+Route::get('/pembeli/{id}', [PembeliController::class, 'searchById']);
+Route::get('/pembeli/searchByEmail/{email}', [PembeliController::class, 'searchByEmail']);
 
