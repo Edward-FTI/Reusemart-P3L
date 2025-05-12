@@ -107,15 +107,7 @@ class PegawaiController extends Controller
         if ($user) {
             $user->name = $updatePegawai['nama'];
             $user->email = $updatePegawai['email'];
-
-            if (!empty($updatePegawai['password'])) {
-                $user->password = Hash::make($updatePegawai['password']);
-            }
-
-            $jabatan = Jabatan::find($updatePegawai['id_jabatan']);
-            if ($jabatan) {
-                $user->role = $jabatan->role;
-            }
+            $user->role = Jabatan::find($updatePegawai['id_jabatan'])->role;
 
             $user->save();
         }
