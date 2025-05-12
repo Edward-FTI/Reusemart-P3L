@@ -47,24 +47,4 @@ class User extends Authenticatable
         ];
     }
 
-    public function pegawai()
-    {
-        return $this->hasOne(Pegawai::class, 'user_id');
-    }
-
-    public function pembeli()
-    {
-        return $this->hasOne(Pembeli::class, 'user_id');
-    }
-
-    public function penitip()
-    {
-        return $this->hasOne(Penitip::class, 'user_id');
-    }
-
-    public function organisasi()
-    {
-        return $this->hasOne(Organisasi::class, 'user_id');
-    }
-
 }

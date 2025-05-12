@@ -25,5 +25,21 @@ const Login = async (data) => {
     throw error.response.data;
   }
 };
+// export { Login };
 
+
+// export const GetAllUser = async () => {
+//     try {
+//         const response = await useAxios.get('/user', {
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+//             },
+//         });
+//         return response.data.data;
+//     }
+//     catch (error) {
+//         throw error.response.data;
+//     }
+// }
 export { Login, SignUp, SignUpO };
