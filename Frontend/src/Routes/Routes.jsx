@@ -1,19 +1,25 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "sonner";
+// import ProtectedRoute from "./ProtectedRoute.jsx";
 
 import NavbarPage from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import Dashboard from "../Components/Dashboard";
 import Login from "../Components/Login";
-import Register from "../Components/Register";
+import RegisterPage from "../Components/pageReg/regisPage";
+import RegisterOrgPage from "../Components/pageReg/regisOrgPage";
 import ForgetPassword from "../Components/ForgetPassword";
 import AmbilBarang from "../Components/AmbilBarang";
 
+//HOME ROLE
+import Admin from "../admin/CRUDJabatan";
+
 //CUSTOMER SERVICE
+import NavbarCustomer_Service from "../navbar/NavbarCustomer_Service";
 import CRUDPenitip from "../Customer_Service/CRUDPenitip";
 import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
 
-//ADMIN 
+//ADMIN
 import CRUDJabatan from "../admin/CRUDJabatan";
 // import CRUDPegawai from "../admin/CRUDPegawai";
 import CRUDMercandise from "../admin/CRUDMercandise";
@@ -26,6 +32,7 @@ import CRUDBarangTitipan from "../Pegawai_Gudang/CRUDBarangTitipan";
 import CRUDPengiriman from "../Pegawai_Gudang/CRUDPengiriman";
 
 //Customer
+import NavbarCustomer from "../navbar/NavbarCustomer";
 import ShowProfileCustomer from "../Customers/ShowProfileCustomer";
 import ShowHistoryCustomer from "../Customers/ShowHistoryCustomer";
 import CRUDDiskusiCustomer from "../Customers/CRUDDiskusiCustomer";
@@ -38,7 +45,6 @@ import ShowProfilePenitip from "../penitip/ShowProfilePenitip";
 import ShowHistoryPenitip from "../penitip/ShowHistoryPenitip";
 import CRUDPenitipan from "../penitip/CRUDPenitipan";
 import PengambilanBarangKembali from "../penitip/PengambilanBarangKembali";
-
 
 //Organisasi
 import InputDataOrganisasi from "../organisasi/InputDataOrganisasi";
@@ -87,14 +93,21 @@ const router = createBrowserRouter([
       path: "/ambil-barang",
       element: <AmbilBarang />,
     },
+    {
+      path: "/admin",
+      element: <CRUDJabatan />
+    },
   
     // CUSTOMER SERVICE
     {
       path: "/customer-service/penitip",
       element: (
         <div>
-          <CRUDPenitip />
-          <Footer />
+          {/* <ProtectedRoute> */}
+          <NavbarCustomer_Service />
+           <CRUDPenitip />
+          {/* <Footer /> */}
+        {/* </ProtectedRoute> */}
         </div>
       ),
     },
@@ -102,8 +115,10 @@ const router = createBrowserRouter([
       path: "/customer-service/diskusi",
       element: (
         <div>
+          {/* <ProtectedRoute> */}
           <CRUDDiskusi />
-          <Footer />
+          <Footer />  
+          {/* </ProtectedRoute> */}
         </div>
       ),
     },
@@ -112,19 +127,22 @@ const router = createBrowserRouter([
     {
       path: "/admin/jabatan",
       element: (
-        <div>
+          <div>
+           {/* <ProtectedRoute> */}
           <CRUDJabatan />
           <Footer />
-        </div>
+         {/* </ProtectedRoute> */}
+          </div>
+        
       ),
     },
     {
       path: "/admin/pegawai",
       element: (
         <div>
+            {/* <ProtectedRoute> */}
           <Layout/>
-          {/* <CRUDPegawai /> */}
-          {/* <Footer /> */}
+          {/* </ProtectedRoute> */}
         </div>
       ),
     },
@@ -183,9 +201,10 @@ const router = createBrowserRouter([
       path: "/customer/profile",
       element: (
         <div>
-          <NavbarPage />
+          {/* <NavbarPage /> */}
+          <NavbarCustomer />
           <ShowProfileCustomer />
-          <Footer />
+          {/* <Footer /> */}
         </div>
       ),
     },
@@ -365,20 +384,237 @@ const router = createBrowserRouter([
 //         </div>
 //       ),
 //     },
+  {
+    path: "*",
+    element: <div>Routes Not Found!</div>,
+  },
+  {
+    path: "/",
+    element: (
+      <div>
+        <NavbarPage />
+        <Dashboard />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
+  },
+  {
+    path: "/register-org",
+    element: <RegisterOrgPage />,
+  },
+  {
+    path: "/forget-password",
+    element: <ForgetPassword />,
+  },
+  {
+    path: "/ambil-barang",
+    element: <AmbilBarang />,
+  },
 
-{
-  path: "*",
-  element: <div>Routes Not Found!</div>,
-}
-  ]);
-  
-  const AppRouter = () => {
-    return (
-      <>
-        <Toaster position="top-center" richColors />
-        <RouterProvider router={router} />
-      </>
-    );
-  };
+  // CUSTOMER SERVICE
+  {
+    path: "/customer-service/penitip",
+    element: (
+      <div>
+        <CRUDPenitip />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/customer-service/diskusi",
+    element: (
+      <div>
+        <CRUDDiskusi />
+        <Footer />
+      </div>
+    ),
+  },
+
+  // ADMIN
+  {
+    path: "/admin/jabatan",
+    element: (
+      <div>
+        <CRUDJabatan />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/admin/pegawai",
+    element: (
+      <div>
+        <Layout />
+        {/* <CRUDPegawai /> */}
+        {/* <Footer /> */}
+      </div>
+    ),
+  },
+  {
+    path: "/admin/mercandise",
+    element: (
+      <div>
+        <CRUDMercandise />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/admin/organisasi",
+    element: (
+      <div>
+        <CRUDOrganisasi />
+        <Footer />
+      </div>
+    ),
+  },
+
+  // PEGAWAI GUDANG
+  {
+    path: "/gudang/barang-titipan",
+    element: (
+      <div>
+        <NavbarPage />
+        <CRUDBarangTitipan />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/gudang/pengiriman",
+    element: (
+      <div>
+        <NavbarPage />
+        <CRUDPengiriman />
+        <Footer />
+      </div>
+    ),
+  },
+
+  // CUSTOMER
+  {
+    path: "/customer/profile",
+    element: (
+      <div>
+        <NavbarPage />
+        <ShowProfileCustomer />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/customer/history",
+    element: (
+      <div>
+        <NavbarPage />
+        <ShowHistoryCustomer />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/customer/diskusi",
+    element: (
+      <div>
+        <NavbarPage />
+        <CRUDDiskusi />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/customer/transaksi",
+    element: (
+      <div>
+        <NavbarPage />
+        <CRUDTransaksiPenjualanCustomer />
+        <Footer />
+      </div>
+    ),
+  },
+
+  // PENITIP
+  {
+    path: "/penitip/profile",
+    element: (
+      <div>
+        <NavbarPage />
+        <ShowProfilePenitip />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/penitip/history",
+    element: (
+      <div>
+        <NavbarPage />
+        <ShowHistoryPenitip />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/penitip/penitipan",
+    element: (
+      <div>
+        <NavbarPage />
+        <CRUDPenitipan />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/penitip/pengambilan",
+    element: (
+      <div>
+        <NavbarPage />
+        <PengambilanBarangKembali />
+        <Footer />
+      </div>
+    ),
+  },
+
+  // ORGANISASI
+  {
+    path: "/organisasi/input",
+    element: (
+      <div>
+        <NavbarPage />
+        <InputDataOrganisasi />
+        <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/organisasi/transaksi-request-donasi",
+    element: (
+      <div>
+        <NavbarPage />
+        <CRUDTransaksiRequestDonasi />
+        <Footer />
+      </div>
+    ),
+  },
+]);
+
+
+const AppRouter = () => {
+  return (
+    <>
+      <Toaster position="top-center" richColors />
+      <RouterProvider router={router} />
+    </>
+  );
+};
 
 export default AppRouter;

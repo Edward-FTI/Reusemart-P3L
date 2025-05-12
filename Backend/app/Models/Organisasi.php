@@ -17,4 +17,10 @@ class Organisasi extends Model
         'password',
         'no_hp',
     ];
+
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 }

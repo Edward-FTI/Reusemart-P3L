@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('pembelis', function (Blueprint $table) {
             $table->id();
+            // $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('nama_pembeli');
             $table->string('email')->unique();
             $table->string('password');
+            $table->double('saldo')->nullable()->default(000.00);
             $table->string('no_hp');
             $table->integer('point');
             $table->timestamps();
