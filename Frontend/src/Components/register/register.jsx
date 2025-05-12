@@ -10,7 +10,7 @@ const FormRegister = () => {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
   const [data, setData] = useState({
-    nama: "",
+    nama_pembeli: "",
     email: "",
     no_hp: "",
     password: "",
@@ -53,7 +53,7 @@ const FormRegister = () => {
         {/* <<< INI KUNCI SPASI */}
         <InputFloatingForm
           type="text"
-          name="nama"
+          name="nama_pembeli"
           onChange={handleChange}
           placeholder="Masukkan Nama"
         />

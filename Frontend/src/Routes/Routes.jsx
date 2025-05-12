@@ -48,7 +48,7 @@ import CRUDPenitipan from "../penitip/CRUDPenitipan";
 import PengambilanBarangKembali from "../penitip/PengambilanBarangKembali";
 
 //Organisasi
-import InputDataOrganisasi from "../organisasi/InputDataOrganisasi";
+// import InputDataOrganisasi from "../organisasi/InputDataOrganisasi";
 import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
 import Layout from "../navbar/layout.jsx";
 
@@ -283,16 +283,16 @@ const router = createBrowserRouter([
     },
   
     // ORGANISASI
-    {
-      path: "/organisasi/input",
-      element: (
-        <div>
-          <NavbarPage />
-          <InputDataOrganisasi />
-          <Footer />
-        </div>
-      ),
-    },
+    // {
+    //   path: "/organisasi/input",
+    //   element: (
+    //     <div>
+    //       <NavbarPage />
+    //       <InputDataOrganisasi />
+    //       <Footer />
+    //     </div>
+    //   ),
+    // },
     {
       path: "/organisasi/transaksi-request-donasi",
       element: (
@@ -587,16 +587,16 @@ const router = createBrowserRouter([
   },
 
   // ORGANISASI
-  {
-    path: "/organisasi/input",
-    element: (
-      <div>
-        <NavbarPage />
-        <InputDataOrganisasi />
-        <Footer />
-      </div>
-    ),
-  },
+  // {
+  //   path: "/organisasi/input",
+  //   element: (
+  //     <div>
+  //       <NavbarPage />
+  //       <InputDataOrganisasi />
+  //       <Footer />
+  //     </div>
+  //   ),
+  // },
   {
     path: "/organisasi/transaksi-request-donasi",
     element: (

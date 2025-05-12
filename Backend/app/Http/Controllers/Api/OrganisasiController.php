@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use App\Models\User;
 use App\Models\Organisasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,89 +33,120 @@ class OrganisasiController extends Controller
     }
 
 
-    // Register organisasi baru
-    public function registerOrg(Request $request)
+   public function registerOrg(Request $request)
+{
+    $request->validate([
+        'nama' => 'required|string|max:255',
+        'alamat' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:organisasis,email|unique:users,email',
+        'no_hp' => 'required|string|max:15',
+        'password' => 'required|string|min:8',
+        'permintaan' => 'nullable|string',
+    ]);
 
-    {
-        $storeData = $request->all();
+    $permintaan = $request->permintaan ?? '';
 
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:organisasis',
-            'no_hp' => 'required|string|max:15',
-            'password' => 'required|string|min:8',
-            'permintaan' => 'nullable|string',
-        ]);
-        $permintaan = $request->permintaan ?? '';
-        $organisasi = Organisasi::create([
-            'nama' => $request->nama,
-            'alamat' => $request->alamat,
-            'email' => $request->email,
-            'no_hp' => $request->no_hp,
-            'password' => Hash::make($request->password),
-            'permintaan' => $permintaan,
-        ]);
+    $organisasi = Organisasi::create([
+        'nama' => $request->nama,
+        'alamat' => $request->alamat,
+        'email' => $request->email,
+        'no_hp' => $request->no_hp,
+        'password' => Hash::make($request->password),
+        'permintaan' => $permintaan,
+    ]);
 
+    $user = User::create([
+        'name' => $request->nama,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'role' => 'organisasi',
+    ]);
 
-        return response([
-            'message' => 'Berhasil menambahkan data organisasi',
-            'data' => $organisasi
-        ], 201);
+    return response()->json([
+        'organisasi' => $organisasi,
+        'user' => $user,
+        'message' => 'Organisasi registered successfully',
+    ], 201);
+}
+
+public function update(Request $request, string $id)
+{
+    $organisasi = Organisasi::find($id);
+    if (!$organisasi) {
+        return response()->json(['message' => 'Organisasi not found'], 404);
     }
 
-    /**
-     * Update the specified organization in storage.
-     */
-      // Update organisasi (termasuk permintaan)
-    public function update(Request $request, $id)
-    {
-        $organisasi = Organisasi::find($id);
-        if (!$organisasi) {
-            return response()->json(['message' => 'Organisasi not found'], 404);
-        }
+    $validate = Validator::make($request->all(), [
+        'nama' => 'string|max:255|nullable',
+        'alamat' => 'string|max:255|nullable',
+        'email' => 'required|email',
+        'no_hp' => 'string|max:15|nullable',
+        'password' => 'string|min:8|nullable',
+        'permintaan' => 'string|nullable',
+    ]);
 
-        $validatedData = $request->validate([
-            'nama' => 'string|max:255|nullable',
-            'alamat' => 'string|max:255|nullable',
-            'email' => 'required|email',
-            'no_hp' => 'string|max:15|nullable',
-            'password' => 'string|min:8|nullable',
-            'permintaan' => 'string|nullable',
-        ]);
+    if ($validate->fails()) {
+        return response(['message' => $validate->errors()], 400);
+    }
+
+    $validatedData = $validate->validated();
+
+    $organisasi->nama = $validatedData['nama'] ?? $organisasi->nama;
+    $organisasi->alamat = $validatedData['alamat'] ?? $organisasi->alamat;
+    $organisasi->email = $validatedData['email'] ?? $organisasi->email;
+    $organisasi->no_hp = $validatedData['no_hp'] ?? $organisasi->no_hp;
+    $organisasi->permintaan = $validatedData['permintaan'] ?? $organisasi->permintaan;
+
+    if (!empty($validatedData['password'])) {
+        $organisasi->password = Hash::make($validatedData['password']);
+    }
+
+    $organisasi->save();
+
+    // Update data user juga
+    $user = User::where('email', $organisasi->email)->first();
+    if ($user) {
+        if (!empty($validatedData['nama'])) {
+            $user->name = $validatedData['nama'];
+        }
+        $user->email = $validatedData['email'];
 
         if (!empty($validatedData['password'])) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
-        } else {
-            unset($validatedData['password']);
+            $user->password = bcrypt($validatedData['password']);
         }
 
-        $organisasi->update($validatedData);
-
-        return response()->json([
-            'organisasi' => $organisasi,
-            'message' => 'Organisasi updated successfully',
-        ]);
+        $user->save();
     }
 
+    return response()->json([
+        'organisasi' => $organisasi,
+        'user' => $user,
+        'message' => 'Organisasi updated successfully',
+    ]);
+}
 
-    /**
-     * Remove the specified organization from storage.
-     */
-    public function destroy(string $id): \Illuminate\Http\Response
-    {
-        $organisasi = Organisasi::find($id);
-        if (!$organisasi) {
-            return response(['message' => 'Data organisasi tidak ditemukan', 'data' => null], 404);
-        }
 
-        $organisasi->delete();
-
-        return response([
-            'message' => 'Berhasil menghapus data organisasi',
-            'data' => $organisasi
-        ], 200);
+public function destroy(string $id)
+{
+    $organisasi = Organisasi::find($id);
+    if (!$organisasi) {
+        return response(['message' => 'Data organisasi tidak ditemukan', 'data' => null], 404);
     }
+
+    // Cari user sebelum hapus organisasi
+    $user = User::where('email', $organisasi->email)->first();
+
+    $organisasi->delete();
+
+    if ($user) {
+        $user->delete();
+    }
+
+    return response([
+        'message' => 'Berhasil menghapus data organisasi dan user terkait',
+        'data' => $organisasi
+    ], 200);
+}
 
     /**
      * Display the specified organization.

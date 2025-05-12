@@ -9,7 +9,11 @@ class AlamatPembeli extends Model
 {
     use HasFactory;
 
-    protected $fillabe = [
+    public $timestamps = false;
+    protected $table = 'alamat_pembelis';
+    protected $primaryKey = 'id';
+
+    protected $fillable = [
         'id_pembeli',
         'alamat',
     ];

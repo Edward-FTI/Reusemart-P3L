@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Str;
 use App\Models\Pembeli;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use App\Models\User;
 
 
 class PembeliController extends Controller
@@ -25,28 +28,42 @@ class PembeliController extends Controller
 
     // Register pembeli baru
     public function register(Request $request)
-    {
-        $request->validate([
-            'nama_pembeli' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
-            'no_hp' => 'required|string|max:15',
-            'password' => 'required|string|min:8',
-            
-        ]);
+{
+    $validate = Validator::make($request->all(), [
+        'nama_pembeli' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email|unique:pembelis,email',
+        'no_hp' => 'required|string|max:15',
+        'password' => 'required|string|min:8',
+    ]);
 
-        $pembeli = Pembeli::create([
-            'nama_pembeli' => $request->nama_pembeli,
-            'email' => $request->email,
-            'no_hp' => $request->no_hp,
-            'password' => Hash::make($request->password),
-            'point' => 0,
-        ]);
-
+    if ($validate->fails()) {
         return response()->json([
-            'pembeli' => $pembeli,
-            'message' => 'Pembeli registered successfully',
-        ], 201);
+            'message' => $validate->errors(),
+        ], 400);
     }
+
+    $pembeli = Pembeli::create([
+        'nama_pembeli' => $request->nama_pembeli,
+        'email' => $request->email,
+        'no_hp' => $request->no_hp,
+        'password' => Hash::make($request->password),
+        'point' => 0,
+    ]);
+
+    $user = new \App\Models\User();
+    $user->name = $request->nama_pembeli;
+    $user->email = $request->email;
+    $user->password = bcrypt($request->password);
+    $user->role = 'pembeli'; 
+    $user->save();
+
+    return response()->json([
+        'pembeli' => $pembeli,
+        'user' => $user,
+        'message' => 'Pembeli registered successfully',
+    ], 201);
+}
+
 
     // Login pembeli
     // public function login(Request $request)
@@ -111,45 +128,71 @@ class PembeliController extends Controller
         return response()->json($pembeli);
     }
 
-    // Update pembeli
     public function update(Request $request, $id)
     {
-        $pembeli = Pembeli::find($id);
-        if (!$pembeli) {
-            return response()->json(['message' => 'Pembeli not found'], 404);
-        }
-
-        $validatedData = $request->validate([
-            'nama_pembeli' => 'string|max:255|nullable',
-            'email' => 'required|email',
-            'no_hp' => 'string|max:15|nullable',
-            'password' => 'string|min:8|nullable',
-        ]);
-
-        if (!empty($validatedData['password'])) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
-        } else {
-            unset($validatedData['password']);
-        }
-
-        $pembeli->update($validatedData);
-
-        return response()->json([
-            'pembeli' => $pembeli,
-            'message' => 'Pembeli updated successfully',
-        ]);
+    $pembeli = Pembeli::find($id);
+    if (!$pembeli) {
+        return response()->json(['message' => 'Pembeli not found'], 404);
     }
+
+    $validatedData = $request->validate([
+        'nama_pembeli' => 'string|max:255|nullable',
+        'email' => 'required|email',
+        'no_hp' => 'string|max:15|nullable',
+        'password' => 'string|min:8|nullable',
+    ]);
+
+    if (!empty($validatedData['password'])) {
+        $validatedData['password'] = Hash::make($validatedData['password']);
+    } else {
+        unset($validatedData['password']);
+    }
+
+   
+    $pembeli->update($validatedData);
+
+    
+    $user = \App\Models\User::where('email', $pembeli->email)->first();
+    if ($user) {
+        if (!empty($validatedData['nama_pembeli'])) {
+            $user->name = $validatedData['nama_pembeli'];
+        }
+        $user->email = $validatedData['email'];
+
+        if (isset($request->password) && !empty($request->password)) {
+            $user->password = bcrypt($request->password);
+        }
+
+        $user->save();
+    }
+
+    return response()->json([
+        'pembeli' => $pembeli,
+        'user' => $user,
+        'message' => 'Pembeli updated successfully',
+    ]);
+}
+
+public function destroy($id)
+{
+    $pembeli = Pembeli::find($id);
+    if (!$pembeli) {
+        return response()->json(['message' => 'Pembeli not found'], 404);
+    }
+
+    // Cari user berdasarkan email sebelum hapus pembeli
+    $user = \App\Models\User::where('email', $pembeli->email)->first();
 
     // Hapus pembeli
-    public function destroy($id)
-    {
-        $pembeli = Pembeli::find($id);
-        if (!$pembeli) {
-            return response()->json(['message' => 'Pembeli not found'], 404);
-        }
+    $pembeli->delete();
 
-        $pembeli->delete();
-
-        return response()->json(['message' => 'Pembeli deleted successfully']);
+    // Hapus user kalau ada
+    if ($user) {
+        $user->delete();
     }
+
+    return response()->json(['message' => 'Pembeli and associated user deleted successfully']);
+}
+
+
 }
