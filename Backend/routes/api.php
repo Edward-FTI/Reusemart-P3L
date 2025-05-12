@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\PegawaiController;
 use App\Http\Controllers\Api\PembeliController;
 use App\Http\Controllers\Api\OrganisasiController;
 use App\Http\Controllers\Api\PenitipController;
-
+use App\Http\Controllers\Api\TransaksiDonasiController;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -75,3 +75,8 @@ Route::delete('/organisasi/{id}', [OrganisasiController::class, 'destroy']);
 Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByName']);
 Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
 Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
+
+
+// donasi
+Route::get('/donasi', [TransaksiDonasiController::class, 'index']);
+Route::put('/donasi/{id}', [TransaksiDonasiController::class, 'update']);

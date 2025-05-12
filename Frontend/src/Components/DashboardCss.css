@@ -10,8 +10,20 @@
 }
 
 .category-links a:hover {
-    text-decoration: underline;
+    background-color: transparent !important;
+    color: #198754; /* jika ingin tetap hijau */
 }
+
+.col a {
+    background-color: transparent !important;
+    cursor: pointer;
+}
+
+.card:hover .card-title,
+.card:hover .card-text {
+    font-weight: 600;
+}
+
 
 .logo {
     text-decoration: none
@@ -28,8 +40,13 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    padding: 5px;
 }
 
 .card-body p {
     font-size: 14px;
+}
+
+.logo:hover {
+    background: transparent !important;
 }

@@ -52,6 +52,9 @@ import InputDataOrganisasi from "../organisasi/InputDataOrganisasi";
 import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
 import Layout from "../navbar/layout.jsx";
 
+// Owner
+import Owner from "../Owner/Owner.jsx";
+
 //NOTIFIKASI
 // import ShowPenjualanBulanan from "../Owner/ShowPenjualanBulanan";
 // import ShowKomisiBulanaPerProduk from "../Owner/ShowKomisiBulananPerProduk";
@@ -239,6 +242,16 @@ const router = createBrowserRouter([
         </div>
       ),
     },
+    
+  // Owner
+  {
+    path: "owner/owner",
+    element: (
+      <div>
+        <Owner />
+      </div>
+    )
+  },
   
     // PENITIP
     {
