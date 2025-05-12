@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\PegawaiController;
 use App\Http\Controllers\Api\PembeliController;
 use App\Http\Controllers\Api\OrganisasiController;
 use App\Http\Controllers\Api\PenitipController;
+use App\Http\Controllers\Api\AlamatPembeliController;
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -19,8 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //Login
 Route::post('/login', [AuthController::class, 'login']);
-// Route::post('/register', [PembeliController::class, 'register']);
-Route::post('/register', [PembeliController::class, 'register']);
+Route::post('/register', [App\Http\Controllers\Api\PembeliController::class, 'register']);
 Route::post('/register-org', [OrganisasiController::class, 'registerOrg']);
 
 
@@ -76,7 +76,14 @@ Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByN
 Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
 Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
 
-//Pembeli
+Route::middleware('auth:api')->group(function () {
+    Route::get('/alamat', [AlamatPembeliController::class, 'index']);
+    Route::get('/alamat/{id}', [AlamatPembeliController::class, 'show']);
+    Route::post('/alamat', [AlamatPembeliController::class, 'store']);
+    Route::put('/alamat/{id}', [AlamatPembeliController::class, 'update']);
+    Route::delete('/alamat/{id}', [AlamatPembeliController::class, 'destroy']);
+});
+
 Route::get('/pembeli', [PembeliController::class, 'index']);
 Route::post('/pembeli', [PembeliController::class, 'store']);
 Route::get('/pembeli/{id}', [PembeliController::class, 'show']);
@@ -85,3 +92,4 @@ Route::delete('/pembeli/{id}', [PembeliController::class, 'destroy']);
 Route::get('/pembeli/search/{name}', [PembeliController::class, 'searchByName']);
 Route::get('/pembeli/{id}', [PembeliController::class, 'searchById']);
 Route::get('/pembeli/searchByEmail/{email}', [PembeliController::class, 'searchByEmail']);
+
