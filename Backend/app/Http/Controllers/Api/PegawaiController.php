@@ -8,11 +8,8 @@ use App\Http\Controllers\Api\JabatanController;
 use App\Models\Pegawai;
 use App\Models\Jabatan;
 use App\Models\User;
-
 use Exception;
-
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Hash;
 
 

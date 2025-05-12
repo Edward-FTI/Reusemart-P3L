@@ -63,7 +63,7 @@ class PenitipController extends Controller
         $user->name = $data['nama_penitip'];
         $user->email = $data['email'];
         $user->password = $data['password'];
-        $user->role = 'penitip';
+        $user->role = 'Penitip';
         $user->email_verified_at = now();
         $user->remember_token = Str::random(60);
         $user->save();
@@ -128,7 +128,7 @@ class PenitipController extends Controller
             if (!empty($data['password'])) {
                 $user->password = Hash::make($data['password']);
             }
-            $user->role = 'penitip';
+            $user->role = 'Penitip';
             $user->email_verified_at = now();
             $user->remember_token = Str::random(60);
             $user->save();
