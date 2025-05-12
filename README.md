@@ -31,7 +31,7 @@ php artisan key:generate
 # 4. Konfigurasi koneksi database di file .env
 
 # 5. Jalankan migrasi database
-php artisan migrate
+php artisan migrate:fresh --seed
 
 # 6. Jalankan server Laravel
 php artisan serve
