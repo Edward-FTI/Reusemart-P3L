@@ -29,6 +29,8 @@ cp .env.example .env
 php artisan key:generate
 
 # 4. Konfigurasi koneksi database di file .env
+cp .env.example .env
+
 
 # 5. Jalankan migrasi database
 php artisan migrate:fresh --seed
