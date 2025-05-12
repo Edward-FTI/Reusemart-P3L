@@ -48,7 +48,17 @@ class JabatanController extends Controller
 
     public function show(string $id)
     {
-        //
+        $jabatan = Jabatan::find($id);
+        if(!is_null($jabatan)) {
+            return response([
+                'message' => 'Jabatan dengan id ' . $id . ' ditemukan',
+                'data' => $jabatan
+            ], 200);
+        }
+        return response([
+            'message' => 'Jabatan tidak ditemukan',
+            'data' => null
+        ], 400);
     }
 
 
