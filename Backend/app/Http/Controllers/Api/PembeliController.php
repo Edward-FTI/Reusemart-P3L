@@ -1,47 +1,151 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Pembeli;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class PembeliController extends Controller
 {
+    // GET semua pembeli
     public function index()
     {
-        //
+        return response()->json(Pembeli::all(), 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // Endpoint kalau tidak terautentikasi
+    public function ligon()
     {
-        //
+        return response()->json("unauthenticated", 401);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // Register pembeli baru
+    public function register(Request $request)
     {
-        //
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:pembelis',
+            'no_hp' => 'required|string|max:15',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $pembeli = Pembeli::create([
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'no_hp' => $request->no_hp,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'pembeli' => $pembeli,
+            'message' => 'Pembeli registered successfully',
+        ], 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Login pembeli
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         $request->validate([
+    //             'email' => 'required|string|email',
+    //             'password' => 'required|string',
+    //         ]);
+
+    //         $pembeli = Pembeli::where('email', $request->email)->first();
+
+    //         if (!$pembeli || !Hash::check($request->password, $pembeli->password)) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'status_code' => 401,
+    //                 'message' => 'Login failed',
+    //                 'error' => 'Invalid email or password'
+    //             ], 401);
+    //         }
+
+    //         $token = $pembeli->createToken('auth_token')->plainTextToken;
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'status_code' => 200,
+    //             'message' => 'Login success',
+    //             'data' => [
+    //                 'token' => $token,
+    //                 'pembeli' => $pembeli
+    //             ]
+    //         ], 200);
+    //     } catch (\Throwable $th) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'status_code' => 500,
+    //             'message' => 'Failed to login',
+    //             'error' => $th->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    // Logout pembeli
+    public function logout(Request $request)
     {
-        //
+        if (Auth::check()) {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json(['message' => 'Logged out successfully']);
+        }
+
+        return response()->json(['message' => 'Not logged in'], 401);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    // Tampilkan detail pembeli
+    public function show($id)
     {
-        //
+        $pembeli = Pembeli::find($id);
+        if (!$pembeli) {
+            return response()->json(['message' => 'Pembeli not found'], 404);
+        }
+
+        return response()->json($pembeli);
+    }
+
+    // Update pembeli
+    public function update(Request $request, $id)
+    {
+        $pembeli = Pembeli::find($id);
+        if (!$pembeli) {
+            return response()->json(['message' => 'Pembeli not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'nama' => 'string|max:255|nullable',
+            'email' => 'required|email',
+            'no_hp' => 'string|max:15|nullable',
+            'password' => 'string|min:8|nullable',
+        ]);
+
+        if (!empty($validatedData['password'])) {
+            $validatedData['password'] = Hash::make($validatedData['password']);
+        } else {
+            unset($validatedData['password']);
+        }
+
+        $pembeli->update($validatedData);
+
+        return response()->json([
+            'pembeli' => $pembeli,
+            'message' => 'Pembeli updated successfully',
+        ]);
+    }
+
+    // Hapus pembeli
+    public function destroy($id)
+    {
+        $pembeli = Pembeli::find($id);
+        if (!$pembeli) {
+            return response()->json(['message' => 'Pembeli not found'], 404);
+        }
+
+        $pembeli->delete();
+
+        return response()->json(['message' => 'Pembeli deleted successfully']);
     }
 }
