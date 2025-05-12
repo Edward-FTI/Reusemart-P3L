@@ -13,7 +13,7 @@ class BarangController extends Controller
 
     public function index()
     {
-        $barang = Barang::all();
+        $barang = Barang::with(['penitip', 'kategori_barang'])->get();
         if (count($barang) > 0) {
             return response([
                 'message' => 'Berhasil mengambil data barang',

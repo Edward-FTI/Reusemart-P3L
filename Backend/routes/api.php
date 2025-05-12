@@ -5,11 +5,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BarangController;
+use App\Http\Controllers\Api\KategoriBarangController;
 use App\Http\Controllers\Api\PegawaiController;
 use APP\Http\Controllers\Api\PembeliController;
 use App\Http\Controllers\Api\OrganisasiController;
 use App\Http\Controllers\Api\PenitipController;
 use App\Models\Barang;
+use App\Models\KategoriBarang;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -36,20 +38,20 @@ Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
 
 //======================= Untuk Jabatan =======================
 Route::get('/jabatan', [JabatanController::class, 'index']);
-Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
+Route::post('/jabatan', [JabatanController::class, 'store']);
 // =========================================================================================================
 
 //======================= Untuk Barang =======================
-Route::get('barang', [BarangController::class, 'index']);
+Route::get('/barang', [BarangController::class, 'index']);
 Route::post('/barang', [BarangController::class, 'store']);
 Route::get('/barang/{id}', [BarangController::class, 'show']);
 Route::put('/barang/{id}', [BarangController::class, 'update']);
 Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 // =========================================================================================================
 
-
-
-
+//======================= Untuk Kategori Barang =======================
+Route::get('/kategori', [KategoriBarangController::class, 'index']);
+// =========================================================================================================
 
 
 

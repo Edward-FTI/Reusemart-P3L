@@ -25,7 +25,7 @@ class Barang extends Model
     public function penitip(): BelongsTo {
         return $this->belongsTo(Penitip::class, 'id_penitip');
     }
-    public function kategori(): BelongsTo {
+    public function kategori_barang(): BelongsTo {
         return $this->belongsTo(KategoriBarang::class, 'id_kategori');
     }
 }

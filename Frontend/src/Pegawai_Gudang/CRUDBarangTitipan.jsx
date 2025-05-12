@@ -1,21 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { GetAllBarang } from "../Api/apiBarang"; // Sesuaikan path API
+import { GetAllBarang } from "../Api/apiBarang";
+import { GetAllKategori } from "../Api/apiKategori";
 
-const TabelBarang = () => {
+const CRUDBarangTitipan = () => {
     const [barangList, setBarangList] = useState([]);
-
-    useEffect(() => {
-        fetchBarang();
-    }, []);
+    const [kategoriList, setKategoriList] = useState([]);
 
     const fetchBarang = async () => {
         try {
             const data = await GetAllBarang();
             setBarangList(data);
-        } catch (err) {
-            console.error("Gagal mengambil data barang:", err);
+        } catch (error) {
+            console.error("Gagal mengambil data barang:", error);
         }
     };
+
+    const fetchKategori = async () => {
+        try {
+            const data = await GetAllKategori();
+            setKategoriList(data);
+        }
+        catch (error) {
+            alert('Gagal mengambil data barang')
+        }
+    }
+
+    useEffect(() => {
+        fetchBarang();
+        fetchKategori();
+    }, []);
 
     return (
         <div className="bg-white shadow rounded p-5">
@@ -47,7 +60,10 @@ const TabelBarang = () => {
                                 <td className="border px-4 py-2">{index + 1}</td>
                                 <td className="border px-4 py-2">{barang.nama_barang}</td>
                                 <td className="border px-4 py-2">{barang.penitip?.nama || '-'}</td>
-                                <td className="border px-4 py-2">{barang.kategori?.nama_kategori || '-'}</td>
+
+                                <td className="border px-4 py-2">{barang.kategori_barang?.nama_kategori || '-'}</td>
+
+
                                 <td className="border px-4 py-2">Rp {barang.harga_barang}</td>
                                 <td className="border px-4 py-2">
                                     {barang.status_garansi === "1" ? "Bergaransi" : "Tidak"}
@@ -82,4 +98,4 @@ const TabelBarang = () => {
     );
 };
 
-export default TabelBarang;
+export default CRUDBarangTitipan;
