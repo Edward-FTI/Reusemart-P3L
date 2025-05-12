@@ -75,3 +75,13 @@ Route::delete('/organisasi/{id}', [OrganisasiController::class, 'destroy']);
 Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByName']);
 Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
 Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
+
+//Pembeli
+Route::get('/pembeli', [PembeliController::class, 'index']);
+Route::post('/pembeli', [PembeliController::class, 'store']);
+Route::get('/pembeli/{id}', [PembeliController::class, 'show']);
+Route::put('/pembeli/{id}', [PembeliController::class, 'update']);
+Route::delete('/pembeli/{id}', [PembeliController::class, 'destroy']);
+Route::get('/pembeli/search/{name}', [PembeliController::class, 'searchByName']);
+Route::get('/pembeli/{id}', [PembeliController::class, 'searchById']);
+Route::get('/pembeli/searchByEmail/{email}', [PembeliController::class, 'searchByEmail']);
