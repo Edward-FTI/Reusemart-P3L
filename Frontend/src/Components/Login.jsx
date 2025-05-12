@@ -24,32 +24,35 @@ const LoginForm = () => {
       sessionStorage.setItem("token", res.access_token);
       sessionStorage.setItem("user", JSON.stringify(user));
 
-      // Simplified role checking
+      // Simplified role checking and redirection
       if (user) {
         toast.success("Login Berhasil!");
 
-        // Redirecting based on user role (You can update the roles accordingly)
-        if (user.jabatan_pegawai) {
-          switch (user.jabatan_pegawai) {
-            case "Dasboard":
-              navigate("/");
+        // Role-based navigation
+        if (user.role) {
+          switch (user.role) {
+            case "Dashboard":
+              navigate("/dashboard"); // Ensure this route exists
               break;
             case "Admin":
-              navigate("/Admin");
+              navigate("/admin"); // Ensure this route exists
               break;
             case "Customer Service":
-              navigate("/customerService");
+              navigate("/customerService"); // Ensure this route exists
               break;
             case "Penitip":
-              navigate("/penitp");
+              navigate("/penitip"); // Ensure this route exists
+              break;
+            case "Pegawai Gudang":
+              navigate("/"); // Ensure this route exists
               break;
             default:
               toast.error("Peran tidak dikenali.");
               break;
           }
         } else {
-          // If no role, default to customer page
-          navigate("/customer");
+          // If no role, default to a general user page
+          navigate("/customer"); // Ensure this route exists
         }
       } else {
         toast.error("Peran tidak dikenali.");
@@ -111,6 +114,7 @@ const LoginForm = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 };
