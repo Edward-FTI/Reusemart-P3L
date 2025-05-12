@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('barangs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_penitip')->constrained('penitips');
-            $table->foreignId('id_kategori')->constrained('kategori_barangs');
+            $table->foreignId('id_kategori')->constrained('kategoriBarang');
             $table->date('tgl_penitipan');
             $table->string('nama_barang');
             $table->double('harga_barang');
             $table->string('deskripsi');
             $table->string('status_garansi');
+            $table->string('status_barang');
+            $table->string('gambar');
             $table->timestamps();
         });
     }

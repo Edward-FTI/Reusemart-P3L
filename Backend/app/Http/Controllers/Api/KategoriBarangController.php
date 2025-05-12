@@ -8,39 +8,40 @@ use Illuminate\Http\Request;
 
 class KategoriBarangController extends Controller
 {
-    
+
     public function index()
     {
-        //
+        $kategori = KategoriBarang::all();
+        if(count($kategori) > 0) {
+            return response([
+                'message' => 'Berhasil mengambil data kategori',
+                'data' => $kategori
+            ], 200);
+        }
+        return response([
+            'message' => 'Data kategori kosong',
+            'data' => []
+        ], 400);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(string $id)
     {
         //

@@ -1,11 +1,10 @@
-// import React from "react"
-
 import React, { useEffect, useState } from 'react';
 import {
     GetAllPegawai,
     CreatePegawai,
     UpdatePegawai,
-    DeletePegawai
+    DeletePegawai,
+    ResetPasswordPegawai
 } from '../Api/apiPegawai';
 import { GetAllJabatan } from '../Api/apiJabatan';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,10 +12,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const CRUDPegawai = () => {
     const [pegawaiList, setPegawaiList] = useState([]);
-    const [form, setForm] = useState({ id: '', nama: '', email: '', password: '', gaji: '', id_jabatan: '' });
+    const [form, setForm] = useState({ id: '', nama: '', tgl_lahir: '', email: '', password: '', gaji: '', id_jabatan: '' });
     const [isEdit, setIsEdit] = useState(false);
     const [jabatanList, setJabatanList] = useState([]);
-
 
     const fetchPegawai = async () => {
         try {
@@ -29,13 +27,12 @@ const CRUDPegawai = () => {
 
     const fetchJabatan = async () => {
         try {
-            const data = await GetAllJabatan(); // Pastikan endpoint ini benar
+            const data = await GetAllJabatan();
             setJabatanList(data);
         } catch (error) {
             alert('Gagal mengambil data jabatan');
         }
     };
-
 
     useEffect(() => {
         fetchPegawai();
@@ -69,7 +66,6 @@ const CRUDPegawai = () => {
         }
     };
 
-
     const handleEdit = (pegawai) => {
         setForm({ ...pegawai, password: '' });
         setIsEdit(true);
@@ -78,7 +74,7 @@ const CRUDPegawai = () => {
     };
 
     const resetForm = () => {
-        setForm({ id: '', nama: '', email: '', password: '', gaji: '', id_jabatan: '' });
+        setForm({ id: '', nama: '', tgl_lahir: '', email: '', password: '', gaji: '', id_jabatan: '' });
         setIsEdit(false);
     };
 
@@ -103,6 +99,7 @@ const CRUDPegawai = () => {
                     <tr>
                         <th>No</th>
                         <th>Nama</th>
+                        <th>Tanggal Lahir</th>
                         <th>Email</th>
                         <th>Gaji</th>
                         <th>Jabatan</th>
@@ -115,6 +112,7 @@ const CRUDPegawai = () => {
                             <tr key={p.id}>
                                 <td>{index + 1}</td>
                                 <td>{p.nama}</td>
+                                <td>{p.tgl_lahir}</td>
                                 <td>{p.email}</td>
                                 <td>{p.gaji}</td>
                                 <td>{p.jabatan?.role || 'Jabatan Tidak Ditemukan'}</td>
@@ -126,7 +124,7 @@ const CRUDPegawai = () => {
                                         Edit
                                     </button>
                                     <button
-                                        className="btn btn-sm btn-danger"
+                                        className="btn btn-sm btn-danger me-2"
                                         onClick={() => {
                                             if (window.confirm('Yakin hapus data ini?')) {
                                                 DeletePegawai(p.id).then(fetchPegawai);
@@ -135,6 +133,25 @@ const CRUDPegawai = () => {
                                     >
                                         Hapus
                                     </button>
+
+                                    <button
+                                        className='btn btn-sm btn-primary'
+                                        onClick={async () => {
+                                            if (window.confirm('Reset password ke tanggal lahir?')) {
+                                                try {
+                                                    await ResetPasswordPegawai(p.id);
+                                                    alert('Password berhasil direset ke tanggal lahir');
+                                                } catch (error) {
+                                                    alert('Gagal reset password');
+                                                    console.error(error);
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        Reset Password
+                                    </button>
+
+
                                 </td>
                             </tr>
                         ))
@@ -161,6 +178,7 @@ const CRUDPegawai = () => {
                                 <label htmlFor="nama" className="form-label">Nama Pegawai</label>
                                 <div className="mb-3">
                                     <input
+                                        type='text'
                                         name="nama"
                                         className="form-control"
                                         placeholder="Nama"
@@ -170,9 +188,23 @@ const CRUDPegawai = () => {
                                     />
                                 </div>
 
+                                <label htmlFor="tgl_lahir" className="form-label">Tanggal Lahir</label>
+                                <div className="mb-3">
+                                    <input
+                                        type="date"
+                                        name="tgl_lahir"
+                                        className="form-control"
+                                        value={form.tgl_lahir}
+                                        onChange={handleChange}
+                                        disabled={isEdit}
+                                        required
+                                    />
+                                </div>
+
                                 <label htmlFor="email" className="form-label">Email</label>
                                 <div className="mb-3">
                                     <input
+                                        type='email'
                                         name="email"
                                         className="form-control"
                                         placeholder="Email"
@@ -181,6 +213,7 @@ const CRUDPegawai = () => {
                                         required
                                     />
                                 </div>
+
                                 {!isEdit && (
                                     <div className="mb-3">
                                         <label htmlFor="password" className="form-label">Password</label>
@@ -199,6 +232,7 @@ const CRUDPegawai = () => {
                                 <label htmlFor="gaji" className="form-label">Gaji</label>
                                 <div className="mb-3">
                                     <input
+                                        type='number'
                                         name="gaji"
                                         className="form-control"
                                         placeholder="Gaji"
@@ -208,17 +242,6 @@ const CRUDPegawai = () => {
                                     />
                                 </div>
 
-                                {/* <label htmlFor="jabatan" className="form-label">Jabatan</label>
-                                <div className="mb-3">
-                                    <input
-                                        name="id_jabatan"
-                                        className="form-control"
-                                        placeholder="ID Jabatan"
-                                        value={form.id_jabatan}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div> */}
                                 <label htmlFor="jabatan" className="form-label">Jabatan</label>
                                 <div className="mb-3">
                                     <select
@@ -236,7 +259,6 @@ const CRUDPegawai = () => {
                                         ))}
                                     </select>
                                 </div>
-
 
                                 <button type="submit" className="btn btn-primary">
                                     {isEdit ? 'Update' : 'Tambah'}

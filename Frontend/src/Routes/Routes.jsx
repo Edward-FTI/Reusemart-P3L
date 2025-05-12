@@ -70,9 +70,10 @@ const router = createBrowserRouter([
       path: "/",
       element: (
         <div>
-          <NavbarPage />
-          <Dashboard />
-          <Footer />
+          {/* <NavbarPage /> */}
+          {/* <Dashboard /> */}
+          <CRUDBarangTitipan/>
+          {/* <Footer /> */}
         </div>
       ),
     },
@@ -178,9 +179,9 @@ const router = createBrowserRouter([
       path: "/gudang/barang-titipan",
       element: (
         <div>
-          <NavbarPage />
+          {/* <NavbarPage /> */}
           <CRUDBarangTitipan />
-          <Footer />
+          {/* <Footer /> */}
         </div>
       ),
     },
