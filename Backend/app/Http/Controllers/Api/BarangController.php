@@ -26,44 +26,91 @@ class BarangController extends Controller
         ], 400);
     }
 
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'id_penitip' => 'required',
+    //         'id_kategori' => 'required',
+    //         'tgl_penitipan' => 'required',
+    //         'nama_barang' => 'required',
+    //         'harga_barang' => 'required',
+    //         'deskripsi' => 'required',
+    //         'status_garansi' => 'required',
+    //         'status_barang' => 'required',
+    //         'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    //     ]);
+
+    //     $path_gambar = null;
+    //     if ($request->hasFile('gambar')) {
+    //         $imageName = time() . '.' . $request->file('gambar')->extension();
+    //         $path_gambar = 'images/barang/' . $imageName;
+    //         $request->file('gambar')->move(public_path('images/barang'), $imageName);
+    //     }
+
+    //     $barang = Barang::create([
+    //         'id_penitip' => $request->id_penitip,
+    //         'id_kategori' => $request->id_kategori,
+    //         'tgl_penitipan' => $request->tgl_penitipan,
+    //         'nama_barang' => $request->nama_barang,
+    //         'harga_barang' => $request->harga_barang,
+    //         'deskripsi' => $request->deskripsi,
+    //         'status_garansi' => $request->status_garansi,
+    //         'status_barang' => $request->status_barang,
+    //         'gambar' => $path_gambar,
+    //     ]);
+
+    //     return response([
+    //         'message' => 'Berhasil menambahkan data barang',
+    //         'data' => $barang
+    //     ], 200);
+    // }
+
     public function store(Request $request)
     {
-        $request->validate([
-            'id_penitip' => 'required',
-            'id_kategori' => 'required',
-            'tgl_penitipan' => 'required',
-            'nama_barang' => 'required',
-            'harga_barang' => 'required',
-            'deskripsi' => 'required',
-            'status_garansi' => 'required',
-            'status_barang' => 'required',
-            'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        try {
+            $request->validate([
+                'id_penitip' => 'required',
+                'id_kategori' => 'required',
+                'tgl_penitipan' => 'required',
+                'nama_barang' => 'required',
+                'harga_barang' => 'required',
+                'deskripsi' => 'required',
+                'status_garansi' => 'required',
+                'status_barang' => 'required',
+                'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
 
-        $path_gambar = null;
-        if ($request->hasFile('gambar')) {
-            $imageName = time() . '.' . $request->file('gambar')->extension();
-            $path_gambar = 'images/barang/' . $imageName;
-            $request->file('gambar')->move(public_path('images/barang'), $imageName);
+            $path_gambar = null;
+            if ($request->hasFile('gambar')) {
+                $imageName = time() . '.' . $request->file('gambar')->extension();
+                $path_gambar = 'images/barang/' . $imageName;
+                $request->file('gambar')->move(public_path('images/barang'), $imageName);
+            }
+
+            $barang = Barang::create([
+                'id_penitip' => $request->id_penitip,
+                'id_kategori' => $request->id_kategori,
+                'tgl_penitipan' => $request->tgl_penitipan,
+                'nama_barang' => $request->nama_barang,
+                'harga_barang' => $request->harga_barang,
+                'deskripsi' => $request->deskripsi,
+                'status_garansi' => $request->status_garansi,
+                'status_barang' => $request->status_barang,
+                'gambar' => $path_gambar,
+            ]);
+
+            return response([
+                'message' => 'Berhasil menambahkan data barang',
+                'data' => $barang
+            ], 200);
+        } catch (\Exception $e) {
+            return response([
+                'message' => 'Terjadi kesalahan saat menyimpan data barang.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $barang = Barang::create([
-            'id_penitip' => $request->id_penitip,
-            'id_kategori' => $request->id_kategori,
-            'tgl_penitipan' => $request->tgl_penitipan,
-            'nama_barang' => $request->nama_barang,
-            'harga_barang' => $request->harga_barang,
-            'deskripsi' => $request->deskripsi,
-            'status_garansi' => $request->status_garansi,
-            'status_barang' => $request->status_barang,
-            'gambar' => $path_gambar,
-        ]);
-
-        return response([
-            'message' => 'Berhasil menambahkan data barang',
-            'data' => $barang
-        ], 200);
     }
+
 
 
     public function show(string $id)

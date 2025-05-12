@@ -203,6 +203,8 @@ const CRUDPenitip = () => {
                                     <label className="form-label">No KTP</label>
                                     <input name="no_ktp" className="form-control" value={form.no_ktp} onChange={handleChange} required />
                                 </div>
+
+                                <label htmlFor="gambar_ktp" className="form-label">Gambar KTP</label>
                                 <div className="mb-3">
                                     <input
                                         type="file"

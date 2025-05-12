@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pembeli extends Authenticatable
 {
@@ -27,4 +28,13 @@ class Pembeli extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function alamatPembelis()
+    {
+        return $this->hasMany(AlamatPembeli::class, 'id_pembeli');
+    }
+
+    public function alamatPembeli(): BelongsTo {
+        return $this->belongsTo(AlamatPembeli::class, 'id_Pembeli');
+    }
 }
