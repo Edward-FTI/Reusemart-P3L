@@ -10,6 +10,10 @@ use App\Http\Controllers\Api\PegawaiController;
 use App\Http\Controllers\Api\PembeliController;
 use App\Http\Controllers\Api\OrganisasiController;
 use App\Http\Controllers\Api\PenitipController;
+use App\Http\Controllers\Api\DetailPengirimanController;
+use App\Http\Controllers\Api\TransaksiPenjualanController;
+use App\Http\Controllers\Api\TransaksiDonasiController;
+use App\Http\Controllers\Api\TransaksiPenitipanController;
 use App\Http\Controllers\Api\AlamatPembeliController;
 
 
@@ -76,6 +80,7 @@ Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByN
 Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
 Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
 
+//Alamat
 Route::middleware('auth:api')->group(function () {
     Route::get('/alamat', [AlamatPembeliController::class, 'index']);
     Route::get('/alamat/{id}', [AlamatPembeliController::class, 'show']);
@@ -84,6 +89,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/alamat/{id}', [AlamatPembeliController::class, 'destroy']);
 });
 
+//Pembeli
 Route::get('/pembeli', [PembeliController::class, 'index']);
 Route::post('/pembeli', [PembeliController::class, 'store']);
 Route::get('/pembeli/{id}', [PembeliController::class, 'show']);
@@ -93,3 +99,20 @@ Route::get('/pembeli/search/{name}', [PembeliController::class, 'searchByName'])
 Route::get('/pembeli/{id}', [PembeliController::class, 'searchById']);
 Route::get('/pembeli/searchByEmail/{email}', [PembeliController::class, 'searchByEmail']);
 
+//Detail Pengiriman
+Route::get('/detail-pengiriman', [DetailPengirimanController::class, 'index']);
+Route::post('/detail-pengiriman', [DetailPengirimanController::class, 'store']);
+Route::get('/detail-pengiriman/{id}', [DetailPengirimanController::class, 'show']);
+Route::put('/detail-pengiriman/{id}', [DetailPengirimanController::class, 'update']);
+Route::delete('/detail-pengiriman/{id}', [DetailPengirimanController::class, 'destroy']);
+
+//Transaksi Penjualan
+Route::get('/transaksi-penjualan', [TransaksiPenjualanController::class, 'index']);
+Route::post('/transaksi-penjualan', [TransaksiPenjualanController::class, 'store']);
+Route::get('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'show']);
+Route::put('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'update']);
+Route::delete('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'destroy']);
+Route::get('/transaksi-penjualan/searchByIdPembeli/{id}', [TransaksiPenjualanController::class, 'searchByIdPembeli']);
+Route::get('/transaksi-penjualan/getPembeli', [TransaksiPenjualanController::class, 'getPembeli']);
+Route::get('/transaksi-penjualan/getDetailPengiriman', [TransaksiPenjualanController::class, 'getDetailPengiriman']);
+Route::get('/transaksi-penjualan/searchById/{id}', [TransaksiPenjualanController::class, 'searchById']);
