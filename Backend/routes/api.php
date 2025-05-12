@@ -10,6 +10,10 @@ use App\Http\Controllers\Api\PegawaiController;
 use App\Http\Controllers\Api\PembeliController;
 use App\Http\Controllers\Api\OrganisasiController;
 use App\Http\Controllers\Api\PenitipController;
+use App\Http\Controllers\Api\DetailPengirimanController;
+use App\Http\Controllers\Api\TransaksiPenjualanController;
+use App\Http\Controllers\Api\TransaksiDonasiController;
+use App\Http\Controllers\Api\TransaksiPenitipanController;
 use App\Http\Controllers\Api\AlamatPembeliController;
 
 // Route ambil user yang login
@@ -22,7 +26,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [PembeliController::class, 'register']);
 Route::post('/register-org', [OrganisasiController::class, 'registerOrg']);
 
-// Semua route di bawah HANYA bisa diakses jika sudah login
+
 Route::middleware('auth:api')->group(function () {
 
     // ======================= Pegawai =======================
@@ -33,6 +37,8 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy']);
     Route::get('/pegawai/search/{name}', [PegawaiController::class, 'searchByName']);
     Route::get('/searchByJabatan/{jabatan}', [PegawaiController::class, 'searchBysearchByJabatanyName']);
+    Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
+    Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
 
     // ======================= Jabatan =======================
@@ -57,6 +63,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/penitip/{id}', [PenitipController::class, 'update']);
     Route::delete('/penitip/{id}', [PenitipController::class, 'destroy']);
     Route::get('/penitip/search/{name}', [PenitipController::class, 'searchByName']);
+    Route::get('/penitip/{id}', [PenitipController::class, 'searchById']);
 
     // ======================= Organisasi =======================
     Route::get('/organisasi', [OrganisasiController::class, 'index']);
@@ -65,6 +72,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/organisasi/{id}', [OrganisasiController::class, 'destroy']);
     Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByName']);
     Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
+    Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
 
     // ======================= Alamat Pembeli =======================
     Route::get('/alamat', [AlamatPembeliController::class, 'index']);
@@ -81,4 +89,28 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/pembeli/{id}', [PembeliController::class, 'destroy']);
     Route::get('/pembeli/search/{name}', [PembeliController::class, 'searchByName']);
     Route::get('/pembeli/searchByEmail/{email}', [PembeliController::class, 'searchByEmail']);
+    Route::get('/pembeli/{id}', [PembeliController::class, 'searchById']);
+  
+    //Detail Pengiriman
+    Route::get('/detail-pengiriman', [DetailPengirimanController::class, 'index']);
+    Route::post('/detail-pengiriman', [DetailPengirimanController::class, 'store']);
+    Route::get('/detail-pengiriman/{id}', [DetailPengirimanController::class, 'show']);
+    Route::put('/detail-pengiriman/{id}', [DetailPengirimanController::class, 'update']);
+    Route::delete('/detail-pengiriman/{id}', [DetailPengirimanController::class, 'destroy']);
+
+    //Transaksi Penjualan
+    Route::get('/transaksi-penjualan', [TransaksiPenjualanController::class, 'index']);
+    Route::post('/transaksi-penjualan', [TransaksiPenjualanController::class, 'store']);
+    Route::get('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'show']);
+    Route::put('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'update']);
+    Route::delete('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'destroy']);
+    Route::get('/transaksi-penjualan/searchByIdPembeli/{id}', [TransaksiPenjualanController::class, 'searchByIdPembeli']);
+    Route::get('/transaksi-penjualan/getPembeli', [TransaksiPenjualanController::class, 'getPembeli']);
+    Route::get('/transaksi-penjualan/getDetailPengiriman', [TransaksiPenjualanController::class, 'getDetailPengiriman']);
+    Route::get('/transaksi-penjualan/searchById/{id}', [TransaksiPenjualanController::class, 'searchById']);
+
 });
+
+
+
+
