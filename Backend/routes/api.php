@@ -26,7 +26,6 @@ Route::post('/register-org', [OrganisasiController::class, 'registerOrg']);
 
 // Punya Abang Edward
 //======================= Untuk Pegawai =======================
-=======
 //Pegawai
 Route::get('/pegawai', [PegawaiController::class, 'index']);
 Route::post('/pegawai', [PegawaiController::class, 'store']);
@@ -34,13 +33,14 @@ Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
 Route::put('/pegawai/{id}', [PegawaiController::class, 'update']);
 Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy']);
 Route::get('/pegawai/search/{name}', [PegawaiController::class, 'searchByName']);
-Route::get('/searchByJabatan/{jabatan}', [PegawaiController::class, 'searchByJabatan']);
+Route::get('/searchByJabatan/{jabatan}', [PegawaiController::class, 'searchBysearchByJabatanyName']);
 Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
 // =========================================================================================================
 
 //======================= Untuk Jabatan =======================
 Route::get('/jabatan', [JabatanController::class, 'index']);
 Route::post('/jabatan', [JabatanController::class, 'store']);
+Route::get('/jabatan/{id}', [JabatanController::class, 'show']);
 // =========================================================================================================
 
 //======================= Untuk Barang =======================

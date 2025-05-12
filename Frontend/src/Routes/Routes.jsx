@@ -8,11 +8,12 @@ import Dashboard from "../Components/Dashboard";
 import Login from "../Components/Login";
 import RegisterPage from "../Components/pageReg/regisPage";
 import RegisterOrgPage from "../Components/pageReg/regisOrgPage";
+import Register from "../Components/register/register.jsx"
 import ForgetPassword from "../Components/ForgetPassword";
 import AmbilBarang from "../Components/AmbilBarang";
 
 //HOME ROLE
-import Admin from "../admin/CRUDJabatan";
+// import Admin from "../admin/CRUDJabatan";
 
 //CUSTOMER SERVICE
 import NavbarCustomer_Service from "../navbar/NavbarCustomer_Service";
@@ -71,8 +72,8 @@ const router = createBrowserRouter([
       element: (
         <div>
           {/* <NavbarPage /> */}
-          {/* <Dashboard /> */}
-          <CRUDBarangTitipan/>
+          <Dashboard />
+          {/* <CRUDBarangTitipan/> */}
           {/* <Footer /> */}
         </div>
       ),
