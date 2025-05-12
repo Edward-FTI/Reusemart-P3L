@@ -1,60 +1,70 @@
+// ShowProfilePenitip.jsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Card, Container, Row, Col } from "react-bootstrap";
 import { GetPenitipById } from "../Api/apiPenitip";
+import { Row, Col } from "react-bootstrap";
 
-const ShowProfilePenitip = () => {
-  const { id } = useParams();
+function ShowProfilePenitip() {
   const [penitip, setPenitip] = useState(null);
 
-  useEffect(() => {
-    const fetchPenitip = async () => {
-      try {
-        const data = await GetPenitipById(id);
-        setPenitip(data);
-      } catch (error) {
-        console.error("Gagal mengambil data penitip:", error);
+  const fetchPenitipByLogin = async () => {
+    try {
+      const userId = sessionStorage.getItem("user_id");
+      if (!userId) {
+        alert("User belum login");
+        window.location.href = "/login"; // redirect ke login
+        return;
       }
-    };
 
-    fetchPenitip();
-  }, [id]);
+      const data = await GetPenitipById(userId);
+      setPenitip(data);
+    } catch (error) {
+      alert("Gagal mengambil data profile penitip");
+      console.error(error);
+    }
+  };
 
-  if (!penitip)
-    return <div className="text-center mt-5">Memuat data penitip...</div>;
+  useEffect(() => {
+    fetchPenitipByLogin();
+  }, []);
 
   return (
-    <Container className="mt-5">
+    <main className="container mt-4">
       <Row className="justify-content-center">
-        <Col md={8}>
-          <Card className="p-4 shadow">
-            <Card.Body>
-              <h3 className="mb-4 text-center">Profil Penitip</h3>
-              <p>
-                <strong>Nama Penitip:</strong> {penitip.nama_penitip}
-              </p>
-              <p>
-                <strong>No. KTP:</strong> {penitip.no_ktp}
-              </p>
-              <p>
-                <strong>Saldo:</strong> Rp{" "}
-                {Number(penitip.saldo).toLocaleString()}
-              </p>
-              <p>
-                <strong>Point:</strong> {penitip.point}
-              </p>
-              <p>
-                <strong>Email:</strong> {penitip.email}
-              </p>
-              <p>
-                <strong>Badge:</strong> {penitip.badge}
-              </p>
-            </Card.Body>
-          </Card>
+        <Col md={6}>
+          <article className="card profile" id="About">
+            <h2 className="card-header">Profile Penitip</h2>
+            <div className="card-body">
+              {penitip ? (
+                <ul className="list-unstyled">
+                  <li>
+                    <strong>Nama:</strong> {penitip.nama}
+                  </li>
+                  <li>
+                    <strong>No KTP:</strong> {penitip.no_ktp}
+                  </li>
+                  <li>
+                    <strong>Saldo:</strong> Rp{" "}
+                    {parseInt(penitip.saldo).toLocaleString("id-ID")}
+                  </li>
+                  <li>
+                    <strong>Point:</strong> {penitip.point}
+                  </li>
+                  <li>
+                    <strong>Email:</strong> {penitip.email}
+                  </li>
+                  <li>
+                    <strong>Badge:</strong> {penitip.badge}
+                  </li>
+                </ul>
+              ) : (
+                <p>Memuat data profile penitip...</p>
+              )}
+            </div>
+          </article>
         </Col>
       </Row>
-    </Container>
+    </main>
   );
-};
+}
 
 export default ShowProfilePenitip;
