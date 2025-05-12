@@ -10,13 +10,16 @@ import RegisterOrgPage from "../Components/pageReg/regisOrgPage";
 import ForgetPassword from "../Components/ForgetPassword";
 import AmbilBarang from "../Components/AmbilBarang";
 
+//HOME ROLE
+import Admin from "../admin/CRUDJabatan";
+
 //CUSTOMER SERVICE
 import CRUDPenitip from "../Customer_Service/CRUDPenitip";
 import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
 
 //ADMIN
 import CRUDJabatan from "../admin/CRUDJabatan";
-import CRUDPegawai from "../admin/CRUDPegawai";
+// import CRUDPegawai from "../admin/CRUDPegawai";
 import CRUDMercandise from "../admin/CRUDMercandise";
 import CRUDOrganisasi from "../Admin/CRUDOrganisasi";
 // import ShowAdmin from "../admin/DaftarCustomer";
@@ -43,6 +46,7 @@ import PengambilanBarangKembali from "../penitip/PengambilanBarangKembali";
 //Organisasi
 import InputDataOrganisasi from "../organisasi/InputDataOrganisasi";
 import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
+import Layout from "../navbar/layout.jsx";
 
 //NOTIFIKASI
 // import ShowPenjualanBulanan from "../Owner/ShowPenjualanBulanan";
@@ -124,8 +128,9 @@ const router = createBrowserRouter([
     path: "/admin/pegawai",
     element: (
       <div>
-        <CRUDPegawai />
-        <Footer />
+        <Layout />
+        {/* <CRUDPegawai /> */}
+        {/* <Footer /> */}
       </div>
     ),
   },
@@ -147,15 +152,6 @@ const router = createBrowserRouter([
       </div>
     ),
   },
-  // {
-  //   path: "/admin/customer",
-  //   element: (
-  //     <div>
-  //       <ShowAdmin />
-  //       <Footer />
-  //     </div>
-  //   ),
-  // },
 
   // PEGAWAI GUDANG
   {
@@ -284,102 +280,15 @@ const router = createBrowserRouter([
       </div>
     ),
   },
-
-  // NOTIFIKASI
-  //     {
-  //       path: "/owner/penjualan-bulanan",
-  //       element: (
-  //         <div>
-  //           <NavbarPage />
-  //           <ShowPenjualanBulanan />
-  //           <Footer />
-  //         </div>
-  //       ),
-  //     },
-  //     {
-  //       path: "/owner/komisi-produk",
-  //       element: (
-  //         <div>
-  //           <NavbarPage />
-  //           <ShowKomisiBulanaPerProduk />
-  //           <Footer />
-  //         </div>
-  //       ),
-  //     },
-  //     {
-  //       path: "/owner/stok-gudang",
-  //       element: (
-  //         <div>
-  //           <NavbarPage />
-  //           <ShowStokGudang />
-  //           <Footer />
-  //         </div>
-  //       ),
-  //     },
-  //     {
-  //       path: "/owner/penjualan-kategori",
-  //       element: (
-  //         <div>
-  //           <NavbarPage />
-  //           <ShowPenjualanPerKategoriBarang />
-  //           <Footer />
-  //         </div>
-  //       ),
-  //     },
-  //     {
-  //       path: "/owner/masa-habis",
-  //       element: (
-  //         <div>
-  //           <NavbarPage />
-  //           <ShowMasaPenitipHabis />
-  //           <Footer />
-  //         </div>
-  //       ),
-  //     },
-  //     {
-  //       path: "/owner/donasi-barang",
-  //       element: (
-  //         <div>
-  //           <NavbarPage />
-  //           <ShowDonasiBarang />
-  //           <Footer />
-  //         </div>
-  //       ),
-  //     },
-  //     {
-  //       path: "/owner/request-donasi",
-  //       element: (
-  //         <div>
-  //           <NavbarPage />
-  //           <ShowRequestDonasi />
-  //           <Footer />
-  //         </div>
-  //       ),
-  //     },
-  //     {
-  //       path: "/owner/transaksi-penitip",
-  //       element: (
-  //         <div>
-  //           <NavbarPage />
-  //           <ShowTransaksiPenitip />
-  //           <Footer />
-  //         </div>
-  //       ),
-  //     },
-
-  {
-    path: "*",
-    element: <div>Routes Not Found!</div>,
-  },
 ]);
-  
-  const AppRouter = () => {
-    return (
-      <>
-        <Toaster position="top-center" richColors />
-        <RouterProvider router={router} />
-      </>
-    );
-  };
+
+const AppRouter = () => {
+  return (
+    <>
+      <Toaster position="top-center" richColors />
+      <RouterProvider router={router} />
+    </>
+  );
+};
 
 export default AppRouter;
