@@ -37,7 +37,7 @@ class PenitipController extends Controller
         $validate = Validator::make($storeData, [
             'nama_penitip' => 'required|string|max:255',
             'no_ktp' => 'required|string|min:16|max:20',
-            'gambar_ktp' => 'nullable|string',
+            'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'email' => 'required|email|unique:penitips,email',
             'password' => 'required|string|min:6',
             'badge' => 'required|string',
@@ -49,8 +49,16 @@ class PenitipController extends Controller
             return response(['message' => $validate->errors()], 400);
         }
 
-        $storeData['password'] = Hash::make($storeData['password']);
+        $pathGambar = null;
+        if ($request->hasFile('gambar_ktp')) {
+            $imageName = time() . '.' . $request->file('gambar_ktp')->extension();
+            $path_gambar = 'images/penitip/' . $imageName;
+            $request->file('gambar_ktp')->move(public_path('images/penitip'), $imageName);
 
+            $storeData['gambar_ktp'] = $path_gambar;
+        }
+
+        $storeData['password'] = Hash::make($storeData['password']);
         $penitip = Penitip::create($storeData);
 
         $user = new User();
