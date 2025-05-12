@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Pembeli;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+
 
 class PembeliController extends Controller
 {
@@ -25,17 +27,19 @@ class PembeliController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:pembelis',
+            'nama_pembeli' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
             'no_hp' => 'required|string|max:15',
             'password' => 'required|string|min:8',
+            
         ]);
 
         $pembeli = Pembeli::create([
-            'nama' => $request->nama,
+            'nama_pembeli' => $request->nama_pembeli,
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'password' => Hash::make($request->password),
+            'point' => 0,
         ]);
 
         return response()->json([
@@ -116,7 +120,7 @@ class PembeliController extends Controller
         }
 
         $validatedData = $request->validate([
-            'nama' => 'string|max:255|nullable',
+            'nama_pembeli' => 'string|max:255|nullable',
             'email' => 'required|email',
             'no_hp' => 'string|max:15|nullable',
             'password' => 'string|min:8|nullable',

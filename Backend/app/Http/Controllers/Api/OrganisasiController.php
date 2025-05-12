@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Organisasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+
+
 
 class OrganisasiController extends Controller
 {
@@ -22,7 +25,7 @@ class OrganisasiController extends Controller
     }
 
     // Register organisasi baru
-    public function register(Request $request)
+    public function registerOrg(Request $request)
     {
         $request->validate([
             'nama' => 'required|string|max:255',
@@ -30,14 +33,16 @@ class OrganisasiController extends Controller
             'email' => 'required|string|email|max:255|unique:organisasis',
             'no_hp' => 'required|string|max:15',
             'password' => 'required|string|min:8',
+            'permintaan' => 'nullable|string',
         ]);
-
+        $permintaan = $request->permintaan ?? '';
         $organisasi = Organisasi::create([
             'nama' => $request->nama,
             'alamat' => $request->alamat,
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'password' => Hash::make($request->password),
+            'permintaan' => $permintaan,
         ]);
 
         return response()->json([

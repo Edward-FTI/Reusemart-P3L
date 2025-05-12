@@ -5,9 +5,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PegawaiController;
-use APP\Http\Controllers\Api\PembeliController;
+use App\Http\Controllers\Api\PembeliController;
 use App\Http\Controllers\Api\OrganisasiController;
 use App\Http\Controllers\Api\PenitipController;
+
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -16,7 +17,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //Login
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+// Route::post('/register', [PembeliController::class, 'register']);
+Route::post('/register', [PembeliController::class, 'register']);
+Route::post('/register-org', [OrganisasiController::class, 'registerOrg']);
 
 
 
