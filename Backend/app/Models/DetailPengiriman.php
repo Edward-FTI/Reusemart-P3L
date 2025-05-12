@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DetailPengirimian extends Model
+class DetailPengiriman extends Model
 {
-    use HasFactory;
+    protected $table = 'detail_pengirimans'; // <- Pastikan ini benar
 
     protected $fillable = [
         'status_pengiriman',
