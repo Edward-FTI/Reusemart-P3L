@@ -7,12 +7,10 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\KategoriBarangController;
 use App\Http\Controllers\Api\PegawaiController;
-use APP\Http\Controllers\Api\PembeliController;
+use App\Http\Controllers\Api\PembeliController;
 use App\Http\Controllers\Api\OrganisasiController;
 use App\Http\Controllers\Api\PenitipController;
 
-use App\Models\Barang;
-use App\Models\KategoriBarang;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -21,7 +19,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //Login
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+// Route::post('/register', [PembeliController::class, 'register']);
+Route::post('/register', [PembeliController::class, 'register']);
+Route::post('/register-org', [OrganisasiController::class, 'registerOrg']);
 
 
 // Punya Abang Edward

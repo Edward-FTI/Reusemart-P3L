@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Organisasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+
 
 class OrganisasiController extends Controller
 {
@@ -29,29 +31,31 @@ class OrganisasiController extends Controller
         ], 400);
     }
 
-    /**
-     * Store a newly created organization in storage.
-     */
-    public function store(Request $request): \Illuminate\Http\Response
+
+    // Register organisasi baru
+    public function registerOrg(Request $request)
+
     {
         $storeData = $request->all();
 
         $validate = Validator::make($storeData, [
             'nama' => 'required|string|max:255',
-            'alamat' => 'required|string',
+            'alamat' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:organisasis',
+            'no_hp' => 'required|string|max:15',
+            'password' => 'required|string|min:8',
             'permintaan' => 'nullable|string',
-            'email' => 'required|email|unique:organisasis,email',
-            'password' => 'required|string|min:6',
-            'no_hp' => 'required|string',
+        ]);
+        $permintaan = $request->permintaan ?? '';
+        $organisasi = Organisasi::create([
+            'nama' => $request->nama,
+            'alamat' => $request->alamat,
+            'email' => $request->email,
+            'no_hp' => $request->no_hp,
+            'password' => Hash::make($request->password),
+            'permintaan' => $permintaan,
         ]);
 
-        if ($validate->fails()) {
-            return response(['message' => $validate->errors()], 400);
-        }
-
-        $storeData['password'] = Hash::make($storeData['password']);
-
-        $organisasi = Organisasi::create($storeData);
 
         return response([
             'message' => 'Berhasil menambahkan data organisasi',

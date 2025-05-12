@@ -2,25 +2,31 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Organisasi extends Model
+class Organisasi extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillabel = [
+    public $timestamps = false;
+    protected $table = 'organisasis';
+    protected $primaryKey = 'id';
+
+    protected $fillable = [
         'nama',
-        'alamat',
-        'permintaan',
+        'alamat', 
+        'permintaan', 
         'email',
         'password',
         'no_hp',
+        
     ];
 
-    public function user()
-{
-    return $this->belongsTo(User::class);
-}
-
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 }
