@@ -1,9 +1,9 @@
 import useAxios from ".";
 
-// ambil seluruh data pegawai
-export const GetAllPegawai = async () => {
+// ambil seluruh data Customer
+export const GetAllCustomer = async () => {
     try {
-        const response = await useAxios.get('/pegawai', {
+        const response = await useAxios.get('/Customer', {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -17,9 +17,9 @@ export const GetAllPegawai = async () => {
 }
 
 
-export const GetPegawaiByNama = async (nama) => {
+export const GetCustomerByNama = async (nama) => {
     try {
-        const response = await useAxios.get(`/pegawai/search/${nama}`, {
+        const response = await useAxios.get(`/Customer/search/${nama}`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -33,9 +33,9 @@ export const GetPegawaiByNama = async (nama) => {
 }
 
 
-export const GetPegawaiByJabatan = async (jabatan) => {
+export const GetCustomerByJabatan = async (jabatan) => {
     try {
-        const response = await useAxios.get(`/pegawai/${jabatan}`, {
+        const response = await useAxios.get(`/Customer/${jabatan}`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -49,9 +49,9 @@ export const GetPegawaiByJabatan = async (jabatan) => {
 }
 
 
-export const GetPegawaiById = async (id) => {
+export const GetCustomerById = async (id) => {
     try {
-        const response = await useAxios.get(`/pegawai/${id}`, {
+        const response = await useAxios.get(`/Customer/${id}`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -65,9 +65,9 @@ export const GetPegawaiById = async (id) => {
 }
 
 
-export const CreatePegawai = async (value) => {
+export const CreateCustomer = async (value) => {
     try {
-        const response = await useAxios.post("/pegawai", value, {
+        const response = await useAxios.post("/Customer", value, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -81,9 +81,9 @@ export const CreatePegawai = async (value) => {
 }
 
 
-export const UpdatePegawai = async (values) => {
+export const UpdateCustomer = async (values) => {
     try {
-        const response = await useAxios.put(`/pegawai/${values.id}`, values, {
+        const response = await useAxios.put(`/Customer/${values.id}`, values, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -97,11 +97,11 @@ export const UpdatePegawai = async (values) => {
 }
 
 
-export const DeletePegawai = async (id) => {
+export const DeleteCustomer = async (id) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     try {
-        const response = await useAxios.delete(`pegawai/${id}`, {
+        const response = await useAxios.delete(`Customer/${id}`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -111,19 +111,5 @@ export const DeletePegawai = async (id) => {
     }
     catch (error) {
         return error.response.data;
-    }
-}
-
-export const ResetPasswordPegawai = async (id) => {
-    try {
-        const response = await useAxios.put(`/pegawai/reset-password/${id}`, {}, {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-        });
-        return response.data;
-    } catch (error) {
-        throw error.response.data;
     }
 }

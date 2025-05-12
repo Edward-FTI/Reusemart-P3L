@@ -4,23 +4,32 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\JabatanController;
 use App\Models\Pegawai;
-use Exception;
-use Illuminate\Http\Request;
-use Symfony\Component\CssSelector\Node\FunctionNode;
+use App\Models\Jabatan;
+use App\Models\User;
 
+use Exception;
+
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Hash;
+
+
+use Symfony\Component\CssSelector\Node\FunctionNode;
 class PegawaiController extends Controller
 {
     public function index()
     {
         $pegawai = Pegawai::with('jabatan')->get();
 
-                if (count($pegawai) > 0) {
+        if (count($pegawai) > 0) {
             return response([
                 'message' =>  'Berhasil mengambil data pegawai',
                 'data' => $pegawai
             ], 200);
         }
+
         return response([
             'message' => 'Data pegawai kosong',
             'data' => []
@@ -35,6 +44,7 @@ class PegawaiController extends Controller
         $validate = Validator::make($storeData, [
             'id_jabatan' => 'required',
             'nama' => 'required',
+            'tgl_lahir' => 'required',
             'email' => 'required',
             'password' => 'required',
             'gaji' => 'required',
@@ -42,7 +52,21 @@ class PegawaiController extends Controller
         if ($validate->fails()) {
             return response(['message' => $validate->errors()], 400);
         }
+        $storeData['password'] = Hash::make($storeData['password']);
         $pegawai = Pegawai::create($storeData);
+
+        $jabatan = Jabatan::find($storeData['id_jabatan']);
+
+        if (!$jabatan) {
+        return response(['message' => 'Jabatan tidak ditemukan'], 404);
+    }
+
+        $user = new User();
+        $user->name = $storeData['nama'];
+        $user->email = $storeData['email'];
+        $user->password = bcrypt($storeData['password']);
+        $user->role = $jabatan->role;
+        $user->save();
 
         return response([
             'message' => 'Berhasil menambahkan data pegawai',
@@ -78,6 +102,25 @@ class PegawaiController extends Controller
         $pegawai->email = $updatePegawai['email'];
         $pegawai->gaji = $updatePegawai['gaji'];
 
+        // update()
+        $user = User::where('email', $pegawai->email)->first();
+        if ($user) {
+            $user->name = $updatePegawai['nama'];
+            $user->email = $updatePegawai['email'];
+
+            if (!empty($updatePegawai['password'])) {
+                $user->password = Hash::make($updatePegawai['password']);
+            }
+
+            $jabatan = Jabatan::find($updatePegawai['id_jabatan']);
+            if ($jabatan) {
+                $user->role = $jabatan->role;
+            }
+
+            $user->save();
+        }
+
+
         if ($pegawai->update($updatePegawai)) {
             return response([
                 'message' => 'Berhasil update data pegawai',
@@ -100,6 +143,10 @@ class PegawaiController extends Controller
                 'data' => null
             ], 400);
         }
+        $user = User::where('email', $pegawai->email)->first();
+        if ($user) {
+            $user->delete();
+        }
         if ($pegawai->delete()) {
             return response([
                 'message' => 'Berhasil menghapus data pegawai',
@@ -108,18 +155,9 @@ class PegawaiController extends Controller
         }
     }
 
-
-    // publick function search(Request $request) {
-    //     $search = $request->search();
-
-    //     $pegawai = 
-    // }
-
-
     public function show(string $id)
     {
         $pegawai = Pegawai::find($id);
-
         if (!is_null($pegawai)) {
             return response([
                 'message' => 'Pegawai dengan nama ' . $pegawai->nama . ' ditemukan',
@@ -195,5 +233,26 @@ class PegawaiController extends Controller
                 'data' => []
             ], 404);
         }
+    }
+
+
+    public function resetPassword($id)
+    {
+        $pegawai = Pegawai::find($id);
+        if (!$pegawai) {
+            return response([
+                'message' => 'Data pegawai tidak ditemukan',
+                'data' => null
+            ], 404);
+        }
+
+        $defaultPassword = $pegawai->tgl_lahir;
+        $pegawai->password = Hash::make($defaultPassword);
+        $pegawai->save();
+
+        return response([
+            'message' => 'Password berhasil direset ke tanggal lahir',
+            'data' => $pegawai
+        ], 200);
     }
 }

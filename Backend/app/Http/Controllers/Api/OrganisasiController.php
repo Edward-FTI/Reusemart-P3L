@@ -9,25 +9,36 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
 
-
 class OrganisasiController extends Controller
 {
-    // GET semua organisasi
-    public function index()
+    /**
+     * Display a listing of the organizations.
+     */
+    public function index(): \Illuminate\Http\Response
     {
-        return response()->json(Organisasi::all(), 200);
+        $organisasis = Organisasi::with('transaksi_donasi')->get();
+
+        if ($organisasis->isNotEmpty()) {
+            return response([
+                'message' => 'Berhasil mengambil data organisasi',
+                'data' => $organisasis
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Data organisasi kosong',
+            'data' => []
+        ], 400);
     }
 
-    // Endpoint kalau tidak terautentikasi
-    public function ligon()
-    {
-        return response()->json("unauthenticated", 401);
-    }
 
     // Register organisasi baru
     public function registerOrg(Request $request)
+
     {
-        $request->validate([
+        $storeData = $request->all();
+
+        $validate = Validator::make($storeData, [
             'nama' => 'required|string|max:255',
             'alamat' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:organisasis',
@@ -45,75 +56,131 @@ class OrganisasiController extends Controller
             'permintaan' => $permintaan,
         ]);
 
-        return response()->json([
-            'organisasi' => $organisasi,
-            'message' => 'Organisasi registered successfully',
+
+        return response([
+            'message' => 'Berhasil menambahkan data organisasi',
+            'data' => $organisasi
         ], 201);
     }
 
-    // Logout organisasi
-    public function logout(Request $request)
-    {
-        if (Auth::check()) {
-            $request->user()->currentAccessToken()->delete();
-            return response()->json(['message' => 'Logged out successfully']);
-        }
-
-        return response()->json(['message' => 'Not logged in'], 401);
-    }
-
-    // Tampilkan detail organisasi
-    public function show($id)
+    /**
+     * Update the specified organization in storage.
+     */
+    public function update(Request $request, string $id): \Illuminate\Http\Response
     {
         $organisasi = Organisasi::find($id);
         if (!$organisasi) {
-            return response()->json(['message' => 'Organisasi not found'], 404);
+            return response(['message' => 'Data organisasi tidak ditemukan', 'data' => null], 404);
         }
 
-        return response()->json($organisasi);
-    }
+        $updateData = $request->all();
 
-    // Update organisasi (termasuk permintaan)
-    public function update(Request $request, $id)
-    {
-        $organisasi = Organisasi::find($id);
-        if (!$organisasi) {
-            return response()->json(['message' => 'Organisasi not found'], 404);
-        }
-
-        $validatedData = $request->validate([
-            'nama' => 'string|max:255|nullable',
-            'alamat' => 'string|max:255|nullable',
-            'email' => 'required|email',
-            'no_hp' => 'string|max:15|nullable',
-            'password' => 'string|min:8|nullable',
-            'permintaan' => 'string|nullable',
+        $validate = Validator::make($updateData, [
+            'nama' => 'required|string|max:255',
+            'alamat' => 'required|string',
+            'permintaan' => 'nullable|string',
+            'email' => 'required|email|unique:organisasis,email',
+            'password' => 'required|string|min:6',
+            'no_hp' => 'required|string',
         ]);
 
-        if (!empty($validatedData['password'])) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
-        } else {
-            unset($validatedData['password']);
+        if ($validate->fails()) {
+            return response(['message' => $validate->errors()], 400);
         }
 
-        $organisasi->update($validatedData);
+        $organisasi->nama = $updateData['nama'];
+        $organisasi->alamat = $updateData['alamat'];
+        $organisasi->permintaan = $updateData['permintaan'];
+        $organisasi->email = $updateData['email'];
+        $organisasi->no_hp = $updateData['no_hp'];
 
-        return response()->json([
-            'organisasi' => $organisasi,
-            'message' => 'Organisasi updated successfully',
-        ]);
+        if (!empty($updateData['password'])) {
+            $organisasi->password = Hash::make($updateData['password']);
+        }
+
+        $organisasi->save();
+
+        return response([
+            'message' => 'Berhasil update data organisasi',
+            'data' => $organisasi
+        ], 200);
     }
 
-    // Hapus organisasi
-    public function destroy($id)
+    /**
+     * Remove the specified organization from storage.
+     */
+    public function destroy(string $id): \Illuminate\Http\Response
     {
         $organisasi = Organisasi::find($id);
         if (!$organisasi) {
-            return response()->json(['message' => 'Organisasi not found'], 404);
+            return response(['message' => 'Data organisasi tidak ditemukan', 'data' => null], 404);
         }
 
         $organisasi->delete();
 
-        return response()->json(['message' => 'Organisasi deleted successfully']);
+        return response([
+            'message' => 'Berhasil menghapus data organisasi',
+            'data' => $organisasi
+        ], 200);
+    }
+
+    /**
+     * Display the specified organization.
+     */
+    public function show(string $id): \Illuminate\Http\Response
+    {
+        $organisasi = Organisasi::find($id);
+
+        if ($organisasi) {
+            return response([
+                'message' => 'Organisasi ditemukan',
+                'data' => $organisasi
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Data tidak ditemukan',
+            'data' => null
+        ], 404);
+    }
+
+    /**
+     * Search organizations by name.
+     */
+    public function searchByName(string $name): \Illuminate\Http\Response
+    {
+        $organisasis = Organisasi::where('nama', 'LIKE', '%' . $name . '%')->get();
+
+        if ($organisasis->isEmpty()) {
+            return response([
+                'message' => 'Organisasi dengan nama tersebut tidak ditemukan',
+                'data' => []
+            ], 404);
+        }
+
+        return response([
+            'message' => 'Berhasil mengambil data organisasi',
+            'data' => $organisasis
+        ], 200);
+    }
+
+    /**
+     * Search organization by ID.
+     */
+    public function searchById(string $id): \Illuminate\Http\Response
+    {
+        $organisasi = Organisasi::find($id);
+
+        if (!$organisasi) {
+            return response([
+                'message' => 'Organisasi tidak ditemukan',
+                'data' => []
+            ], 404);
+        }
+
+        return response([
+            'message' => 'Organisasi ditemukan',
+            'data' => $organisasi
+        ], 200);
     }
 }

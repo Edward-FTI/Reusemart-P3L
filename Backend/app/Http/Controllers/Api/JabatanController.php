@@ -37,7 +37,7 @@ class JabatanController extends Controller
                 'message' => $validate->errors()
             ], 404);
         }
-        $jabatan = Jabatan::created($storeData);
+        $jabatan = Jabatan::create($storeData);
 
         return response([
             'message' => 'Berhasil menambahkan data jabatan',

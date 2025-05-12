@@ -12,8 +12,9 @@ class Penitip extends Model
     protected $fillable = [
         'nama_penitip',
         'no_ktp',
+        'gambar_ktp',
         'saldo',
-        'pont',
+        'point',
         'email',
         'password',
         'badge',

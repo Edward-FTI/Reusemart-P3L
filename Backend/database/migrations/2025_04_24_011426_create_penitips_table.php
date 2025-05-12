@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('penitips', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('nama_penitip');
             $table->string('no_ktp');
-            $table->double('saldo');
+            $table->string('gambar_ktp')->nullable();
+            $table->double('saldo')->nullable()->default(000.00);
             $table->integer('point');
             $table->string('email')->unique();
             $table->string('password');
