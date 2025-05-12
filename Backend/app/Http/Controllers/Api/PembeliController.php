@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Pembeli;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+
 
 
 class PembeliController extends Controller
@@ -14,7 +17,46 @@ class PembeliController extends Controller
     // GET semua pembeli
     public function index()
     {
-        return response()->json(Pembeli::all(), 200);
+        $pembelis = Pembeli::all();
+
+        return response([
+            'message' => $pembelis->isEmpty() ? 'Data pembeli kosong' : 'Berhasil mengambil data pembeli',
+            'data' => $pembelis
+        ], $pembelis->isEmpty() ? 404 : 200);
+
+        $user = User::where('role', 'pembeli')->get();
+        if ($user->isNotEmpty()) {
+            return response([
+                'message' => 'Berhasil mengambil data User',
+                'data' => $user
+            ], 200);
+        }
+    }
+
+    public function store(Request $request)
+    {
+        $storeData = $request->all();
+
+        $validate = Validator::make($storeData, [
+            'nama_pembeli' => 'required|string|max:255',
+            'email' => 'required|email|unique:pembelis,email',
+            'no_hp' => 'required|string|max:15',
+            'password' => 'required|string|min:8',
+            'point' => 'integer',
+        ]);
+
+        if ($validate->fails()) {
+            return response(['message' => $validate->errors()], 400);
+        }
+
+        $storeData['password'] = Hash::make($storeData['password']);
+
+        $pembeli = Pembeli::create($storeData);
+
+        return response([
+            'message' => 'Berhasil menambahkan data pembeli',
+            'data' => $pembeli
+        ], 201);
     }
 
     // Endpoint kalau tidak terautentikasi
@@ -31,7 +73,7 @@ class PembeliController extends Controller
             'email' => 'required|string|email|max:255',
             'no_hp' => 'required|string|max:15',
             'password' => 'required|string|min:8',
-            
+
         ]);
 
         $pembeli = Pembeli::create([
@@ -90,15 +132,15 @@ class PembeliController extends Controller
     // }
 
     // Logout pembeli
-    public function logout(Request $request)
-    {
-        if (Auth::check()) {
-            $request->user()->currentAccessToken()->delete();
-            return response()->json(['message' => 'Logged out successfully']);
-        }
+    // public function logout(Request $request)
+    // {
+    //     if (Auth::check()) {
+    //         $request->user()->currentAccessToken()->delete();
+    //         return response()->json(['message' => 'Logged out successfully']);
+    //     }
 
-        return response()->json(['message' => 'Not logged in'], 401);
-    }
+    //     return response()->json(['message' => 'Not logged in'], 401);
+    // }
 
     // Tampilkan detail pembeli
     public function show($id)

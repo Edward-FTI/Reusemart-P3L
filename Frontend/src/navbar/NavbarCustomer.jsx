@@ -23,13 +23,13 @@ const NavbarCustomer_Service = () => {
           />
         </button>
 
-        <button style={styles.logoutButton} onClick={() => {/* handle logout */}}>
+        <button style={styles.logoutButton} onClick={() => navigate('/customer/profile')}>
           <img
             src="https://img.icons8.com/?size=100&id=24337&format=png&color=FFFFFF"
             alt="logout"
             style={styles.icon}
           />
-          <span style={styles.logoutText}>Log out</span>
+          <span style={styles.logoutText}>Profile</span>
         </button>
       </div>
 
@@ -66,8 +66,8 @@ const LinkSidebar = ({ navigate }) => {
   return (
     <div className="d-flex flex-column gap-3">
       <DrawerItem label="Dashboard" icon="https://img.icons8.com/?size=100&id=iPqKoSmxmAyJ&format=png&color=000000" onClick={() => navigate('/dashboard')} />
-      <DrawerItem label="Penitip" icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" onClick={() => navigate('/penitip')} />
-      <DrawerItem label="Diskusi" icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" />
+      <DrawerItem label="Transaksi" icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" onClick={() => navigate('/customer/transaksi')} />
+      <DrawerItem label="Diskusi" icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" onClick={() => navigate('/customer/diskusi')}/>
     </div>
   );
 };
