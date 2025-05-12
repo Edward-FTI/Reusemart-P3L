@@ -35,6 +35,7 @@ Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy']);
 Route::get('/pegawai/search/{name}', [PegawaiController::class, 'searchByName']);
 Route::get('/searchByJabatan/{jabatan}', [PegawaiController::class, 'searchBysearchByJabatanyName']);
 Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
+Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
 // =========================================================================================================
 
 //======================= Untuk Jabatan =======================

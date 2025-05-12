@@ -64,7 +64,7 @@ const Dashboard = () => {
                     <div class="d-flex align-items-center justify-content-between">
 
                         <a class="d-flex align-items-center logo" href="#">
-                            <img src="{{ asset('asset/bg-logo.png') }}" alt="Logo" width="35" />
+                            <img src={logo} alt="Logo" width="35" />
                             <h5 class="ms-2 mb-0 text-success">reusemart</h5>
                         </a>
 
@@ -73,7 +73,7 @@ const Dashboard = () => {
                                 <input type="text" class="form-control search-box" placeholder="Cari di reusemart" />
                                 <button class="btn btn-outline-secondary ms-2" type="submit">
 
-                                    <img src="{{ url('https://img.icons8.com/?size=100&id=132&format=png&color=000000') }}"
+                                    <img src="https://img.icons8.com/?size=100&id=132&format=png&color=000000"
                                         alt="" width="15" />
                                 </button>
                             </form>
@@ -104,7 +104,7 @@ const Dashboard = () => {
             </header>
 
             <main class="container mt-5">
-                <div className="row row-cols-1 row-cols-md-4 g-4 mt-0">
+                <div className="row row-cols-1 row-cols-md-5 g-3">
                     {products.map((product, index) => (
                         <div className="col" key={index}>
                             <div className="card p-2">
