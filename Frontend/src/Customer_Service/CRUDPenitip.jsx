@@ -171,7 +171,7 @@ const CRUDPenitip = () => {
                                     />
                                 </div>
 
-                               <label htmlFor="gambar_ktp" className="form-label">Gambar KTP</label>
+                                <label htmlFor="gambar_ktp" className="form-label">Gambar KTP</label>
                                 <div className="mb-3">
                                     <input
                                         type="file"

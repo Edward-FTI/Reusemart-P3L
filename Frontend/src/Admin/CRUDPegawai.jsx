@@ -12,7 +12,15 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const CRUDPegawai = () => {
     const [pegawaiList, setPegawaiList] = useState([]);
-    const [form, setForm] = useState({ id: '', nama: '', tgl_lahir: '', email: '', password: '', gaji: '', id_jabatan: '' });
+    const [form, setForm] = useState({
+        id: '',
+        nama: '',
+        tgl_lahir: '',
+        email: '',
+        password: '',
+        gaji: '',
+        id_jabatan: ''
+    });
     const [isEdit, setIsEdit] = useState(false);
     const [jabatanList, setJabatanList] = useState([]);
 
@@ -150,8 +158,6 @@ const CRUDPegawai = () => {
                                     >
                                         Reset Password
                                     </button>
-
-
                                 </td>
                             </tr>
                         ))

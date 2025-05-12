@@ -33,10 +33,32 @@ export const GetAllBarang = async () => {
 //     }
 // }
 
+// export const CreateBarang = async (value) => {
+//     try {
+//         const response = await useAxios.post("/barang", value, {
+//             headers: {
+//                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+//             },
+//         });
+//         return response.data.data;
+//     }
+//     catch (error) {
+//         console.error(error);
+//         throw error.response.data;
+//     }
+// }
+
 export const CreateBarang = async (value) => {
     try {
-        const response = await useAxios.post("/barang", value, {
+        const formData = new FormData();
+
+        for (const key in value) {
+            formData.append(key, value[key]);
+        }
+
+        const response = await useAxios.post("/barang", formData, {
             headers: {
+                "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
@@ -44,9 +66,10 @@ export const CreateBarang = async (value) => {
     }
     catch (error) {
         console.error(error);
-        throw error.response.data;
+        throw error.response?.data || error;
     }
-}
+};
+
 
 
 export const UpdateBarang = async (values) => {
