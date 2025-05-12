@@ -404,7 +404,8 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <RegisterPage />,
+    element: 
+    <RegisterPage />,
   },
   {
     path: "/register-org",
