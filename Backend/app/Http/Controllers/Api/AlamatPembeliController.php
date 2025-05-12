@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\AlamatPembeli;
+use App\Models\Pembeli;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -10,36 +11,54 @@ use Exception;
 
 class AlamatPembeliController extends Controller
 {
-    // Menampilkan semua alamat milik user yang login
-   public function index()
-{
-    try {
-        $userId = (int) Auth::id();
-        $targetId = $userId + 2;
+    // Ambil id_pembeli dari email user yang login
+    private function getPembeliId()
+    {
+        $userEmail = Auth::user()->email;
+        $pembeli = Pembeli::where('email', $userEmail)->first();
 
-        $alamat = AlamatPembeli::where('id_pembeli', $targetId)->get();
+        if (!$pembeli) {
+            return null;
+        }
 
-        return response()->json([
-            'message' => 'Data alamat berhasil diambil',
-            'data' => $alamat
-        ]);
-    } catch (Exception $e) {
-        return response()->json([
-            'message' => 'Gagal mengambil data alamat',
-            'error' => $e->getMessage()
-        ], 500);
+        return $pembeli->id;
     }
-}
 
+    // Menampilkan semua alamat milik user yang login
+    public function index()
+    {
+        try {
+            $pembeliId = $this->getPembeliId();
+
+            if (!$pembeliId) {
+                return response()->json(['message' => 'Data pembeli tidak ditemukan untuk user yang login'], 404);
+            }
+
+            $alamat = AlamatPembeli::where('id_pembeli', $pembeliId)->get();
+
+            return response()->json([
+                'message' => 'Data alamat berhasil diambil',
+                'data' => $alamat
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal mengambil data alamat',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     // Menampilkan alamat spesifik
     public function show($id)
     {
         try {
-            
-            
-            $userId = Auth::id();
-            $alamat = AlamatPembeli::where('id_pembeli', $userId)->where('id', $id)->first();
+            $pembeliId = $this->getPembeliId();
+
+            if (!$pembeliId) {
+                return response()->json(['message' => 'Data pembeli tidak ditemukan untuk user yang login'], 404);
+            }
+
+            $alamat = AlamatPembeli::where('id_pembeli', $pembeliId)->where('id', $id)->first();
 
             if (!$alamat) {
                 return response()->json(['message' => 'Alamat tidak ditemukan atau Anda tidak memiliki izin'], 404);
@@ -65,9 +84,14 @@ class AlamatPembeliController extends Controller
         ]);
 
         try {
-            $userId = Auth::id();
+            $pembeliId = $this->getPembeliId();
+
+            if (!$pembeliId) {
+                return response()->json(['message' => 'Data pembeli tidak ditemukan untuk user yang login'], 404);
+            }
+
             $alamat = AlamatPembeli::create([
-                'id_pembeli' => $userId+2,
+                'id_pembeli' => $pembeliId,
                 'alamat' => $validatedData['alamat'],
             ]);
 
@@ -78,8 +102,7 @@ class AlamatPembeliController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Gagal menambahkan alamat',
-                'error' => $e->getMessage(),
-                // 'id' => $userId+2
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -92,8 +115,13 @@ class AlamatPembeliController extends Controller
         ]);
 
         try {
-            $userId = Auth::id();
-            $alamat = AlamatPembeli::where('id_pembeli', $userId)->where('id', $id)->first();
+            $pembeliId = $this->getPembeliId();
+
+            if (!$pembeliId) {
+                return response()->json(['message' => 'Data pembeli tidak ditemukan untuk user yang login'], 404);
+            }
+
+            $alamat = AlamatPembeli::where('id_pembeli', $pembeliId)->where('id', $id)->first();
 
             if (!$alamat) {
                 return response()->json(['message' => 'Alamat tidak ditemukan atau Anda tidak memiliki izin'], 404);
@@ -119,8 +147,13 @@ class AlamatPembeliController extends Controller
     public function destroy($id)
     {
         try {
-            $userId = Auth::id();
-            $alamat = AlamatPembeli::where('id_pembeli', $userId)->where('id', $id)->first();
+            $pembeliId = $this->getPembeliId();
+
+            if (!$pembeliId) {
+                return response()->json(['message' => 'Data pembeli tidak ditemukan untuk user yang login'], 404);
+            }
+
+            $alamat = AlamatPembeli::where('id_pembeli', $pembeliId)->where('id', $id)->first();
 
             if (!$alamat) {
                 return response()->json(['message' => 'Alamat tidak ditemukan atau Anda tidak memiliki izin'], 404);
