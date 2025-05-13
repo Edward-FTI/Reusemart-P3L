@@ -53,9 +53,9 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <div>
-        <NavbarPage />
+        {/* <NavbarPage /> */}
         <Dashboard />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
@@ -144,9 +144,9 @@ const router = createBrowserRouter([
     path: "/gudang/barang-titipan",
     element: (
       <div>
-        <NavbarPage />
+        {/* <NavbarPage /> */}
         <CRUDBarangTitipan />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
