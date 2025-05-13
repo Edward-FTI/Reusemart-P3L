@@ -239,12 +239,23 @@ class PegawaiController extends Controller
         }
 
         $defaultPassword = $pegawai->tgl_lahir;
-        $pegawai->password = Hash::make($defaultPassword);
+        $hashedPassword = Hash::make($defaultPassword);
+
+        // Update password di tabel pegawai
+        $pegawai->password = $hashedPassword;
         $pegawai->save();
+
+        // Update password di tabel users
+        $user = User::where('email', $pegawai->email)->first();
+        if ($user) {
+            $user->password = $hashedPassword;
+            $user->save();
+        }
 
         return response([
             'message' => 'Password berhasil direset ke tanggal lahir',
             'data' => $pegawai
         ], 200);
     }
+
 }

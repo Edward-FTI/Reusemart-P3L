@@ -6,6 +6,7 @@ import {
 } from "../Api/apiOrganisasi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { useNavigate } from "react-router-dom"; // ← tambahkan ini
 
 const CRUDOrganisasi = () => {
   const [organisasiList, setOrganisasiList] = useState([]);
@@ -18,6 +19,7 @@ const CRUDOrganisasi = () => {
     no_hp: "",
   });
   const [isEdit, setIsEdit] = useState(false);
+  const navigate = useNavigate(); // ← dan ini
 
   const fetchOrganisasi = async () => {
     try {
@@ -46,7 +48,6 @@ const CRUDOrganisasi = () => {
         await UpdateOrganisasi(dataToSubmit);
         alert("Berhasil mengupdate organisasi");
       } else {
-        // karena POST route belum ada, alert saja
         alert("Fitur tambah organisasi belum tersedia");
       }
 
@@ -81,6 +82,16 @@ const CRUDOrganisasi = () => {
 
   return (
     <div className="container mt-5 bg-white p-4 rounded shadow">
+      {/* Tombol kembali ke halaman Pegawai */}
+      <div className="mb-3">
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => navigate("/admin/pegawai")}
+        >
+          &larr; ke Halaman Pegawai
+        </button>
+      </div>
+
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Data Organisasi</h2>
         <button

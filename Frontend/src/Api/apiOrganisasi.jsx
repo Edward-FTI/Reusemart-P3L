@@ -1,6 +1,6 @@
 import useAxios from ".";
 
-// ambil seluruh data organisasi
+
 export const GetAllOrganisasi = async () => {
     try {
         const response = await useAxios.get('/organisasi', {
@@ -15,6 +15,20 @@ export const GetAllOrganisasi = async () => {
         throw error.response.data;
     }
 }
+
+    export const GetPermintaan = async () => {
+      try {
+        const response = await useAxios.get("/ujiankelas", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        });
+        return response.data.data;
+      } catch (error) {
+        throw error.response.data;
+      }
+    };
 
 export const GetOrganisasiByNama = async (nama) => {
     try {

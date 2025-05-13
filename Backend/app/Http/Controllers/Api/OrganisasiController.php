@@ -103,7 +103,7 @@ public function update(Request $request, string $id)
 
     $organisasi->save();
 
-    // Update data user juga
+    
     $user = User::where('email', $organisasi->email)->first();
     if ($user) {
         if (!empty($validatedData['nama'])) {
@@ -133,7 +133,7 @@ public function destroy(string $id)
         return response(['message' => 'Data organisasi tidak ditemukan', 'data' => null], 404);
     }
 
-    // Cari user sebelum hapus organisasi
+    
     $user = User::where('email', $organisasi->email)->first();
 
     $organisasi->delete();
@@ -207,4 +207,33 @@ public function destroy(string $id)
             'data' => $organisasi
         ], 200);
     }
+
+        public function showPermintaan()
+    {
+        $organisasis = Organisasi::with('transaksi_donasi')
+            ->where(function ($query) {
+                $query->whereNull('permintaan')
+                    ->orWhere('permintaan', '');
+            })
+            ->get();
+
+        if ($organisasis->isEmpty()) {
+            return response([
+                'message' => 'Tidak ditemukan organisasi dengan permintaan kosong atau null',
+                'data' => []
+            ], 404);
+        }
+
+        return response([
+            'message' => 'Berhasil mengambil data organisasi dengan permintaan kosong atau null',
+            'data' => $organisasis
+        ], 200);
+    }
+
+
+
+
+
+
+
 }

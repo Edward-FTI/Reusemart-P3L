@@ -35,16 +35,16 @@ const LoginForm = () => {
               navigate("/customer"); // Ensure this route exists
               break;
             case "Admin":
-              navigate("/admin"); // Ensure this route exists
+              navigate("/admin/pegawai"); // Ensure this route exists
               break;
             case "Customer Service":
-              navigate("/customerService"); // Ensure this route exists
+              navigate("/customer-service/penitip"); // Ensure this route exists
               break;
             case "Penitip":
-              navigate("/penitip"); // Ensure this route exists
+              navigate("/penitip/profile"); // Ensure this route exists
               break;
             case "Pegawai Gudang":
-              navigate("/"); // Ensure this route exists
+              navigate("/gudang/barang-titipan"); // Ensure this route exists
               break;
             default:
               toast.error("Peran tidak dikenali.");
