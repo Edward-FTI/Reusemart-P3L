@@ -114,16 +114,17 @@ export const DeletePegawai = async (id) => {
     }
 }
 
-export const ResetPasswordPegawai = async (id) => {
+export const ResetPasswordPegawai = async (values) => {
     try {
-        const response = await useAxios.put(`/pegawai/reset-password/${id}`, {}, {
+        const response = await useAxios.post(`/pegawai/reset-password`, values, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
         return response.data;
-    } catch (error) {
+    }
+    catch (error) {
         throw error.response.data;
     }
 }
