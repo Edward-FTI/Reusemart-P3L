@@ -46,6 +46,12 @@ const LoginForm = () => {
             case "Pegawai Gudang":
               navigate("/gudang/barang-titipan"); // Ensure this route exists
               break;
+            case "Organisasi":
+              navigate("/"); // Ensure this route exists
+              break;
+            case "Owner":
+              navigate("/owner"); // Ensure this route exists
+              break;
             default:
               toast.error("Peran tidak dikenali.");
               break;

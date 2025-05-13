@@ -52,6 +52,9 @@ function ShowProfileCustomer() {
           <h3>Transaksi Penjualan</h3>
           <Table striped bordered hover>
             <thead>
+          <h3>Transaksi Penjualan</h3>
+          <Table striped bordered hover>
+            <thead>
               <tr>
                 {Object.keys(transaksi[0] || {}).map((key) => (
                   <th key={key}>{key}</th>
@@ -67,6 +70,7 @@ function ShowProfileCustomer() {
                 </tr>
               ))}
             </tbody>
+          </Table>
           </Table>
         </Col>
 
@@ -99,6 +103,7 @@ function ShowProfileCustomer() {
           </Card>
         </Col>
       </Row>
+    </Container>
     </Container>
   );
 }

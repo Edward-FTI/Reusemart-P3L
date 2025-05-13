@@ -1,6 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "sonner";
 
+//Penilaian
+import ResetPassword from "../Components/resetPassword";
+
+
+
 import NavbarPage from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import Dashboard from "../Components/Dashboard";
@@ -29,6 +34,10 @@ import NavbarCustomer from "../navbar/NavbarCustomer";
 import ShowProfileCustomer from "../Customers/ShowProfileCustomer";
 import ShowHistoryCustomer from "../Customers/ShowHistoryCustomer";
 import CRUDTransaksiPenjualanCustomer from "../Customers/CRUDTransaksiPenjualanCustomer";
+
+//OWNER
+import Owner from "../Owner/Owner.jsx";
+
 
 // PENITIP
 import ShowProfilePenitip from "../Penitip/ShowProfilePenitip.jsx";
@@ -79,6 +88,22 @@ const router = createBrowserRouter([
     path: "/ambil-barang",
     element: <AmbilBarang />,
   },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
+  },
+
+  // OWNER
+  {
+    path: "/owner",
+    element: (
+      <div>
+        <NavbarPage />
+        <Owner />
+        <Footer />
+      </div>
+    ),
+  },
 
   // CUSTOMER SERVICE
   {
@@ -87,7 +112,7 @@ const router = createBrowserRouter([
       <div>
         <NavbarCustomer_Service />
         <CRUDPenitip />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
@@ -97,7 +122,7 @@ const router = createBrowserRouter([
       <div>
         <NavbarCustomer_Service />
         <CRUDDiskusi />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
@@ -166,7 +191,7 @@ const router = createBrowserRouter([
     path: "/customer/profile",
     element: (
       <div>
-        <NavbarPage />
+        <NavbarCustomer />
         <ShowProfileCustomer />
         <Footer />
       </div>

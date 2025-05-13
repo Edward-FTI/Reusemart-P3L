@@ -73,7 +73,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByName']);
     Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
     Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
+    Route::get('/organisasi/searchById/{id}', [OrganisasiController::class, 'searchById']);
     Route::get('/ujiankelas', [OrganisasiController::class, 'showPermintaan']);
+
 
     // ======================= Alamat Pembeli =======================
     Route::get('/alamat', [AlamatPembeliController::class, 'index']);
@@ -91,7 +93,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pembeli/search/{name}', [PembeliController::class, 'searchByName']);
     Route::get('/pembeli/searchByEmail/{email}', [PembeliController::class, 'searchByEmail']);
     Route::get('/pembeli/{id}', [PembeliController::class, 'searchById']);
-  
+// Ganti route-nya menjadi tanpa parameter ID
+Route::post('/pembeli/reset-password', [PembeliController::class, 'resetPassword']);
+
+
     //Detail Pengiriman
     Route::get('/detail-pengiriman', [DetailPengirimanController::class, 'index']);
     Route::post('/detail-pengiriman', [DetailPengirimanController::class, 'store']);
