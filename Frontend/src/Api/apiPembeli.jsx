@@ -114,16 +114,23 @@ export const Deletepembeli = async (id) => {
     }
 }
 
-export const ResetPasswordpembeli = async (id) => {
+export const ResetPasswordByEmail = async (email) => {
     try {
-        const response = await useAxios.put(`/pembeli/reset-password/${id}`, {}, {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-        });
+        const response = await useAxios.post(
+            "/pembeli/reset-password",
+            { email },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                },
+            }
+        );
         return response.data;
     } catch (error) {
-        throw error.response.data;
+        throw error.response?.data || { message: "Unknown error occurred." };
     }
-}
+};
+
+
+

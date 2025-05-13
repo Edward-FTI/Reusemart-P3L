@@ -1,5 +1,8 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap-icons/font/bootstrap-icons.css";
+import Login from "./Login";
+import { Link } from "react-router-dom";
 import logo from "../assets/Logo/logo.png";
 import AL12 from "../assets/Elektronik/Laptop/AL12.png";
 import AL14 from "../assets/Elektronik/Laptop/AL14.png"
@@ -80,7 +83,9 @@ const Dashboard = () => {
                         </div>
 
                         <div class="d-flex align-items-center">
-                            <button class="btn btn-outline-success me-2">Masuk</button>
+                            <Link to="/login">
+                            <button className="btn btn-outline-success me-2">Masuk</button>
+                            </Link>
                             <button class="btn btn-success">Daftar</button>
                             <i class="bi bi-cart3 ms-3 fs-4"></i>
                         </div>
