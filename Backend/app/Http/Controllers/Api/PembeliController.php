@@ -54,7 +54,8 @@ class PembeliController extends Controller
     $user->name = $request->nama_pembeli;
     $user->email = $request->email;
     $user->password = bcrypt($request->password);
-    $user->role = 'Pembeli';
+
+    $user->role = 'Pembeli'; 
     $user->save();
 
     return response()->json([

@@ -59,7 +59,7 @@ class OrganisasiController extends Controller
         'name' => $request->nama,
         'email' => $request->email,
         'password' => bcrypt($request->password),
-        'role' => 'organisasi',
+        'role' => 'Organisasi',
     ]);
 
     return response()->json([

@@ -40,10 +40,13 @@ import Owner from "../Owner/Owner.jsx";
 
 
 // PENITIP
-import ShowProfilePenitip from "../penitip/ShowProfilePenitip";
+import ShowProfilePenitip from "../Penitip/ShowProfilePenitip.jsx";
 import ShowHistoryPenitip from "../penitip/ShowHistoryPenitip";
 import CRUDPenitipan from "../penitip/CRUDPenitipan";
 import PengambilanBarangKembali from "../penitip/PengambilanBarangKembali";
+
+//ALAMAT
+import CRUDAlamat from "../pembeli/CrudAlamat.jsx";
 
 // ORGANISASI
 import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
@@ -224,14 +227,25 @@ const router = createBrowserRouter([
     ),
   },
 
+  //ALAMAT
+  {
+    path: "/pembeli/alamat",
+    element: (
+      <div>
+        {/* <NavbarPage /> */}
+        <CRUDAlamat />
+      </div>
+    ),
+  },
+
   // PENITIP
   {
     path: "/penitip/profile",
     element: (
       <div>
-        <NavbarPage />
+        {/* <NavbarPage /> */}
         <ShowProfilePenitip />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
