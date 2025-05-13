@@ -1,84 +1,82 @@
-import React from "react";
-import {
-  GetAllPenitip,
-  GetPenitipByNama,
-  GetPenitipById,
-} from "../Api/apiPenitip";
-
-import { Row, Col, Button, Card } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Table from 'react-bootstrap/Table';
+import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 function ShowProfileCustomer() {
-  return (
-    <main className="container mt-4">
-      <Row>
-        {/* Left Side: Articles with Data Table */}
-        <Col md={8}>
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h2>History Transaksi</h2>
-          </div>
+  const [pembeli, setPembeli] = useState(null);
+  const [transaksi, setTransaksi] = useState([]);
 
-          <table className="table table-bordered table-hover">
-            <thead className="table-light">
+  useEffect(() => {
+    // Memanggil data pembeli
+    axios.get('/pembeli')
+      .then(res => {
+        if (res.data && res.data.length > 0) {
+          const firstPembeli = res.data[0];
+          setPembeli(firstPembeli);
+          // Setelah mendapatkan pembeli, ambil data transaksi penjualan
+          axios.get('/transaksi_penjualan')
+            .then(resTrans => {
+              const allTransaksi = resTrans.data;
+              // Filter transaksi berdasarkan id_pembeli
+              const filtered = allTransaksi.filter(t => t.id_pembeli === firstPembeli.id);
+              setTransaksi(filtered);
+            })
+            .catch(err => console.error(err));
+        }
+      })
+      .catch(err => console.error(err));
+  }, []);
+
+  // Jika data pembeli belum tersedia, tampilkan loading
+  if (!pembeli) return <div>Loading...</div>;
+
+  return (
+    <Container fluid>
+      <Row>
+        <Col md={8}>
+          <h3>Transaksi Penjualan</h3>
+          <Table striped bordered hover>
+            <thead>
               <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>No KTP</th>
-                <th>Gambar KTP</th>
-                <th>Saldo</th>
-                <th>Point</th>
-                <th>Email</th>
-                <th>Badge</th>
-                <th>Aksi</th>
+                {Object.keys(transaksi[0] || {}).map(key => (
+                  <th key={key}>{key}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {/* Map your PenitipList here */}
-              {/* Example data */}
-              <tr>
-                <td>1</td>
-                <td>Adji Ma'aarij</td>
-                <td>1234567890</td>
-                <td><img src="assets/ktp_sample.jpg" alt="Gambar KTP" style={{ width: '50px', height: '50px' }} /></td>
-                <td>Rp 500,000</td>
-                <td>100</td>
-                <td>adji@mail.com</td>
-                <td>Gold</td>
-                <td>
-                  <button className="btn btn-sm btn-warning me-2">Edit</button>
-                  <button className="btn btn-sm btn-danger">Hapus</button>
-                </td>
-              </tr>
+              {transaksi.map(trans => (
+                <tr key={trans.id}>
+                  {Object.values(trans).map((value, idx) => (
+                    <td key={idx}>{value}</td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
-          </table>
+          </Table>
         </Col>
-
-        {/* Right Side: Profile */}
         <Col md={4}>
-          <aside>
-            <article className="card profile" id="About">
-              <figure>
-                <h2>Profile</h2>
-                <img src="assets/Pribadi.JPG" alt="Saya" />
-              </figure>
-              <ul>
-                <li><h4>Nama: Adji Ma'aarij</h4></li>
-                <li>
-                  <p>
-                    Tentang Saya: Saya memiliki banyak sekali hobi seperti bermain
-                    game, membaca novel, menonton film, coding, dan baru-baru ini
-                    saya menyukai traveling. Setelah saya kuliah saya mulai menyukai
-                    traveling. Saya suka menjelajahi tempat baru yang belum pernah
-                    saya kunjungi. Kali ini, saya akan berbagi beberapa tempat yang
-                    telah saya kunjungi di daerah dekat tempat tinggal saya di
-                    project web ini.
-                  </p>
-                </li>
-              </ul>
-            </article>
-          </aside>
+          <h3>Profil Pembeli</h3>
+          <Card>
+            {/* Placeholder untuk gambar KTP */}
+            <Card.Img variant="top" src="assets/default_ktp.png" alt="KTP" />
+            <Card.Body>
+              <Card.Title>{pembeli.nama}</Card.Title>
+              <Card.Text>{pembeli.deskripsi}</Card.Text>
+            </Card.Body>
+            <ListGroup variant="flush">
+              <ListGroup.Item><strong>Email:</strong> {pembeli.email}</ListGroup.Item>
+              <ListGroup.Item><strong>Point:</strong> {pembeli.point}</ListGroup.Item>
+              <ListGroup.Item><strong>Saldo:</strong> {pembeli.saldo}</ListGroup.Item>
+            </ListGroup>
+          </Card>
         </Col>
       </Row>
-    </main>
+    </Container>
   );
 }
 

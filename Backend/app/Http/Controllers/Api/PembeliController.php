@@ -50,11 +50,11 @@ class PembeliController extends Controller
         'point' => 0,
     ]);
 
-    $user = new \App\Models\User();
+    $user = new User();
     $user->name = $request->nama_pembeli;
     $user->email = $request->email;
     $user->password = bcrypt($request->password);
-    $user->role = 'pembeli'; 
+    $user->role = 'Pembeli';
     $user->save();
 
     return response()->json([
@@ -107,6 +107,43 @@ class PembeliController extends Controller
     // }
 
     // Logout pembeli
+
+    public function store(Request $request)
+{
+    $validated = Validator::make($request->all(), [
+        'nama_pembeli' => 'required|string|max:255',
+        'email' => 'required|email|unique:pembelis,email',
+        'no_hp' => 'required|string|max:15',
+        'password' => 'required|string|min:8',
+    ]);
+
+    if ($validated->fails()) {
+        return response()->json($validated->errors(), 422);
+    }
+
+    $pembeli = Pembeli::create([
+        'nama_pembeli' => $request->nama_pembeli,
+        'email' => $request->email,
+        'no_hp' => $request->no_hp,
+        'password' => Hash::make($request->password),
+        'point' => 0,
+    ]);
+
+    $user = new User();
+    $user->name = $request->nama_pembeli;
+    $user->email = $request->email;
+    $user->password = bcrypt($request->password);
+    $user->role = 'Pembeli';
+    $user->email_verified_at = now();
+    $user->remember_token = Str::random(60);
+    $user->save();
+
+    return response()->json([
+        'message' => 'Pembeli created successfully',
+        'data' => $pembeli
+    ], 201);
+}
+
     public function logout(Request $request)
     {
         if (Auth::check()) {
@@ -148,11 +185,11 @@ class PembeliController extends Controller
         unset($validatedData['password']);
     }
 
-   
+
     $pembeli->update($validatedData);
 
-    
-    $user = \App\Models\User::where('email', $pembeli->email)->first();
+
+    $user = User::where('email', $pembeli->email)->first();
     if ($user) {
         if (!empty($validatedData['nama_pembeli'])) {
             $user->name = $validatedData['nama_pembeli'];
@@ -181,7 +218,7 @@ public function destroy($id)
     }
 
     // Cari user berdasarkan email sebelum hapus pembeli
-    $user = \App\Models\User::where('email', $pembeli->email)->first();
+    $user = User::where('email', $pembeli->email)->first();
 
     // Hapus pembeli
     $pembeli->delete();
@@ -194,5 +231,46 @@ public function destroy($id)
     return response()->json(['message' => 'Pembeli and associated user deleted successfully']);
 }
 
+public function resetPassword(Request $request)
+    {
+        // Validasi email input
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        // Mencari user berdasarkan email
+        $user = User::where('email', $request->email)->first();
+        $pembeli = Pembeli::where('email', $request->email)->first();
+
+        if (!$user && !$pembeli) {
+            return response()->json(['error' => 'User or Pembeli not found.'], 404);
+        }
+
+        // Mengambil 6 digit terakhir nomor HP
+        $last6Digits = substr($pembeli ? $pembeli->no_hp : '', -6);
+
+        // Membalikkan urutan 6 digit terakhir nomor HP
+        $newPassword = strrev($last6Digits);
+
+
+        if (!$newPassword) {
+            return response()->json(['error' => 'No HP not valid.'], 422);
+        }
+
+        $pembeli->password = Hash::make($newPassword);
+        $user->password = $pembeli->password;
+        $user->save();
+        $pembeli->save();
+        // Reset password untuk tabel `users`
+
+        return response()->json([
+        'message' => 'Password reset successfully!',
+        'new_password' => $newPassword
+    ], 200);
+    }
 
 }

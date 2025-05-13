@@ -32,7 +32,7 @@ const LoginForm = () => {
         if (user.role) {
           switch (user.role) {
             case "Pembeli":
-              navigate("/customer"); // Ensure this route exists
+              navigate("/customer/profile"); // Ensure this route exists
               break;
             case "Admin":
               navigate("/admin/pegawai"); // Ensure this route exists
@@ -45,6 +45,12 @@ const LoginForm = () => {
               break;
             case "Pegawai Gudang":
               navigate("/gudang/barang-titipan"); // Ensure this route exists
+              break;
+            case "Organisasi":
+              navigate("/organisasi"); // Ensure this route exists
+              break;
+            case "Owner":
+              navigate("/owner"); // Ensure this route exists
               break;
             default:
               toast.error("Peran tidak dikenali.");

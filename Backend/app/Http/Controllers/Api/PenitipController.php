@@ -23,16 +23,64 @@ class PenitipController extends Controller
         ], $penitips->isEmpty() ? 404 : 200);
     }
 
-    // Menyimpan data penitip baru
-    public function store(Request $request)
-    {
-        $data = $request->all();
+    // // Menyimpan data penitip baru
+    // public function store(Request $request)
+    // {
+    //     $data = $request->all();
 
-        // Validasi input
-        $validasi = Validator::make($data, [
+    //     // Validasi input
+    //     $validasi = Validator::make($data, [
+    //         'nama_penitip' => 'required|string|max:255',
+    //         'no_ktp' => 'required|string|min:16|max:20',
+    //         'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    //         'email' => 'required|email|unique:penitips,email',
+    //         'password' => 'required|string|min:6',
+    //         'badge' => 'required|string',
+    //         'point' => 'required|integer',
+    //         'saldo' => 'nullable|numeric',
+    //     ]);
+
+    //     if ($validasi->fails()) {
+    //         return response(['message' => $validasi->errors()], 400);
+    //     }
+
+    //     // Menyimpan gambar KTP
+    //     if ($request->hasFile('gambar_ktp')) {
+    //         $namaGambar = time() . '.' . $request->file('gambar_ktp')->extension();
+    //         $pathGambar = 'images/penitip/' . $namaGambar;
+    //         $request->file('gambar_ktp')->move(public_path('images/penitip'), $namaGambar);
+    //         $data['gambar_ktp'] = $pathGambar;
+    //     }
+
+    //     // Enkripsi password
+    //     $data['password'] = Hash::make($data['password']);
+
+    //     // Simpan ke tabel penitip
+    //     $penitip = Penitip::create($data);
+
+    //     // Buat juga akun user
+    //     $user = new User();
+    //     $user->name = $data['nama_penitip'];
+    //     $user->email = $data['email'];
+    //     $user->password = $data['password'];
+    //     $user->role = 'Penitip';
+    //     $user->email_verified_at = now();
+    //     $user->remember_token = Str::random(60);
+    //     $user->save();
+
+    //     return response([
+    //         'message' => 'Berhasil menambahkan data penitip',
+    //         'data' => $penitip
+    //     ], 201);
+    // }
+
+  public function store(Request $request)
+{
+    try {
+        $validasi = Validator::make($request->all(), [
             'nama_penitip' => 'required|string|max:255',
-            'no_ktp' => 'required|string|min:16|max:20',
-            'gambar_ktp' => 'nullable|string',
+            'no_ktp' => 'required|string|min:16|max:20|unique:penitips,no_ktp',
+            'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'email' => 'required|email|unique:penitips,email',
             'password' => 'required|string|min:6',
             'badge' => 'required|string',
@@ -44,25 +92,34 @@ class PenitipController extends Controller
             return response(['message' => $validasi->errors()], 400);
         }
 
-        // Menyimpan gambar KTP
+        // Simpan gambar KTP
+        $pathGambar = null;
         if ($request->hasFile('gambar_ktp')) {
             $namaGambar = time() . '.' . $request->file('gambar_ktp')->extension();
             $pathGambar = 'images/penitip/' . $namaGambar;
             $request->file('gambar_ktp')->move(public_path('images/penitip'), $namaGambar);
-            $data['gambar_ktp'] = $pathGambar;
         }
 
-        // Enkripsi password
-        $data['password'] = Hash::make($data['password']);
+        $data = $request->all();
+        $data['gambar_ktp'] = $pathGambar;
 
         // Simpan ke tabel penitip
-        $penitip = Penitip::create($data);
+        $penitip = Penitip::create([
+            'nama_penitip' => $data['nama_penitip'],
+            'no_ktp' => $data['no_ktp'],
+            'gambar_ktp' => $data['gambar_ktp'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'badge' => $data['badge'],
+            'point' => $data['point'],
+            'saldo' => $data['saldo'] ?? 0,
+        ]);
 
-        // Buat juga akun user
+        // Buat akun user
         $user = new User();
         $user->name = $data['nama_penitip'];
         $user->email = $data['email'];
-        $user->password = $data['password'];
+        $user->password = Hash::make($data['password']);
         $user->role = 'Penitip';
         $user->email_verified_at = now();
         $user->remember_token = Str::random(60);
@@ -72,7 +129,15 @@ class PenitipController extends Controller
             'message' => 'Berhasil menambahkan data penitip',
             'data' => $penitip
         ], 201);
+
+    } catch (\Exception $e) {
+        return response([
+            'message' => 'Gagal menambahkan data penitip',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
 
     // Mengubah data penitip
     public function update(Request $request, string $id)
@@ -86,8 +151,8 @@ class PenitipController extends Controller
 
         $validasi = Validator::make($data, [
             'nama_penitip' => 'required|string|max:255',
-            'no_ktp' => 'required|string|min:16|max:20',
-            'gambar_ktp' => 'nullable|string',
+            'no_ktp' => 'required|string|min:16|max:20|unique:penitips,no_ktp,' .$id,
+            'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'email' => 'required|email|unique:penitips,email,' . $id,
             'password' => 'nullable|string|min:6',
             'badge' => 'required|string',
@@ -104,11 +169,12 @@ class PenitipController extends Controller
             $namaGambar = time() . '.' . $request->file('gambar_ktp')->extension();
             $pathGambar = 'images/penitip/' . $namaGambar;
             $request->file('gambar_ktp')->move(public_path('images/penitip'), $namaGambar);
-            $penitip->gambar_ktp = $pathGambar;
+            $data['gambar_ktp'] = $pathGambar;
         }
 
         $penitip->nama_penitip = $data['nama_penitip'];
         $penitip->no_ktp = $data['no_ktp'];
+        $penitip->gambar_ktp = $data['gambar_ktp'] ?? $penitip->gambar_ktp;
         $penitip->email = $data['email'];
         $penitip->badge = $data['badge'];
         $penitip->point = $data['point'];
