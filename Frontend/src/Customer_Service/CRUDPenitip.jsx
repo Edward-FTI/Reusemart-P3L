@@ -30,21 +30,48 @@ const CRUDPenitip = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const dataToSubmit = { ...form };
+    //         if (isEdit && !dataToSubmit.password) {
+    //             delete dataToSubmit.password;
+    //         }
+
+    //         if (isEdit) {
+    //             await UpdatePenitip(dataToSubmit);
+    //             alert('Berhasil mengupdate Penitip');
+    //         } else {
+    //             await CreatePenitip(dataToSubmit);
+    //             alert('Berhasil menambah Penitip');
+    //         }
+    //         resetForm();
+    //         fetchPenitip();
+    //     } catch (error) {
+    //         alert('Gagal menyimpan data Penitip');
+    //         console.error(error);
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const dataToSubmit = { ...form };
-            if (isEdit && !dataToSubmit.password) {
-                delete dataToSubmit.password;
+            const formData = new FormData();
+            for (const key in form) {
+                // Jika password kosong saat edit, skip
+                if (isEdit && key === 'password' && !form[key]) continue;
+
+                formData.append(key, form[key]);
             }
 
             if (isEdit) {
-                await UpdatePenitip(dataToSubmit);
+                await UpdatePenitip(form.id, formData); // Update API harus terima FormData
                 alert('Berhasil mengupdate Penitip');
             } else {
-                await CreatePenitip(dataToSubmit);
+                await CreatePenitip(formData); // Create API juga harus terima FormData
                 alert('Berhasil menambah Penitip');
             }
+
             resetForm();
             fetchPenitip();
         } catch (error) {
@@ -52,6 +79,7 @@ const CRUDPenitip = () => {
             console.error(error);
         }
     };
+
 
     const handleEdit = (Penitip) => {
         setForm({ ...Penitip, password: '' });
@@ -61,7 +89,7 @@ const CRUDPenitip = () => {
     };
 
     const resetForm = () => {
-        setForm({ id: '', nama_penitip: '', no_ktp: '', gambar_ktp: '', saldo: '', point: '', email: '', password: '', badege: '' });
+        setForm({ id: '', nama_penitip: '', no_ktp: '', gambar_ktp: '', saldo: '', point: '', email: '', password: '', badge: '' });
         setIsEdit(false);
     };
 
@@ -212,38 +240,38 @@ const CRUDPenitip = () => {
                                 )}
 
                                 <label htmlFor="badge" className="form-label">Badge</label>
-                                    <div className="mb-3">
-                                        <input
-                                            name="badge"
-                                            className="form-control"
-                                            placeholder="Badge (opsional)"
-                                            value={form.badge}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-
-                                    <label htmlFor="saldo" className="form-label">Saldo</label>
-                                    <div className="mb-3">
-                                        <input
-                                            name="saldo"
-                                            type="number"
-                                            className="form-control"
-                                            placeholder="Saldo (default 0)"
-                                            value={form.saldo}
-                                            onChange={handleChange}
-                                        />
+                                <div className="mb-3">
+                                    <input
+                                        name="badge"
+                                        className="form-control"
+                                        placeholder="Badge (opsional)"
+                                        value={form.badge}
+                                        onChange={handleChange}
+                                    />
                                 </div>
-                                
+
+                                <label htmlFor="saldo" className="form-label">Saldo</label>
+                                <div className="mb-3">
+                                    <input
+                                        name="saldo"
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="Saldo (default 0)"
+                                        value={form.saldo}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
                                 <label htmlFor="point" className="form-label">point</label>
-                                    <div className="mb-3">
-                                        <input
-                                            name="point"
-                                            type="number"
-                                            className="form-control"
-                                            placeholder="point (default 0)"
-                                            value={form.point}
-                                            onChange={handleChange}
-                                        />
+                                <div className="mb-3">
+                                    <input
+                                        name="point"
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="point (default 0)"
+                                        value={form.point}
+                                        onChange={handleChange}
+                                    />
                                 </div>
 
 
