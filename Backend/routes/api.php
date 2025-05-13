@@ -74,6 +74,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
     Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
     Route::get('/organisasi/searchById/{id}', [OrganisasiController::class, 'searchById']);
+    Route::get('/ujiankelas', [OrganisasiController::class, 'showPermintaan']);
+
 
     // ======================= Alamat Pembeli =======================
     Route::get('/alamat', [AlamatPembeliController::class, 'index']);

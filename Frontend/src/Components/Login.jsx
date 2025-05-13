@@ -47,7 +47,7 @@ const LoginForm = () => {
               navigate("/gudang/barang-titipan"); // Ensure this route exists
               break;
             case "Organisasi":
-              navigate("/organisasi"); // Ensure this route exists
+              navigate("/"); // Ensure this route exists
               break;
             case "Owner":
               navigate("/owner"); // Ensure this route exists

@@ -51,6 +51,7 @@ import CRUDAlamat from "../pembeli/CrudAlamat.jsx";
 // ORGANISASI
 import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
 import Layout from "../navbar/layout.jsx";
+import Organisasi from "../Organisasi/Organisasi.jsx";
 
 const router = createBrowserRouter([
   {
@@ -288,6 +289,16 @@ const router = createBrowserRouter([
         <NavbarPage />
         <CRUDTransaksiRequestDonasi />
         <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/ujiankelas",
+    element: (
+      <div>
+        {/* <NavbarPage /> */}
+        <Organisasi />
+        {/* <Footer /> */}
       </div>
     ),
   },
