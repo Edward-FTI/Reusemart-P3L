@@ -41,7 +41,7 @@ const FormRegisterOrg = () => {
   return (
     <Form
       style={{ maxWidth: "600px", margin: "auto" }}
-      onSubmit={RegisterOrg} 
+      onSubmit={RegisterOrg}
       className="p-4 rounded formContainer"
     >
       <Alert variant="primary" className="mb-4 alertColor text-center">
@@ -86,7 +86,7 @@ const FormRegisterOrg = () => {
         <Form.Check type="checkbox" onChange={handleCheck} />
         <p className="ms-2 mb-0">
           Have you Already Read the{" "}
-          <a href="https://www.youtube.com/static?template=terms&gl=ID">
+          <a href="https://policies.google.com/terms?hl=en-US">
             Terms of Service
           </a>
         </p>
@@ -100,7 +100,7 @@ const FormRegisterOrg = () => {
         Register
       </Button>
 
-       <p className="text-end mt-2">
+      <p className="text-end mt-2">
         Personal Account? <Link to="/register">Click Here!</Link>
       </p>
 
