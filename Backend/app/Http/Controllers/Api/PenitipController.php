@@ -31,27 +31,71 @@ class PenitipController extends Controller
         ], 200);
     }
 
-    // Menyimpan data penitip baru
-    public function store(Request $request)
-    {
-        try {
-            $request->validate([
-                'nama_penitip' => 'required|string|max:255',
-                'no_ktp' => 'required|string|min:16|max:20',
-                'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-                'email' => 'required|email|unique:penitips,email',
-                'password' => 'required|string|min:6',
-                'badge' => 'required|string',
-                'point' => 'required|integer',
-                'saldo' => 'nullable|numeric',
-            ]);
 
-            $path_gambar = null;
-            if ($request->hasFile('gambar_ktp')) {
-                $imageName = time() . '.' . $request->file('gambar_ktp')->extension();
-                $path_gambar = 'images/penitip/' . $imageName;
-                $request->file('gambar_ktp')->move(public_path('images/penitip'), $imageName);
-            }
+    // // Menyimpan data penitip baru
+    // public function store(Request $request)
+    // {
+    //     $data = $request->all();
+
+    //     // Validasi input
+    //     $validasi = Validator::make($data, [
+    //         'nama_penitip' => 'required|string|max:255',
+    //         'no_ktp' => 'required|string|min:16|max:20',
+    //         'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    //         'email' => 'required|email|unique:penitips,email',
+    //         'password' => 'required|string|min:6',
+    //         'badge' => 'required|string',
+    //         'point' => 'required|integer',
+    //         'saldo' => 'nullable|numeric',
+    //     ]);
+
+    //     if ($validasi->fails()) {
+    //         return response(['message' => $validasi->errors()], 400);
+    //     }
+
+    //     // Menyimpan gambar KTP
+    //     if ($request->hasFile('gambar_ktp')) {
+    //         $namaGambar = time() . '.' . $request->file('gambar_ktp')->extension();
+    //         $pathGambar = 'images/penitip/' . $namaGambar;
+    //         $request->file('gambar_ktp')->move(public_path('images/penitip'), $namaGambar);
+    //         $data['gambar_ktp'] = $pathGambar;
+    //     }
+
+    //     // Enkripsi password
+    //     $data['password'] = Hash::make($data['password']);
+
+    //     // Simpan ke tabel penitip
+    //     $penitip = Penitip::create($data);
+
+    //     // Buat juga akun user
+    //     $user = new User();
+    //     $user->name = $data['nama_penitip'];
+    //     $user->email = $data['email'];
+    //     $user->password = $data['password'];
+    //     $user->role = 'Penitip';
+    //     $user->email_verified_at = now();
+    //     $user->remember_token = Str::random(60);
+    //     $user->save();
+
+    //     return response([
+    //         'message' => 'Berhasil menambahkan data penitip',
+    //         'data' => $penitip
+    //     ], 201);
+    // }
+
+  public function store(Request $request)
+{
+    try {
+        $validasi = Validator::make($request->all(), [
+            'nama_penitip' => 'required|string|max:255',
+            'no_ktp' => 'required|string|min:16|max:20|unique:penitips,no_ktp',
+            'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'email' => 'required|email|unique:penitips,email',
+            'password' => 'required|string|min:6',
+            'badge' => 'required|string',
+            'point' => 'required|integer',
+            'saldo' => 'nullable|numeric',
+        ]);
 
             $penitip = Penitip::create([
                 'nama_penitip' => $request->nama_penitip,
@@ -73,35 +117,54 @@ class PenitipController extends Controller
                 'email_verified_at' => now(),
                 'remember_token' => Str::random(60),
             ]);
-
-            return response([
-                'message' => 'Berhasil menambahkan data penitip',
-                'data' => $penitip
-            ], 201);
-        } catch (\Exception $e) {
-            return response([
-                'message' => 'Terjadi kesalahan saat menyimpan data penitip.',
-                'error' => $e->getMessage()
-            ], 500);
+        // Simpan gambar KTP
+        $pathGambar = null;
+        if ($request->hasFile('gambar_ktp')) {
+            $namaGambar = time() . '.' . $request->file('gambar_ktp')->extension();
+            $pathGambar = 'images/penitip/' . $namaGambar;
+            $request->file('gambar_ktp')->move(public_path('images/penitip'), $namaGambar);
         }
     }
 
-    public function show($id)
-    {
-        $penitip = Penitip::find($id);
+        $data = $request->all();
+        $data['gambar_ktp'] = $pathGambar;
 
-        if (!$penitip) {
-            return response([
-                'message' => 'Data penitip tidak ditemukan',
-                'data' => null
-            ], 404);
-        }
+        // Simpan ke tabel penitip
+        $penitip = Penitip::create([
+            'nama_penitip' => $data['nama_penitip'],
+            'no_ktp' => $data['no_ktp'],
+            'gambar_ktp' => $data['gambar_ktp'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'badge' => $data['badge'],
+            'point' => $data['point'],
+            'saldo' => $data['saldo'] ?? 0,
+        ]);
+
+        // Buat akun user
+        $user = new User();
+        $user->name = $data['nama_penitip'];
+        $user->email = $data['email'];
+        $user->password = Hash::make($data['password']);
+        $user->role = 'Penitip';
+        $user->email_verified_at = now();
+        $user->remember_token = Str::random(60);
+        $user->save();
 
         return response([
             'message' => 'Penitip ditemukan',
             'data' => $penitip
-        ], 200);
+
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response([
+            'message' => 'Gagal menambahkan data penitip',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
 
     public function update(Request $request, $id)
     {
@@ -115,8 +178,8 @@ class PenitipController extends Controller
 
         $request->validate([
             'nama_penitip' => 'required|string|max:255',
-            'no_ktp' => 'required|string|min:16|max:20',
-            'gambar_ktp' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'no_ktp' => 'required|string|min:16|max:20|unique:penitips,no_ktp,' .$id,
+            'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'email' => 'required|email|unique:penitips,email,' . $id,
             'password' => 'nullable|string|min:6',
             'badge' => 'required|string',
@@ -126,32 +189,38 @@ class PenitipController extends Controller
 
         // Gambar KTP
         if ($request->hasFile('gambar_ktp')) {
-            if ($penitip->gambar_ktp && File::exists(public_path($penitip->gambar_ktp))) {
-                File::delete(public_path($penitip->gambar_ktp));
-            }
-            $imageName = time() . '.' . $request->file('gambar_ktp')->extension();
-            $path_gambar = 'images/penitip/' . $imageName;
-            $request->file('gambar_ktp')->move(public_path('images/penitip'), $imageName);
-            $penitip->gambar_ktp = $path_gambar;
+            $namaGambar = time() . '.' . $request->file('gambar_ktp')->extension();
+            $pathGambar = 'images/penitip/' . $namaGambar;
+            $request->file('gambar_ktp')->move(public_path('images/penitip'), $namaGambar);
+            $data['gambar_ktp'] = $pathGambar;
         }
 
-        $penitip->nama_penitip = $request->nama_penitip;
-        $penitip->no_ktp = $request->no_ktp;
-        $penitip->email = $request->email;
-        $penitip->badge = $request->badge;
-        $penitip->point = $request->point;
-        $penitip->saldo = $request->saldo ?? $penitip->saldo;
+        $penitip->nama_penitip = $data['nama_penitip'];
+        $penitip->no_ktp = $data['no_ktp'];
+        $penitip->gambar_ktp = $data['gambar_ktp'] ?? $penitip->gambar_ktp;
+        $penitip->email = $data['email'];
+        $penitip->badge = $data['badge'];
+        $penitip->point = $data['point'];
+        $penitip->saldo = $data['saldo'] ?? $penitip->saldo;
 
         if (!empty($request->password)) {
             $penitip->password = Hash::make($request->password);
         }
+        $penitip->update($data);
 
-        $penitip->nama_penitip = $request->nama_penitip;
-        $penitip->no_ktp = $request->no_ktp;
-        $penitip->email = $request->email;
-        $penitip->badge = $request->badge;
-        $penitip->point = $request->point;
-        $penitip->saldo = $request->saldo ?? $penitip->saldo;
+        // Update juga data user
+        $user = User::where('email', $penitip->email)->first();
+        if ($user) {
+            $user->name = $penitip->nama_penitip;
+            $user->email = $penitip->email;
+            if (!empty($data['password'])) {
+                $user->password = Hash::make($data['password']);
+            }
+            $user->role = 'Penitip';
+            $user->email_verified_at = now();
+            $user->remember_token = Str::random(60);
+            $user->save();
+        }
 
         return response([
             'message' => 'Berhasil memperbarui data penitip',

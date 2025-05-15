@@ -1,6 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "sonner";
 
+//Penilaian
+import ResetPassword from "../Components/resetPassword";
+
+
+
 import NavbarPage from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import Dashboard from "../Components/Dashboard";
@@ -30,6 +35,10 @@ import ShowProfileCustomer from "../Customers/ShowProfileCustomer";
 import ShowHistoryCustomer from "../Customers/ShowHistoryCustomer";
 import CRUDTransaksiPenjualanCustomer from "../Customers/CRUDTransaksiPenjualanCustomer";
 
+//OWNER
+import Owner from "../Owner/Owner.jsx";
+
+
 // PENITIP
 import ShowProfilePenitip from "../Penitip/ShowProfilePenitip.jsx";
 import ShowHistoryPenitip from "../penitip/ShowHistoryPenitip";
@@ -42,6 +51,7 @@ import CRUDAlamat from "../pembeli/CrudAlamat.jsx";
 // ORGANISASI
 import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
 import Layout from "../navbar/layout.jsx";
+import Organisasi from "../Organisasi/Organisasi.jsx";
 
 // Owner
 import Owner from "../Owner/Owner.jsx";
@@ -397,9 +407,9 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <div>
-        <NavbarPage />
+        {/* <NavbarPage /> */}
         <Dashboard />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
@@ -423,6 +433,22 @@ const router = createBrowserRouter([
     path: "/ambil-barang",
     element: <AmbilBarang />,
   },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
+  },
+
+  // OWNER
+  {
+    path: "/owner",
+    element: (
+      <div>
+        <NavbarPage />
+        <Owner />
+        <Footer />
+      </div>
+    ),
+  },
 
   // CUSTOMER SERVICE
   {
@@ -431,7 +457,7 @@ const router = createBrowserRouter([
       <div>
         <NavbarCustomer_Service />
         <CRUDPenitip />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
@@ -441,7 +467,7 @@ const router = createBrowserRouter([
       <div>
         <NavbarCustomer_Service />
         <CRUDDiskusi />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
@@ -510,7 +536,7 @@ const router = createBrowserRouter([
     path: "/customer/profile",
     element: (
       <div>
-        <NavbarPage />
+        <NavbarCustomer />
         <ShowProfileCustomer />
         <Footer />
       </div>
@@ -608,6 +634,16 @@ const router = createBrowserRouter([
         <NavbarPage />
         <CRUDTransaksiRequestDonasi />
         <Footer />
+      </div>
+    ),
+  },
+  {
+    path: "/ujiankelas",
+    element: (
+      <div>
+        {/* <NavbarPage /> */}
+        <Organisasi />
+        {/* <Footer /> */}
       </div>
     ),
   },

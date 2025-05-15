@@ -82,7 +82,7 @@ const FormRegister = () => {
         <Form.Check type="checkbox" onChange={handleCheck} />
         <p className="ms-2 mb-0">
           Have you Already Read the{" "}
-          <a href="https://www.youtube.com/static?template=terms&gl=ID">
+          <a href="https://policies.google.com/terms?hl=en-US">
             Terms of Service
           </a>
         </p>

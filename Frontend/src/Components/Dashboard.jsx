@@ -1,6 +1,9 @@
 import React from "react";
-import "./DashboardCss.css";
-import products from "./gambar/laptop";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap-icons/font/bootstrap-icons.css";
+import Login from "./Login";
+import { Link } from "react-router-dom";
 import logo from "../assets/Logo/logo.png";
 import hp from "./gambar/hp";
 import sepatu from "./gambar/sepatu";
@@ -30,10 +33,12 @@ const Dashboard = () => {
                             </form>
                         </div>
 
-                        <div className="d-flex align-items-center">
+                        <div class="d-flex align-items-center">
+                            <Link to="/login">
                             <button className="btn btn-outline-success me-2">Masuk</button>
-                            <button className="btn btn-success">Daftar</button>
-                            <i className="bi bi-cart3 ms-3 fs-4"></i>
+                            </Link>
+                            <button class="btn btn-success">Daftar</button>
+                            <i class="bi bi-cart3 ms-3 fs-4"></i>
                         </div>
                     </div>
 

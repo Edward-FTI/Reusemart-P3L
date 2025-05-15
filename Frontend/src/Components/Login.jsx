@@ -32,18 +32,30 @@ const LoginForm = () => {
         if (user.role) {
           switch (user.role) {
             case "Pembeli":
-              navigate("/customer"); // Ensure this route exists
+              navigate("/customer/profile"); // Ensure this route exists
               break;
             case "Admin":
-              navigate("/admin"); // Ensure this route exists
+              navigate("/admin/pegawai"); // Ensure this route exists
               break;
             case "Customer Service":
-              navigate("/customerService"); // Ensure this route exists
+              navigate("/customer-service/penitip"); // Ensure this route exists
               break;
             case "Penitip":
-              navigate("/penitip"); // Ensure this route exists
+              navigate("/penitip/profile"); // Ensure this route exists
               break;
             case "Pegawai Gudang":
+              navigate("/gudang/barang-titipan"); // Ensure this route exists
+              break;
+            case "Organisasi":
+              navigate("/"); // Ensure this route exists
+              break;
+            case "Owner":
+              navigate("/"); // Ensure this route exists
+              break;
+            case "Kurir":
+              navigate("/"); // Ensure this route exists
+              break;
+            case "Hunter":
               navigate("/"); // Ensure this route exists
               break;
             default:
