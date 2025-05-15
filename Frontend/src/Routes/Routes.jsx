@@ -255,4 +255,13 @@ const router = createBrowserRouter([
   },
 ]);
 
-export default router;
+const AppRouter = () => {
+  return (
+    <>
+      <Toaster position="top-center" richColors />
+      <RouterProvider router={router} />
+    </>
+  );
+};
+
+export default AppRouter;
