@@ -29,12 +29,7 @@ class Pembeli extends Authenticatable
         'remember_token',
     ];
 
-    public function alamatPembelis()
-    {
-        return $this->hasMany(AlamatPembeli::class, 'id_pembeli');
-    }
-
-    public function alamatPembeli(): BelongsTo {
-        return $this->belongsTo(AlamatPembeli::class, 'id_Pembeli');
+    public function beliBarang(): BelongsTo {
+        return $this->belongsTo(Barang::class);
     }
 }

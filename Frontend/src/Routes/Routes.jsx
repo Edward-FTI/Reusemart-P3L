@@ -53,7 +53,352 @@ import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi
 import Layout from "../navbar/layout.jsx";
 import Organisasi from "../Organisasi/Organisasi.jsx";
 
+// Owner
+import Owner from "../Owner/Owner.jsx";
+
+//NOTIFIKASI
+// import ShowPenjualanBulanan from "../Owner/ShowPenjualanBulanan";
+// import ShowKomisiBulanaPerProduk from "../Owner/ShowKomisiBulananPerProduk";
+// import ShowStokGudang from "../Owner/ShowStokGudang";
+// import ShowPenjualanPerKategoriBarang from "../Owner/ShowPenjualanPerKategoriBarang";
+// import ShowMasaPenitipHabis from "../Owner/ShowMasaPenitipHabis";
+// import ShowDonasiBarang from "../Owner/ShowDonasiBarang";
+// import ShowRequestDonasi from "../Owner/ShowRequestDonasi";
+// import ShowTransaksiPenitip from "../Owner/ShowTransaksiPenitip";
+
 const router = createBrowserRouter([
+    {
+      path: "*",
+      element: <div>Routes Not Found!</div>,
+    },
+    {
+      path: "/",
+      element: (
+        <div>
+          {/* <NavbarPage /> */}
+          <Dashboard />
+          {/* <CRUDBarangTitipan/> */}
+          {/* <Footer /> */}
+        </div>
+      ),
+    },
+    {
+      path: "/login",
+      element: <Login />,
+    },
+    {
+      path: "/register",
+      element: <Register />,
+    },
+    {
+      path: "/forget-password",
+      element: <ForgetPassword />,
+    },
+    {
+      path: "/ambil-barang",
+      element: <AmbilBarang />,
+    },
+    {
+      path: "/admin",
+      element: <CRUDJabatan />
+    },
+  
+    // CUSTOMER SERVICE
+    {
+      path: "/customer-service/penitip",
+      element: (
+        <div>
+          {/* <ProtectedRoute> */}
+          <NavbarCustomer_Service />
+           <CRUDPenitip />
+          {/* <Footer /> */}
+        {/* </ProtectedRoute> */}
+        </div>
+      ),
+    },
+    {
+      path: "/customer-service/diskusi",
+      element: (
+        <div>
+          {/* <ProtectedRoute> */}
+          <CRUDDiskusi />
+          <Footer />  
+          {/* </ProtectedRoute> */}
+        </div>
+      ),
+    },
+  
+    // ADMIN
+    {
+      path: "/admin/jabatan",
+      element: (
+          <div>
+           {/* <ProtectedRoute> */}
+          <CRUDJabatan />
+          <Footer />
+         {/* </ProtectedRoute> */}
+          </div>
+        
+      ),
+    },
+    {
+      path: "/admin/pegawai",
+      element: (
+        <div>
+            {/* <ProtectedRoute> */}
+          <Layout/>
+          {/* </ProtectedRoute> */}
+        </div>
+      ),
+    },
+    {
+      path: "/admin/mercandise",
+      element: (
+        <div>
+          <CRUDMercandise />
+          <Footer />
+        </div>
+      ),
+    },
+    {
+      path: "/admin/organisasi",
+      element: (
+        <div>
+          <CRUDOrganisasi />
+          <Footer />
+        </div>
+      ),
+    },
+    // {
+    //   path: "/admin/customer",
+    //   element: (
+    //     <div>
+    //       <ShowAdmin />
+    //       <Footer />
+    //     </div>
+    //   ),
+    // },
+  
+    // PEGAWAI GUDANG
+    {
+      path: "/gudang/barang-titipan",
+      element: (
+        <div>
+          {/* <NavbarPage /> */}
+          <CRUDBarangTitipan />
+          {/* <Footer /> */}
+        </div>
+      ),
+    },
+    {
+      path: "/gudang/pengiriman",
+      element: (
+        <div>
+          <NavbarPage />
+          <CRUDPengiriman />
+          <Footer />
+        </div>
+      ),
+    },
+  
+    // CUSTOMER
+    {
+      path: "/customer/profile",
+      element: (
+        <div>
+          {/* <NavbarPage /> */}
+          <NavbarCustomer />
+          <ShowProfileCustomer />
+          {/* <Footer /> */}
+        </div>
+      ),
+    },
+    {
+      path: "/customer/history",
+      element: (
+        <div>
+          <NavbarPage />
+          <ShowHistoryCustomer />
+          <Footer />
+        </div>
+      ),
+    },
+    {
+      path: "/customer/diskusi",
+      element: (
+        <div>
+          <NavbarPage />
+          <CRUDDiskusi />
+          <Footer />
+        </div>
+      ),
+    },
+    {
+      path: "/customer/transaksi",
+      element: (
+        <div>
+          <NavbarPage />
+          <CRUDTransaksiPenjualanCustomer />
+          <Footer />
+        </div>
+      ),
+    },
+    
+  // Owner
+  {
+    path: "owner/owner",
+    element: (
+      <div>
+        <Owner />
+      </div>
+    )
+  },
+  
+    // PENITIP
+    {
+      path: "/penitip/profile",
+      element: (
+        <div>
+          <NavbarPage />
+          <ShowProfilePenitip />
+          <Footer />
+        </div>
+      ),
+    },
+    {
+      path: "/penitip/history",
+      element: (
+        <div>
+          <NavbarPage />
+          <ShowHistoryPenitip />
+          <Footer />
+        </div>
+      ),
+    },
+    {
+      path: "/penitip/penitipan",
+      element: (
+        <div>
+          <NavbarPage />
+          <CRUDPenitipan />
+          <Footer />
+        </div>
+      ),
+    },
+    {
+      path: "/penitip/pengambilan",
+      element: (
+        <div>
+          <NavbarPage />
+          <PengambilanBarangKembali />
+          <Footer />
+        </div>
+      ),
+    },
+  
+    // ORGANISASI
+    {
+      path: "/organisasi/input",
+      element: (
+        <div>
+          <NavbarPage />
+          <InputDataOrganisasi />
+          <Footer />
+        </div>
+      ),
+    },
+    {
+      path: "/organisasi/transaksi-request-donasi",
+      element: (
+        <div>
+          <NavbarPage />
+          <CRUDTransaksiRequestDonasi />
+          <Footer />
+        </div>
+      ),
+    },
+  
+    // NOTIFIKASI
+//     {
+//       path: "/owner/penjualan-bulanan",
+//       element: (
+//         <div>
+//           <NavbarPage />
+//           <ShowPenjualanBulanan />
+//           <Footer />
+//         </div>
+//       ),
+//     },
+//     {
+//       path: "/owner/komisi-produk",
+//       element: (
+//         <div>
+//           <NavbarPage />
+//           <ShowKomisiBulanaPerProduk />
+//           <Footer />
+//         </div>
+//       ),
+//     },
+//     {
+//       path: "/owner/stok-gudang",
+//       element: (
+//         <div>
+//           <NavbarPage />
+//           <ShowStokGudang />
+//           <Footer />
+//         </div>
+//       ),
+//     },
+//     {
+//       path: "/owner/penjualan-kategori",
+//       element: (
+//         <div>
+//           <NavbarPage />
+//           <ShowPenjualanPerKategoriBarang />
+//           <Footer />
+//         </div>
+//       ),
+//     },
+//     {
+//       path: "/owner/masa-habis",
+//       element: (
+//         <div>
+//           <NavbarPage />
+//           <ShowMasaPenitipHabis />
+//           <Footer />
+//         </div>
+//       ),
+//     },
+//     {
+//       path: "/owner/donasi-barang",
+//       element: (
+//         <div>
+//           <NavbarPage />
+//           <ShowDonasiBarang />
+//           <Footer />
+//         </div>
+//       ),
+//     },
+//     {
+//       path: "/owner/request-donasi",
+//       element: (
+//         <div>
+//           <NavbarPage />
+//           <ShowRequestDonasi />
+//           <Footer />
+//         </div>
+//       ),
+//     },
+//     {
+//       path: "/owner/transaksi-penitip",
+//       element: (
+//         <div>
+//           <NavbarPage />
+//           <ShowTransaksiPenitip />
+//           <Footer />
+//         </div>
+//       ),
+//     },
   {
     path: "*",
     element: <div>Routes Not Found!</div>,
