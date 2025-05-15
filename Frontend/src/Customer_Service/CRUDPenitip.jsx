@@ -10,7 +10,17 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const CRUDPenitip = () => {
     const [PenitipList, setPenitipList] = useState([]);
-    const [form, setForm] = useState({ id: '', nama_penitip: '', no_ktp: '', gambar_ktp: '', saldo: '', point: '', email: '', password: '', badge: '' });
+    const [form, setForm] = useState({
+        id: '',
+        nama_penitip: '',
+        no_ktp: '',
+        gambar_ktp: '',
+        saldo: '',
+        point: '',
+        email: '',
+        password: '',
+        badge: ''
+    });
     const [isEdit, setIsEdit] = useState(false);
 
     const fetchPenitip = async () => {
@@ -27,7 +37,12 @@ const CRUDPenitip = () => {
     }, []);
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
+    };
+
+    const handleFileChange = (e) => {
+        setForm({ ...form, gambar_ktp: e.target.files[0] });
     };
 
     // const handleSubmit = async (e) => {
@@ -130,7 +145,15 @@ const CRUDPenitip = () => {
                                 <td>{index + 1}</td>
                                 <td>{p.nama_penitip}</td>
                                 <td>{p.no_ktp}</td>
-                                <td>{p.gambar_ktp ? <img src={p.gambar_ktp} alt="Gambar KTP" style={{ width: '50px', height: '50px' }} /> : 'Tidak ada gambar'}</td>
+                                <td>
+                                    {p.gambar_ktp ? (
+                                        <img
+                                            src={p.gambar_ktp}
+                                            alt="Gambar KTP"
+                                            style={{ width: '50px', height: '50px' }}
+                                        />
+                                    ) : 'Tidak ada gambar'}
+                                </td>
                                 <td>{p.saldo}</td>
                                 <td>{p.point}</td>
                                 <td>{p.email}</td>
@@ -163,7 +186,7 @@ const CRUDPenitip = () => {
                 </tbody>
             </table>
 
-            {/* Modal */}
+            {/* Modal Form */}
             <div className="modal fade" id="formModal" tabIndex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -174,29 +197,14 @@ const CRUDPenitip = () => {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <form onSubmit={handleSubmit}>
-                                <label htmlFor="nama_penitip" className="form-label">Nama Penitip</label>
+                            <form onSubmit={handleSubmit} encType="multipart/form-data">
                                 <div className="mb-3">
-                                    <input
-                                        name="nama_penitip"
-                                        className="form-control"
-                                        placeholder="Nama"
-                                        value={form.nama_penitip}
-                                        onChange={handleChange}
-                                        required
-                                    />
+                                    <label className="form-label">Nama Penitip</label>
+                                    <input name="nama_penitip" className="form-control" value={form.nama_penitip} onChange={handleChange} required />
                                 </div>
-
-                                <label htmlFor="no_ktp" className="form-label">No KTP</label>
                                 <div className="mb-3">
-                                    <input
-                                        name="no_ktp"
-                                        className="form-control"
-                                        placeholder="No KTP"
-                                        value={form.no_ktp}
-                                        onChange={handleChange}
-                                        required
-                                    />
+                                    <label className="form-label">No KTP</label>
+                                    <input name="no_ktp" className="form-control" value={form.no_ktp} onChange={handleChange} required />
                                 </div>
 
                                 <label htmlFor="gambar_ktp" className="form-label">Gambar KTP</label>
@@ -210,18 +218,9 @@ const CRUDPenitip = () => {
                                         required={!isEdit}
                                     />
                                 </div>
-
-
-                                <label htmlFor="email" className="form-label">Email</label>
                                 <div className="mb-3">
-                                    <input
-                                        name="email"
-                                        className="form-control"
-                                        placeholder="Email"
-                                        value={form.email}
-                                        onChange={handleChange}
-                                        required
-                                    />
+                                    <label className="form-label">Email</label>
+                                    <input name="email" className="form-control" value={form.email} onChange={handleChange} required />
                                 </div>
 
                                 {!isEdit && (
@@ -273,11 +272,16 @@ const CRUDPenitip = () => {
                                         onChange={handleChange}
                                     />
                                 </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Saldo</label>
+                                    <input name="saldo" type="number" className="form-control" value={form.saldo} onChange={handleChange} />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Point</label>
+                                    <input name="point" type="number" className="form-control" value={form.point} onChange={handleChange} />
+                                </div>
 
-
-                                <button type="submit" className="btn btn-primary">
-                                    {isEdit ? 'Update' : 'Tambah'}
-                                </button>
+                                <button type="submit" className="btn btn-primary">{isEdit ? 'Update' : 'Tambah'}</button>
                             </form>
                         </div>
                     </div>

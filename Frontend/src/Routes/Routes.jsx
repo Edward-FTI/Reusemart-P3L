@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "sonner";
-// import ProtectedRoute from "./ProtectedRoute.jsx";
 
 import NavbarPage from "../Components/Navbar";
 import Footer from "../Components/Footer";
@@ -8,47 +7,39 @@ import Dashboard from "../Components/Dashboard";
 import Login from "../Components/Login";
 import RegisterPage from "../Components/pageReg/regisPage";
 import RegisterOrgPage from "../Components/pageReg/regisOrgPage";
-import Register from "../Components/register/register.jsx"
 import ForgetPassword from "../Components/ForgetPassword";
 import AmbilBarang from "../Components/AmbilBarang";
 
-//HOME ROLE
-// import Admin from "../admin/CRUDJabatan";
-
-//CUSTOMER SERVICE
+// CUSTOMER SERVICE
 import NavbarCustomer_Service from "../navbar/NavbarCustomer_Service";
 import CRUDPenitip from "../Customer_Service/CRUDPenitip";
 import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
 
-//ADMIN
+// ADMIN
 import CRUDJabatan from "../admin/CRUDJabatan";
-// import CRUDPegawai from "../admin/CRUDPegawai";
 import CRUDMercandise from "../admin/CRUDMercandise";
 import CRUDOrganisasi from "../Admin/CRUDOrganisasi";
-// import ShowAdmin from "../admin/DaftarCustomer";
-// import TopNavBarAdmin from "../admin/TopNavBarCS";
 
-//PEGAWAI GUDANG
+// PEGAWAI GUDANG
 import CRUDBarangTitipan from "../Pegawai_Gudang/CRUDBarangTitipan";
 import CRUDPengiriman from "../Pegawai_Gudang/CRUDPengiriman";
 
-//Customer
+// CUSTOMER
 import NavbarCustomer from "../navbar/NavbarCustomer";
 import ShowProfileCustomer from "../Customers/ShowProfileCustomer";
 import ShowHistoryCustomer from "../Customers/ShowHistoryCustomer";
-import CRUDDiskusiCustomer from "../Customers/CRUDDiskusiCustomer";
 import CRUDTransaksiPenjualanCustomer from "../Customers/CRUDTransaksiPenjualanCustomer";
-// import Rating from "../customer/Rating";
-// import PenukaranReward from "../customer/PenukaranReward";
 
-//Penitip
-import ShowProfilePenitip from "../penitip/ShowProfilePenitip";
+// PENITIP
+import ShowProfilePenitip from "../Penitip/ShowProfilePenitip.jsx";
 import ShowHistoryPenitip from "../penitip/ShowHistoryPenitip";
 import CRUDPenitipan from "../penitip/CRUDPenitipan";
 import PengambilanBarangKembali from "../penitip/PengambilanBarangKembali";
 
-//Organisasi
-import InputDataOrganisasi from "../organisasi/InputDataOrganisasi";
+//ALAMAT
+import CRUDAlamat from "../pembeli/CrudAlamat.jsx";
+
+// ORGANISASI
 import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
 import Layout from "../navbar/layout.jsx";
 
@@ -418,8 +409,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: 
-    <RegisterPage />,
+    element: <RegisterPage />,
   },
   {
     path: "/register-org",
@@ -439,6 +429,7 @@ const router = createBrowserRouter([
     path: "/customer-service/penitip",
     element: (
       <div>
+        <NavbarCustomer_Service />
         <CRUDPenitip />
         <Footer />
       </div>
@@ -448,6 +439,7 @@ const router = createBrowserRouter([
     path: "/customer-service/diskusi",
     element: (
       <div>
+        <NavbarCustomer_Service />
         <CRUDDiskusi />
         <Footer />
       </div>
@@ -469,8 +461,6 @@ const router = createBrowserRouter([
     element: (
       <div>
         <Layout />
-        {/* <CRUDPegawai /> */}
-        {/* <Footer /> */}
       </div>
     ),
   },
@@ -557,14 +547,25 @@ const router = createBrowserRouter([
     ),
   },
 
+  //ALAMAT
+  {
+    path: "/pembeli/alamat",
+    element: (
+      <div>
+        {/* <NavbarPage /> */}
+        <CRUDAlamat />
+      </div>
+    ),
+  },
+
   // PENITIP
   {
     path: "/penitip/profile",
     element: (
       <div>
-        <NavbarPage />
+        {/* <NavbarPage /> */}
         <ShowProfilePenitip />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
@@ -601,16 +602,6 @@ const router = createBrowserRouter([
 
   // ORGANISASI
   {
-    path: "/organisasi/input",
-    element: (
-      <div>
-        <NavbarPage />
-        <InputDataOrganisasi />
-        <Footer />
-      </div>
-    ),
-  },
-  {
     path: "/organisasi/transaksi-request-donasi",
     element: (
       <div>
@@ -621,7 +612,6 @@ const router = createBrowserRouter([
     ),
   },
 ]);
-
 
 const AppRouter = () => {
   return (

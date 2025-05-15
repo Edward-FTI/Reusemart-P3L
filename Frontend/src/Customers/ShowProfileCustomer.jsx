@@ -1,4 +1,10 @@
 import React from "react";
+import {
+  GetAllPenitip,
+  GetPenitipByNama,
+  GetPenitipById,
+} from "../Api/apiPenitip";
+
 import { Row, Col, Button, Card } from 'react-bootstrap';
 
 function ShowProfileCustomer() {

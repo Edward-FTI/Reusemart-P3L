@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 
 class PenitipController extends Controller
 {
+    // Menampilkan semua data penitip
     public function index()
     {
         $penitips = Penitip::all();
@@ -30,6 +31,7 @@ class PenitipController extends Controller
         ], 200);
     }
 
+    // Menyimpan data penitip baru
     public function store(Request $request)
     {
         try {
@@ -144,10 +146,15 @@ class PenitipController extends Controller
             $penitip->password = Hash::make($request->password);
         }
 
-        $penitip->save();
+        $penitip->nama_penitip = $request->nama_penitip;
+        $penitip->no_ktp = $request->no_ktp;
+        $penitip->email = $request->email;
+        $penitip->badge = $request->badge;
+        $penitip->point = $request->point;
+        $penitip->saldo = $request->saldo ?? $penitip->saldo;
 
         return response([
-            'message' => 'Berhasil update data penitip',
+            'message' => 'Berhasil memperbarui data penitip',
             'data' => $penitip
         ], 200);
     }
@@ -198,6 +205,7 @@ class PenitipController extends Controller
         ], 200);
     }
 
+    // Cari penitip berdasarkan ID
     public function searchById($id)
     {
         return $this->show($id);

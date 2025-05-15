@@ -29,6 +29,8 @@ class DatabaseSeeder extends Seeder
             OrganisasiSeeder::class,
             PegawaiSeeder::class,
             PembeliSeeder::class,
+            PengirimanSeeder::class,
+            Transaksi_PenjualanSeeder::class,
             // Tambahkan seeder lainnya jika ada
         ]);
     }
