@@ -63,7 +63,7 @@ function ShowProfileCustomer() {
           <h3>Profil Pembeli</h3>
           <Card>
             {/* Placeholder untuk gambar KTP */}
-            <Card.Img variant="top" src="assets/default_ktp.png" alt="KTP" />
+            <Card.Img variant="top" src="assets/default_ktp.png" alt="Profile" />
             <Card.Body>
               <Card.Title>{pembeli.nama}</Card.Title>
               <Card.Text>{pembeli.deskripsi}</Card.Text>

@@ -5,6 +5,14 @@ import { useNavigate } from 'react-router-dom';
 const NavbarCustomer_Service = () => {
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    // Clear session storage or any other logout logic
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    navigate('/'); // Redirect to login page
+  }
+  
+
   return (
     <>
       {/* Navbar */}
@@ -23,13 +31,13 @@ const NavbarCustomer_Service = () => {
           />
         </button>
 
-        <button style={styles.logoutButton} onClick={() => navigate('/customer/profile')}>
+        <button style={styles.logoutButton} onClick={() => navigate('/')}>
           <img
             src="https://img.icons8.com/?size=100&id=24337&format=png&color=FFFFFF"
             alt="logout"
             style={styles.icon}
           />
-          <span style={styles.logoutText}>Profile</span>
+          <span style={styles.logoutText}>Logout</span>
         </button>
       </div>
 
