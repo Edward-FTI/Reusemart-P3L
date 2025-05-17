@@ -2,35 +2,90 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\TransaksiDonasi;
+use App\Models\Organisasi;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class TransaksiDonasiController extends Controller
 {
+    private function getOrganisasiId()
+    {
+        $userEmail = Auth::user()->email;
+        $organisasi = Organisasi::where('email', $userEmail)->first();
+
+        if (!$organisasi) {
+            return null;
+        }
+
+        return $organisasi->id;
+    }
+
     public function index()
     {
-        $donasi = TransaksiDonasi::with('organisasi')->get();
+        try {
+            $organisasiId = $this->getOrganisasiId();
 
-        if(count($donasi) > 0) {
-            return response([
-                'message' => 'Berhasil mengambil data transaksi donasi',
-                'data' => $donasi
-            ], 200);
+            if (!$organisasiId) {
+                return response()->json(['message' => 'Data organisasi tidak ditemukan untuk user yang login'], 404);
+            }
+
+            $transaksiDonasi = TransaksiDonasi::where('id_organisasi', $organisasiId)->get();
+
+            return response()->json([
+                'message' => 'Data transaksi donasi berhasil diambil',
+                'data' => $transaksiDonasi
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal mengambil data transaksi donasi',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response([
-            'message' => 'Data transaksi donasi kosong',
-            'data' => []
-        ], 400);
     }
 
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'status' => 'required|string',
+            'nama_penitip' => 'required|string',
+            'jenis_barang' => 'required|string',
+            'jumlah_barang' => 'required|integer',
+            'tgl_transaksi' => 'required|date',
+        ]);
+
+        try {
+            $organisasiId = $this->getOrganisasiId();
+
+            if (!$organisasiId) {
+                return response()->json(['message' => 'Data organisasi tidak ditemukan untuk user yang login'], 404);
+            }
+
+            $transaksiDonasi = TransaksiDonasi::create([
+                'id_organisasi' => $organisasiId,
+                'status' => $request->status,
+                'nama_penitip' => $request->nama_penitip,
+                'jenis_barang' => $request->jenis_barang,
+                'jumlah_barang' => $request->jumlah_barang,
+                'tgl_transaksi' => $request->tgl_transaksi,
+            ]);
+
+            return response()->json([
+                'message' => 'Data transaksi donasi berhasil disimpan',
+                'data' => $transaksiDonasi
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menyimpan data transaksi donasi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -38,7 +93,29 @@ class TransaksiDonasiController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $organisasiId = $this->getOrganisasiId();
+
+            if (!$organisasiId) {
+                return response()->json(['message' => 'Data organisasi tidak ditemukan untuk user yang login'], 404);
+            }
+
+            $transaksiDonasi = TransaksiDonasi::where('id_organisasi', $organisasiId)->where('id', $id)->first();
+
+            if (!$transaksiDonasi) {
+                return response()->json(['message' => 'Data transaksi donasi tidak ditemukan'], 404);
+            }
+
+            return response()->json([
+                'message' => 'Data transaksi donasi berhasil diambil',
+                'data' => $transaksiDonasi
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal mengambil data transaksi donasi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -46,36 +123,39 @@ class TransaksiDonasiController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $donasi = TransaksiDonasi::find($id);
-        if(is_null($donasi)) {
-            return response([
-                'message' => 'Data tidak ditemukan',
-                'data' => null
-            ], 404);
-        }
-        $updateDonasi = $request->all();
-        $validate = Validator::make($updateDonasi, [
-            'status',
+        $request->validate([
+            'status' => 'required|string',
+            'nama_penitip' => 'required|string',
+            'jenis_barang' => 'required|string',
+            'jumlah_barang' => 'required|integer',
+            'tgl_transaksi' => 'required|date',
         ]);
-        
-        if($validate->fails()) {
-            return response([
-                'message' => $validate->errors()
-            ], 400);
-        }
-        $donasi->status = $updateDonasi['status'];
 
-        if($donasi->update($updateDonasi)) {
-            return response([
-                'message' => 'Berhasil update transaksi donasi',
-                'data' => $donasi
-            ], 200);
-        }
+        try {
+            $organisasiId = $this->getOrganisasiId();
 
-        return response([
-            'message' => 'Gagal update data transaksi donasi',
-            'data' => null
-        ], 400);
+            if (!$organisasiId) {
+                return response()->json(['message' => 'Data organisasi tidak ditemukan untuk user yang login'], 404);
+            }
+
+            $transaksiDonasi = TransaksiDonasi::where('id_organisasi', $organisasiId)->where('id', $id)->first();
+
+            if (!$transaksiDonasi) {
+                return response()->json(['message' => 'Data transaksi donasi tidak ditemukan'], 404);
+            }
+
+            $transaksiDonasi->update($request->all());
+
+            return response()->json([
+                'message' => 'Data transaksi donasi berhasil diperbarui',
+                'data' => $transaksiDonasi
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal memperbarui data transaksi donasi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -83,6 +163,29 @@ class TransaksiDonasiController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $organisasiId = $this->getOrganisasiId();
+
+            if (!$organisasiId) {
+                return response()->json(['message' => 'Data organisasi tidak ditemukan untuk user yang login'], 404);
+            }
+
+            $transaksiDonasi = TransaksiDonasi::where('id_organisasi', $organisasiId)->where('id', $id)->first();
+
+            if (!$transaksiDonasi) {
+                return response()->json(['message' => 'Data transaksi donasi tidak ditemukan'], 404);
+            }
+
+            $transaksiDonasi->delete();
+
+            return response()->json([
+                'message' => 'Data transaksi donasi berhasil dihapus'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menghapus data transaksi donasi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

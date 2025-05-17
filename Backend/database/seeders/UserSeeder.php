@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
@@ -63,6 +64,13 @@ class UserSeeder extends Seeder
                 'role' => 'Organisasi',
                 'password' => 'organisasi123',
             ],
+            // password: organisasi123
+            [
+                'name' => 'Organisasi A',
+                'email' => 'organisasi_a@example.com',
+                'role' => 'Organisasi',
+                'password' => 'organisasi123',
+            ],
             // password: owner123
             [
                 'name' => 'Owner User',
@@ -86,6 +94,7 @@ class UserSeeder extends Seeder
             ],
         ];
 
+        // Insert predefined users
         foreach ($users as $user) {
             User::create([
                 'name' => $user['name'],
@@ -96,6 +105,25 @@ class UserSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+        }
+
+        // Ambil data dari tabel organisasis untuk membuat akun user-nya juga
+        $organisasiList = DB::table('organisasis')->get();
+
+        foreach ($organisasiList as $org) {
+            // Cek apakah sudah ada user dengan email tersebut untuk menghindari duplikasi
+            $exists = User::where('email', $org->email)->exists();
+            if (!$exists) {
+                User::create([
+                    'name' => $org->nama,
+                    'email' => $org->email,
+                    'role' => 'Organisasi',
+                    'password' => Hash::make('password123'), // bisa diganti sesuai kebutuhan
+                    'email_verified_at' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
     }
 }
