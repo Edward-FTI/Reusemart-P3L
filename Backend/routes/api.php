@@ -55,7 +55,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/kategori', [KategoriBarangController::class, 'index']);
 
     // ======================= Penitip =======================
-    Route::get('/penitip', [PenitipController::class, 'index']);
+    // Route::get('/penitip', [PenitipController::class, 'index']);
+    
+    // Route::middleware('auth')->get('/penitip', [PenitipController::class, 'index']);
     Route::post('/penitip', [PenitipController::class, 'store']);
     Route::get('/penitip/{id}', [PenitipController::class, 'show']);
     Route::put('/penitip/{id}', [PenitipController::class, 'update']);
@@ -91,8 +93,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pembeli/search/{name}', [PembeliController::class, 'searchByName']);
     Route::get('/pembeli/searchByEmail/{email}', [PembeliController::class, 'searchByEmail']);
     Route::get('/pembeli/{id}', [PembeliController::class, 'searchById']);
-// Ganti route-nya menjadi tanpa parameter ID
-Route::post('/pembeli/reset-password', [PembeliController::class, 'resetPassword']);
+    // Ganti route-nya menjadi tanpa parameter ID
+    Route::post('/pembeli/reset-password', [PembeliController::class, 'resetPassword']);
 
 
     //Detail Pengiriman
@@ -112,10 +114,9 @@ Route::post('/pembeli/reset-password', [PembeliController::class, 'resetPassword
     Route::get('/transaksi-penjualan/getPembeli', [TransaksiPenjualanController::class, 'getPembeli']);
     Route::get('/transaksi-penjualan/getDetailPengiriman', [TransaksiPenjualanController::class, 'getDetailPengiriman']);
     Route::get('/transaksi-penjualan/searchById/{id}', [TransaksiPenjualanController::class, 'searchById']);
-
 });
 
-
+Route::get('/penitip', [PenitipController::class, 'index']);
 
 
 //Organisasi

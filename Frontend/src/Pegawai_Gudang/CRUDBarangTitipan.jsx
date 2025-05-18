@@ -13,6 +13,11 @@ const CRUDBarangTitipan = () => {
     const [barangList, setBarangList] = useState([]);
     const [kategoriList, setKategoriList] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
+
+    const [penitipSearch, setPenitipSearch] = useState("");
+    const [penitipOptions, setPenitipOptions] = useState([]);
+
+
     const [form, setForm] = useState({
         id: '',
         id_penitip: '',
@@ -204,17 +209,42 @@ const CRUDBarangTitipan = () => {
 
                         <div className="modal-body">
                             <form onSubmit={handleSubmit}>
-                                <label htmlFor="id_penitip" className="form-label">ID Penitip</label>
+                                {/* Ganti input id_penitip menjadi search/select */}
+                                <label htmlFor="id_penitip" className="form-label">Penitip</label>
                                 <div className="mb-3">
                                     <input
-                                        type='number'
-                                        name="id_penitip"
-                                        className="form-control"
-                                        placeholder="ID Penitip"
-                                        value={form.id_penitip}
-                                        onChange={handleChange}
-                                        required
+                                        type="text"
+                                        className="form-control mb-2"
+                                        placeholder="Cari nama penitip..."
+                                        value={form.nama_penitip || ""}
+                                        onChange={async (e) => {
+                                            // Implementasi pencarian penitip
+                                            // Misal: panggil API pencarian penitip berdasarkan nama
+                                            // dan tampilkan hasilnya sebagai dropdown/autocomplete
+                                            // Untuk contoh sederhana, hanya update nama_penitip di form
+                                            setForm({
+                                                ...form,
+                                                nama_penitip: e.target.value,
+                                                id_penitip: "" // reset id saat nama berubah
+                                            });
+                                        }}
                                     />
+                                    {/* Dropdown hasil pencarian penitip */}
+                                    {/* Anda perlu implementasi pencarian penitip dan hasilnya */}
+                                    {/* Contoh statis: */}
+                                    {/* 
+                                    <ul className="list-group position-absolute w-100">
+                                        <li className="list-group-item" onClick={() => {
+                                            setForm({...form, id_penitip: 1, nama_penitip: "Nama Penitip"});
+                                        }}>Nama Penitip</li>
+                                    </ul>
+                                    */}
+                                    {/* Jika sudah memilih penitip, tampilkan id_penitip */}
+                                    {form.id_penitip && (
+                                        <div className="text-muted small">
+                                            ID Penitip terpilih: {form.id_penitip}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <label htmlFor="id_kategori" className="form-label">ID Kategori</label>
@@ -319,7 +349,8 @@ const CRUDBarangTitipan = () => {
                                                 onChange={handleChange}
                                                 required
                                             />
-                                        </div></>
+                                        </div>
+                                    </>
                                 )}
                                 <button type="submit" className="btn btn-primary">
                                     {isEdit ? 'Update' : 'Tambah'}

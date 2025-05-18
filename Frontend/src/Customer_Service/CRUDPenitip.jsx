@@ -37,8 +37,11 @@ const CRUDPenitip = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    const { name, value, files } = e.target;
+    setForm({
+      ...form,
+      [name]: files ? files[0] : value
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -191,8 +194,9 @@ const CRUDPenitip = () => {
                 aria-label="Close"
               ></button>
             </div>
+
             <div className="modal-body">
-              <form onSubmit={handleSubmit} encType="multipart/form-data">
+              <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label className="form-label">Nama Penitip</label>
                   <input
@@ -213,7 +217,8 @@ const CRUDPenitip = () => {
                     required
                   />
                 </div>
-                <div className="mb-3">
+
+                {/* <div className="mb-3">
                   <label htmlFor="gambar_ktp" className="form-label">
                     Gambar KTP
                   </label>
@@ -221,13 +226,28 @@ const CRUDPenitip = () => {
                     type="file"
                     name="gambar_ktp"
                     className="form-control"
-                    accept="image/*"
-                    onChange={(e) =>
-                      setForm({ ...form, gambar_ktp: e.target.files[0] })
-                    }
+                    onChange={handleChange}
                     required={!isEdit}
                   />
-                </div>
+                </div> */}
+
+                {!isEdit && (
+                  <>
+                    <label htmlFor="gambar_ktp" className="form-label">
+                      Gambar KTP
+                    </label>
+                    <div className="mb-3">
+                      <input
+                        type="file"
+                        name="gambar_ktp"
+                        className="form-control"
+                        onChange={handleChange}
+                        required={!isEdit}
+                      />
+                    </div>
+                  </>
+                )}
+
                 <div className="mb-3">
                   <label className="form-label">Email</label>
                   <input
@@ -238,7 +258,9 @@ const CRUDPenitip = () => {
                     required
                   />
                 </div>
-                <div className="mb-3">
+
+
+                {/* <div className="mb-3">
                   <label className="form-label">
                     Password{" "}
                     {isEdit && (
@@ -255,7 +277,26 @@ const CRUDPenitip = () => {
                     onChange={handleChange}
                     required={!isEdit}
                   />
-                </div>
+                </div> */}
+
+                {!isEdit && (
+                  <>
+                    <label htmlFor="gambar_ktp" className="form-label">
+                      Passworrd
+                    </label>
+                    <div className="mb-3">
+                      <input
+                        type="password"
+                        name="password"
+                        className="form-control"
+                        onChange={handleChange}
+                        value={form.password}
+                      />
+                    </div>
+                  </>
+                )}
+
+
                 <div className="mb-3">
                   <label className="form-label">Badge</label>
                   <input

@@ -128,6 +128,8 @@ class BarangController extends Controller
         ], 400);
     }
 
+
+    
     public function update(Request $request, string $id)
     {
         $barang = Barang::find($id);
