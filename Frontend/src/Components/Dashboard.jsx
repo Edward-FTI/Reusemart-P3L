@@ -3,6 +3,7 @@ import "./DashboardCss.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap-icons/font/bootstrap-icons.css";
 import Login from "./Login";
+
 import { Link } from "react-router-dom";
 import logo from "../assets/Logo/logo.png";
 import hp from "./gambar/hp";
@@ -11,6 +12,7 @@ import tas from "./gambar/tas";
 import meja from "./gambar/meja";
 import alatTulis from "./gambar/AlatTulis";
 import mainan from "./gambar/mainan";
+import "./DashboardCss.css";
 
 const Dashboard = () => {
     return (
@@ -35,9 +37,12 @@ const Dashboard = () => {
 
                         <div class="d-flex align-items-center">
                             <Link to="/login">
-                            <button className="btn btn-outline-success me-2">Masuk</button>
+                                <button className="btn btn-outline-success me-2">Masuk</button>
                             </Link>
-                            <button class="btn btn-success">Daftar</button>
+
+                            <Link to="/register">
+                                <button className="btn btn-outline-success me-2">Daftar</button>
+                            </Link>
                             <i class="bi bi-cart3 ms-3 fs-4"></i>
                         </div>
                     </div>
@@ -48,8 +53,8 @@ const Dashboard = () => {
                         <a href="#perabotan">Perabotan Rumah Tangga</a>
                         <a href="#peralatanSekolah">Buku, Alat Tulis, & Peralatan Sekolah</a>
                         <a href="#mainan">Hobi, Mainan, & Koleksi</a>
-                        <br />
                         <a href="#">Perlengkapan Bayi & Anak</a>
+                        <br />
                         <a href="#">Otomotif & Aksesori</a>
                         <a href="#">Perlengkapan Taman & Outdoor</a>
                         <a href="#">Peralatan Kantor & Industri</a>
