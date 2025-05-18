@@ -25,6 +25,11 @@ const CRUDBarangTitipan = () => {
     const [isEdit, setIsEdit] = useState(false);
 
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredBarangList, setFilteredBarangList] = useState([]);
+
+
+
     const [form, setForm] = useState({
         id: '',
         id_penitip: '',
@@ -38,14 +43,32 @@ const CRUDBarangTitipan = () => {
         gambar: ''
     })
 
+    // const fetchBarang = async () => {
+    //     try {
+    //         const data = await GetAllBarang();
+    //         setBarangList(data);
+    //     } catch (error) {
+    //         toast.error("Gagal mengambil data barang");
+    //     }
+    // };
+
     const fetchBarang = async () => {
         try {
             const data = await GetAllBarang();
             setBarangList(data);
+            setFilteredBarangList(data); // Awalnya tampilkan semua
         } catch (error) {
             toast.error("Gagal mengambil data barang");
         }
     };
+
+    const handleSearch = () => {
+        const filtered = barangList.filter(b =>
+            b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredBarangList(filtered);
+    };
+
 
     const fetchKategori = async () => {
         try {
@@ -145,13 +168,28 @@ const CRUDBarangTitipan = () => {
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
                     <h2>Data Barang</h2>
-                    <input
-                        type="search"
-                        name="cari"
-                        className="form-control-mt-2"
-                        placeholder="Cari barang..."
-                        style={{ width: "350px" }}
-                    />
+                    <form
+                        className="d-flex"
+                        onSubmit={(e) => {
+                            e.preventDefault(); // mencegah reload halaman
+                            handleSearch();     // jalankan pencarian
+                        }}
+                    >
+                        <input
+                            type="search"
+                            name="cari"
+                            className="form-control me-2"
+                            placeholder="Cari barang..."
+                            style={{ width: "250px" }}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button className="btn btn-outline-primary" type="submit">
+                            Cari
+                        </button>
+                    </form>
+
+
                 </div>
                 <button
                     className="btn btn-success"
@@ -183,8 +221,8 @@ const CRUDBarangTitipan = () => {
                 </thead>
 
                 <tbody>
-                    {barangList.length > 0 ? (
-                        barangList.map((b, index) => (
+                    {filteredBarangList.length > 0 ? (
+                        filteredBarangList.map((b, index) => (
                             <tr key={b.id}>
                                 <td>{index + 1}</td>
                                 <td>{b.penitip.nama_penitip}</td>
