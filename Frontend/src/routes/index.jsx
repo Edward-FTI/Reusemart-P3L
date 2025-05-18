@@ -9,6 +9,7 @@ const RoutesIndex = () => {
             <Route path="/" element = { <Pegawai/> } />
             <Route path="/pegawai/create" element = { <CreatePegawai /> } />
             <Route path="/pegawai/update" element = { <UpdatePegawai /> } />
+            
         </Routes>
     )
 }
