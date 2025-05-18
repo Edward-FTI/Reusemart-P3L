@@ -1,5 +1,5 @@
 import React from "react";
-
+import "./DashboardCss.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap-icons/font/bootstrap-icons.css";
 import Login from "./Login";
@@ -60,7 +60,7 @@ const Dashboard = () => {
 
             <main className="container mt-5">
                 <div id="elektronik">
-                    <div className="row row-cols-1 row-cols-md-5 g-3">
+                    {/* <div className="row row-cols-1 row-cols-md-5 g-3">
                         {products.map((product, index) => (
                             <div className="col" key={index}>
                                 <a>
@@ -74,7 +74,7 @@ const Dashboard = () => {
                                 </a>
                             </div>
                         ))}
-                    </div>
+                    </div> */}
 
                     <div className="row row-cols-1 row-cols-md-5 g-3">
                         {hp.map((hp, index) => (

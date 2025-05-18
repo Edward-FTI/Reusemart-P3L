@@ -39,7 +39,7 @@ import CRUDPenitipan from "../penitip/CRUDPenitipan";
 import PengambilanBarangKembali from "../penitip/PengambilanBarangKembali";
 
 // ORGANISASI
-import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
+import CRUDTransaksiRequestDonasi from "../Organisasi/CRUDTransaksiRequestDonasi";
 import Organisasi from "../Organisasi/Organisasi";
 import Layout from "../navbar/layout";
 
@@ -81,6 +81,10 @@ const router = createBrowserRouter([
   {
     path: "/ambil-barang",
     element: <AmbilBarang />,
+  },
+  {
+    path: "/alamat",
+    element: <CRUDAlamat />
   },
 
   // ADMIN
@@ -235,9 +239,7 @@ const router = createBrowserRouter([
     path: "/organisasi/transaksi-request-donasi",
     element: (
       <div>
-        <NavbarPage />
         <CRUDTransaksiRequestDonasi />
-        <Footer />
       </div>
     ),
   },
