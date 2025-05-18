@@ -1,22 +1,20 @@
 <?php
 
-use App\Http\Controllers\Api\JabatanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BarangController;
-use App\Http\Controllers\Api\KategoriBarangController;
+use App\Http\Controllers\Api\JabatanController;
 use App\Http\Controllers\Api\PegawaiController;
 use App\Http\Controllers\Api\PembeliController;
-use App\Http\Controllers\Api\OrganisasiController;
 use App\Http\Controllers\Api\PenitipController;
+use App\Http\Controllers\Api\OrganisasiController;
+use App\Http\Controllers\Api\AlamatPembeliController;
+use App\Http\Controllers\Api\KategoriBarangController;
+use App\Http\Controllers\Api\TransaksiDonasiController;
 use App\Http\Controllers\Api\DetailPengirimanController;
 use App\Http\Controllers\Api\TransaksiPenjualanController;
-use App\Http\Controllers\Api\TransaksiDonasiController;
-use App\Http\Controllers\Api\TransaksiPenitipanController;
-use App\Http\Controllers\Api\AlamatPembeliController;
 
-// Route ambil user yang login
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -115,8 +113,29 @@ Route::post('/pembeli/reset-password', [PembeliController::class, 'resetPassword
     Route::get('/transaksi-penjualan/getDetailPengiriman', [TransaksiPenjualanController::class, 'getDetailPengiriman']);
     Route::get('/transaksi-penjualan/searchById/{id}', [TransaksiPenjualanController::class, 'searchById']);
 
+    //Transaksi Donasi
+    Route::get('/transaksi-donasi', [TransaksiDonasiController::class, 'index']);
+    Route::post('/transaksi-donasi', [TransaksiDonasiController::class, 'store']);
+    Route::get('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'show']);
+    Route::put('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'update']);
+    Route::delete('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'destroy']);
+    Route::get('/transaksi-donasi/searchByIdOrganisasi/{id}', [TransaksiDonasiController::class, 'searchByIdOrganisasi']);
 });
 
 
 
 
+//Organisasi
+Route::get('/organisasi', [OrganisasiController::class, 'index']);
+Route::post('/organisasi', [OrganisasiController::class, 'store']);
+Route::get('/organisasi/{id}', [OrganisasiController::class, 'show']);
+Route::put('/organisasi/{id}', [OrganisasiController::class, 'update']);
+Route::delete('/organisasi/{id}', [OrganisasiController::class, 'destroy']);
+Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByName']);
+Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
+Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
+
+
+// donasi
+Route::get('/donasi', [TransaksiDonasiController::class, 'index']);
+Route::put('/donasi/{id}', [TransaksiDonasiController::class, 'update']);

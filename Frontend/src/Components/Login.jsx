@@ -50,7 +50,13 @@ const LoginForm = () => {
               navigate("/"); // Ensure this route exists
               break;
             case "Owner":
-              navigate("/owner"); // Ensure this route exists
+              navigate("/"); // Ensure this route exists
+              break;
+            case "Kurir":
+              navigate("/"); // Ensure this route exists
+              break;
+            case "Hunter":
+              navigate("/"); // Ensure this route exists
               break;
             default:
               toast.error("Peran tidak dikenali.");

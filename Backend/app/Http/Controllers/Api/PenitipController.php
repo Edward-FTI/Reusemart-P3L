@@ -7,8 +7,9 @@ use App\Models\Penitip;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class PenitipController extends Controller
 {
@@ -17,11 +18,19 @@ class PenitipController extends Controller
     {
         $penitips = Penitip::all();
 
+        if ($penitips->isEmpty()) {
+            return response([
+                'message' => 'Data penitip kosong',
+                'data' => []
+            ], 404);
+        }
+
         return response([
-            'message' => $penitips->isEmpty() ? 'Data penitip kosong' : 'Berhasil mengambil data penitip',
+            'message' => 'Berhasil mengambil data penitip',
             'data' => $penitips
-        ], $penitips->isEmpty() ? 404 : 200);
+        ], 200);
     }
+
 
     // // Menyimpan data penitip baru
     // public function store(Request $request)
@@ -88,10 +97,26 @@ class PenitipController extends Controller
             'saldo' => 'nullable|numeric',
         ]);
 
-        if ($validasi->fails()) {
-            return response(['message' => $validasi->errors()], 400);
-        }
+            $penitip = Penitip::create([
+                'nama_penitip' => $request->nama_penitip,
+                'no_ktp' => $request->no_ktp,
+                'gambar_ktp' => $path_gambar,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'badge' => $request->badge,
+                'point' => $request->point,
+                'saldo' => $request->saldo ?? 0
+            ]);
 
+            // Tambah ke tabel users
+            User::create([
+                'name' => $request->nama_penitip,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'penitip',
+                'email_verified_at' => now(),
+                'remember_token' => Str::random(60),
+            ]);
         // Simpan gambar KTP
         $pathGambar = null;
         if ($request->hasFile('gambar_ktp')) {
@@ -99,6 +124,7 @@ class PenitipController extends Controller
             $pathGambar = 'images/penitip/' . $namaGambar;
             $request->file('gambar_ktp')->move(public_path('images/penitip'), $namaGambar);
         }
+    }
 
         $data = $request->all();
         $data['gambar_ktp'] = $pathGambar;
@@ -126,8 +152,9 @@ class PenitipController extends Controller
         $user->save();
 
         return response([
-            'message' => 'Berhasil menambahkan data penitip',
+            'message' => 'Penitip ditemukan',
             'data' => $penitip
+
         ], 201);
 
     } catch (\Exception $e) {
@@ -139,17 +166,17 @@ class PenitipController extends Controller
 }
 
 
-    // Mengubah data penitip
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $penitip = Penitip::find($id);
         if (!$penitip) {
-            return response(['message' => 'Data penitip tidak ditemukan', 'data' => null], 404);
+            return response([
+                'message' => 'Data penitip tidak ditemukan',
+                'data' => null
+            ], 404);
         }
 
-        $data = $request->all();
-
-        $validasi = Validator::make($data, [
+        $request->validate([
             'nama_penitip' => 'required|string|max:255',
             'no_ktp' => 'required|string|min:16|max:20|unique:penitips,no_ktp,' .$id,
             'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
@@ -160,11 +187,7 @@ class PenitipController extends Controller
             'saldo' => 'nullable|numeric',
         ]);
 
-        if ($validasi->fails()) {
-            return response(['message' => $validasi->errors()], 400);
-        }
-
-        // Jika ada gambar baru
+        // Gambar KTP
         if ($request->hasFile('gambar_ktp')) {
             $namaGambar = time() . '.' . $request->file('gambar_ktp')->extension();
             $pathGambar = 'images/penitip/' . $namaGambar;
@@ -180,10 +203,9 @@ class PenitipController extends Controller
         $penitip->point = $data['point'];
         $penitip->saldo = $data['saldo'] ?? $penitip->saldo;
 
-        if (!empty($data['password'])) {
-            $penitip->password = Hash::make($data['password']);
+        if (!empty($request->password)) {
+            $penitip->password = Hash::make($request->password);
         }
-
         $penitip->update($data);
 
         // Update juga data user
@@ -206,20 +228,28 @@ class PenitipController extends Controller
         ], 200);
     }
 
-    // Menghapus data penitip
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $penitip = Penitip::find($id);
         if (!$penitip) {
-            return response(['message' => 'Data penitip tidak ditemukan', 'data' => null], 404);
+            return response([
+                'message' => 'Data penitip tidak ditemukan',
+                'data' => null
+            ], 404);
         }
 
-        $penitip->delete();
+        // Hapus gambar
+        if ($penitip->gambar_ktp && File::exists(public_path($penitip->gambar_ktp))) {
+            File::delete(public_path($penitip->gambar_ktp));
+        }
 
+        // Hapus user
         $user = User::where('email', $penitip->email)->first();
         if ($user) {
             $user->delete();
         }
+
+        $penitip->delete();
 
         return response([
             'message' => 'Berhasil menghapus data penitip',
@@ -227,28 +257,9 @@ class PenitipController extends Controller
         ], 200);
     }
 
-    // Menampilkan detail penitip berdasarkan ID
-    public function show(string $id)
-    {
-        $penitip = Penitip::find($id);
-
-        if ($penitip) {
-            return response([
-                'message' => 'Penitip ditemukan',
-                'data' => $penitip
-            ], 200);
-        }
-
-        return response([
-            'message' => 'Data penitip tidak ditemukan',
-            'data' => null
-        ], 404);
-    }
-
-    // Cari penitip berdasarkan nama
     public function searchByName($name)
     {
-        $penitips = Penitip::where('nama_penitip', 'LIKE', '%' . $name . '%')->get();
+        $penitips = Penitip::where('nama_penitip', 'like', '%' . $name . '%')->get();
 
         if ($penitips->isEmpty()) {
             return response([
@@ -266,18 +277,6 @@ class PenitipController extends Controller
     // Cari penitip berdasarkan ID
     public function searchById($id)
     {
-        $penitip = Penitip::find($id);
-
-        if (!$penitip) {
-            return response([
-                'message' => 'Penitip tidak ditemukan',
-                'data' => []
-            ], 404);
-        }
-
-        return response([
-            'message' => 'Penitip ditemukan',
-            'data' => $penitip
-        ], 200);
+        return $this->show($id);
     }
 }

@@ -37,97 +37,42 @@ const CRUDPenitip = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setForm({
-      ...form,
-      [name]: files ? files[0] : value,
-    });
-  };
-
-  const handleFileChange = (e) => {
-    setForm({ ...form, gambar_ktp: e.target.files[0] });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-          const formData = new FormData();
-          if (!isEdit || (isEdit && form.gambar_ktp)) {
-          formData.append('gambar_ktp', form.gambar_ktp);
-          }
-          formData.append('nama_penitip', form.nama_penitip);
-          formData.append('no_ktp', form.no_ktp);
-          formData.append('email', form.email);
-          formData.append('badge', form.badge || 'null');
-          formData.append('saldo', form.saldo || 0);
-          formData.append('point', form.point || 0);
-          if (form.gambar_ktp instanceof File) {
-              formData.append('gambar_ktp', form.gambar_ktp);
-          }
-          if (!isEdit || (isEdit && form.password)) {
-              formData.append('password', form.password);
-          }
-
-          if (isEdit) {
-              await UpdatePenitip(formData);
-              alert('Berhasil mengupdate Penitip');
-          } else {
-              await CreatePenitip(formData);
-              alert('Berhasil menambah Penitip');
-          }
-
-          resetForm();
-          fetchPenitip();
-      } catch (error) {
-          alert('Gagal menyimpan data Penitip');
-          console.error(error);
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      for (const key in form) {
+        if (isEdit && key === "password" && !form[key]) continue;
+        if (key === "gambar_ktp" && !(form[key] instanceof File)) continue;
+        formData.append(key, form[key]);
       }
+
+      if (isEdit) {
+        await UpdatePenitip(form.id, formData);
+        alert("Berhasil mengupdate Penitip");
+      } else {
+        await CreatePenitip(formData);
+        alert("Berhasil menambah Penitip");
+      }
+
+      resetForm();
+      fetchPenitip();
+    } catch (error) {
+      alert("Gagal menyimpan data Penitip");
+      console.error(error);
+    }
   };
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const dataToSubmit = { ...form };
-//       if (isEdit && !dataToSubmit.gambar_ktp) {
-//         delete dataToSubmit.gambar_ktp;
-//       }
-
-//       if (isEdit) {
-//         await UpdatePenitip(dataToSubmit);
-//         alert("Berhasil update data penitip");
-//       } else {
-//         await CreatePenitip(dataToSubmit);
-//         alert("Berhasil menambahkan data penitip");
-//       }
-//       resetForm();
-//       fetchPenitip();
-//     } catch (error) {
-//       alert("Gagal menyimpan data penitip");
-//       console.error(error);
-//     }
-//   };
-
-//   const handleEdit = (penitip) => {
-//     setForm({
-//       ...penitip,
-//       gambar_ktp: null,
-//       password: "",
-//     });
-
-   const handleEdit = (penitip) => {
-        setForm({ ...penitip, gambar_ktp: '' });
-        setIsEdit(true);
-        const modal = new window.bootstrap.Modal(document.getElementById('formModal'));
-        modal.show();
-    }
-
-//     setIsEdit(true);
-//     const modal = new window.bootstrap.Modal(
-//       document.getElementById("formModal")
-//     );
-//     modal.show();
-//   };
+  const handleEdit = (penitip) => {
+    setForm({ ...penitip, gambar_ktp: "", password: "" });
+    setIsEdit(true);
+    const modal = new window.bootstrap.Modal(document.getElementById("formModal"));
+    modal.show();
+  };
 
   const resetForm = () => {
     setForm({
@@ -247,7 +192,7 @@ const CRUDPenitip = () => {
               ></button>
             </div>
             <div className="modal-body">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <div className="mb-3">
                   <label className="form-label">Nama Penitip</label>
                   <input
@@ -268,11 +213,10 @@ const CRUDPenitip = () => {
                     required
                   />
                 </div>
-
-                <label htmlFor="gambar_ktp" className="form-label">
-                  Gambar KTP
-                </label>
                 <div className="mb-3">
+                  <label htmlFor="gambar_ktp" className="form-label">
+                    Gambar KTP
+                  </label>
                   <input
                     type="file"
                     name="gambar_ktp"
@@ -312,19 +256,35 @@ const CRUDPenitip = () => {
                     required={!isEdit}
                   />
                 </div>
-                {/* <div className="mb-3">
-                                    <label className="form-label">Badge</label>
-                                    <input name="badge" className="form-control" value={form.badge} onChange={handleChange} />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Saldo</label>
-                                    <input name="saldo" type="number" className="form-control" value={form.saldo} onChange={handleChange} />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Point</label>
-                                    <input name="point" type="number" className="form-control" value={form.point} onChange={handleChange} />
-                                </div> */}
-
+                <div className="mb-3">
+                  <label className="form-label">Badge</label>
+                  <input
+                    name="badge"
+                    className="form-control"
+                    value={form.badge}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Saldo</label>
+                  <input
+                    name="saldo"
+                    type="number"
+                    className="form-control"
+                    value={form.saldo}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Point</label>
+                  <input
+                    name="point"
+                    type="number"
+                    className="form-control"
+                    value={form.point}
+                    onChange={handleChange}
+                  />
+                </div>
                 <button type="submit" className="btn btn-primary">
                   {isEdit ? "Update" : "Tambah"}
                 </button>
