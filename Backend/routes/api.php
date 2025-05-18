@@ -55,9 +55,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/kategori', [KategoriBarangController::class, 'index']);
 
     // ======================= Penitip =======================
-    // Route::get('/penitip', [PenitipController::class, 'index']);
-    
-    // Route::middleware('auth')->get('/penitip', [PenitipController::class, 'index']);
+    Route::get('/penitip', [PenitipController::class, 'index']);
     Route::post('/penitip', [PenitipController::class, 'store']);
     Route::get('/penitip/{id}', [PenitipController::class, 'show']);
     Route::put('/penitip/{id}', [PenitipController::class, 'update']);
@@ -114,9 +112,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transaksi-penjualan/getPembeli', [TransaksiPenjualanController::class, 'getPembeli']);
     Route::get('/transaksi-penjualan/getDetailPengiriman', [TransaksiPenjualanController::class, 'getDetailPengiriman']);
     Route::get('/transaksi-penjualan/searchById/{id}', [TransaksiPenjualanController::class, 'searchById']);
+
+    //Transaksi Donasi
+    Route::get('/transaksi-donasi', [TransaksiDonasiController::class, 'index']);
+    Route::post('/transaksi-donasi', [TransaksiDonasiController::class, 'store']);
+    Route::get('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'show']);
+    Route::put('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'update']);
+    Route::delete('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'destroy']);
+    Route::get('/transaksi-donasi/searchByIdOrganisasi/{id}', [TransaksiDonasiController::class, 'searchByIdOrganisasi']);
 });
 
-Route::get('/penitip', [PenitipController::class, 'index']);
 
 
 //Organisasi

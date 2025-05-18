@@ -2,8 +2,6 @@ import useAxios from ".";
 
 // GET semua penitip
 export const GetAllPenitip = async () => {
-    const token = sessionStorage.getItem("token");
-    console.log("Token yang dipakai:", token);
     try {
         const response = await useAxios.get('/penitip', {
             headers: {

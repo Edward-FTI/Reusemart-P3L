@@ -147,7 +147,7 @@ const CRUDPegawai = () => {
                   <td>{p.tgl_lahir}</td>
                   <td>{p.email}</td>
                   <td>{p.gaji}</td>
-                  <td>{p.jabatan?.role || "Jabatan Tidak Ditemukan"}</td>
+                  <td>{p.jabatan?.role || "Jabatan tidak ditemukan"}</td>
                   <td>
                     <button
                       className="btn btn-sm btn-warning me-2"
@@ -299,6 +299,7 @@ const CRUDPegawai = () => {
                   <label htmlFor="jabatan" className="form-label">
                     Jabatan
                   </label>
+
                   <div className="mb-3">
                     <select
                       name="id_jabatan"

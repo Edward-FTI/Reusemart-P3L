@@ -1,4 +1,10 @@
 import React, { useEffect, useState } from "react";
+// import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "sonner";
+import Select from "react-select";
+
+
 import {
     GetAllBarang,
     CreateBarang,
@@ -6,16 +12,17 @@ import {
     DeleteBarang
 } from "../Api/apiBarang";
 import { GetAllKategori } from "../Api/apiKategori";
+import { GetAllPenitip } from "../Api/apiPenitip";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const CRUDBarangTitipan = () => {
     const [barangList, setBarangList] = useState([]);
-    const [kategoriList, setKategoriList] = useState([]);
-    const [isEdit, setIsEdit] = useState(false);
 
-    const [penitipSearch, setPenitipSearch] = useState("");
-    const [penitipOptions, setPenitipOptions] = useState([]);
+    const [kategoriList, setKategoriList] = useState([]);
+    const [penitipList, setPenitipList] = useState([]);
+
+    const [isEdit, setIsEdit] = useState(false);
 
 
     const [form, setForm] = useState({
@@ -36,7 +43,7 @@ const CRUDBarangTitipan = () => {
             const data = await GetAllBarang();
             setBarangList(data);
         } catch (error) {
-            console.error("Gagal mengambil data barang:", error);
+            toast.error("Gagal mengambil data barang");
         }
     };
 
@@ -46,13 +53,24 @@ const CRUDBarangTitipan = () => {
             setKategoriList(data);
         }
         catch (error) {
-            alert('Gagal mengambil data barang')
+            toast.error('Gagal mengambil data kategori')
+        }
+    }
+
+    const fetchPenitip = async () => {
+        try {
+            const data = await GetAllPenitip();
+            setPenitipList(data);
+        }
+        catch (error) {
+            toast.error('Gagal mengambil data penitip');
         }
     }
 
     useEffect(() => {
         fetchBarang();
         fetchKategori();
+        fetchPenitip();
     }, []);
 
     const handleChange = (e) => {
@@ -97,6 +115,15 @@ const CRUDBarangTitipan = () => {
         modal.show();
     }
 
+    const handleDelete = async (id) => {
+        try {
+            await api.delete(`/pegawai/${id}`);
+            fetchData(); // refetch data
+        } catch (error) {
+            console.error("Gagal hapus:", error);
+        }
+    }
+
     const resetForm = () => {
         setForm({
             id: '',
@@ -116,7 +143,16 @@ const CRUDBarangTitipan = () => {
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2>Data Barang</h2>
+                <div>
+                    <h2>Data Barang</h2>
+                    <input
+                        type="search"
+                        name="cari"
+                        className="form-control-mt-2"
+                        placeholder="Cari barang..."
+                        style={{ width: "350px" }}
+                    />
+                </div>
                 <button
                     className="btn btn-success"
                     onClick={() => {
@@ -133,8 +169,8 @@ const CRUDBarangTitipan = () => {
                 <thead className="table-light">
                     <tr>
                         <th>No</th>
-                        <th>ID Penitip</th>
-                        <th>ID Kategori</th>
+                        <th>Nama Penitip</th>
+                        <th>Kategori Barang</th>
                         <th>Tanggal Penitipan</th>
                         <th>Nama Barang</th>
                         <th>Harga Barang</th>
@@ -151,8 +187,8 @@ const CRUDBarangTitipan = () => {
                         barangList.map((b, index) => (
                             <tr key={b.id}>
                                 <td>{index + 1}</td>
-                                <td>{b.id_penitip}</td>
-                                <td>{b.id_kategori}</td>
+                                <td>{b.penitip.nama_penitip}</td>
+                                <td>{b.kategori_barang.nama_kategori || "Kategori tidak ditemukan"}</td>
                                 <td>{b.tgl_penitipan}</td>
                                 <td>{b.nama_barang}</td>
                                 <td>{b.harga_barang}</td>
@@ -178,10 +214,11 @@ const CRUDBarangTitipan = () => {
                                     <button
                                         className="btn btn-sm btn-danger me-2"
                                         onClick={() => {
-                                            if (window.confirm('Yakin hapus data ini?')) {
+                                            if (window.confirm('Yaking ingin menghaus data ini?')) {
                                                 DeleteBarang(b.id).then(fetchBarang);
                                             }
                                         }}
+
                                     >
                                         Hapus
                                     </button>
@@ -190,7 +227,7 @@ const CRUDBarangTitipan = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="10" className="text-center fs-2">Belum ada data barang</td>
+                            <td colSpan="11" className="text-center fs-2">Belum ada data barang</td>
                         </tr>
                     )
                     }
@@ -209,55 +246,46 @@ const CRUDBarangTitipan = () => {
 
                         <div className="modal-body">
                             <form onSubmit={handleSubmit}>
-                                {/* Ganti input id_penitip menjadi search/select */}
-                                <label htmlFor="id_penitip" className="form-label">Penitip</label>
+                                <label htmlFor="penitip" className="form-label">Nama Penitip</label>
                                 <div className="mb-3">
-                                    <input
-                                        type="text"
-                                        className="form-control mb-2"
-                                        placeholder="Cari nama penitip..."
-                                        value={form.nama_penitip || ""}
-                                        onChange={async (e) => {
-                                            // Implementasi pencarian penitip
-                                            // Misal: panggil API pencarian penitip berdasarkan nama
-                                            // dan tampilkan hasilnya sebagai dropdown/autocomplete
-                                            // Untuk contoh sederhana, hanya update nama_penitip di form
-                                            setForm({
-                                                ...form,
-                                                nama_penitip: e.target.value,
-                                                id_penitip: "" // reset id saat nama berubah
-                                            });
-                                        }}
+                                    <Select
+                                        name="id_penitip"
+                                        options={penitipList.map(p => ({
+                                            value: p.id,
+                                            label: p.nama_penitip
+                                        }))}
+                                        value={penitipList
+                                            .map(p => ({ value: p.id, label: p.nama_penitip }))
+                                            .find(option => option.value === form.id_penitip)}
+                                        onChange={(selectedOption) =>
+                                            setForm({ ...form, id_penitip: selectedOption?.value || '' })
+                                        }
+                                        placeholder="Cari penitip..."
+                                        isClearable
                                     />
-                                    {/* Dropdown hasil pencarian penitip */}
-                                    {/* Anda perlu implementasi pencarian penitip dan hasilnya */}
-                                    {/* Contoh statis: */}
-                                    {/* 
-                                    <ul className="list-group position-absolute w-100">
-                                        <li className="list-group-item" onClick={() => {
-                                            setForm({...form, id_penitip: 1, nama_penitip: "Nama Penitip"});
-                                        }}>Nama Penitip</li>
-                                    </ul>
-                                    */}
-                                    {/* Jika sudah memilih penitip, tampilkan id_penitip */}
-                                    {form.id_penitip && (
-                                        <div className="text-muted small">
-                                            ID Penitip terpilih: {form.id_penitip}
-                                        </div>
-                                    )}
                                 </div>
 
-                                <label htmlFor="id_kategori" className="form-label">ID Kategori</label>
+
+                                <label htmlFor="kategori" className="form-label">
+                                    Nama Kategori
+                                </label>
                                 <div className="mb-3">
-                                    <input
-                                        type='number'
+                                    <select
                                         name="id_kategori"
-                                        className="form-control"
-                                        placeholder="ID Kategori"
+                                        className="form-select"
                                         value={form.id_kategori}
                                         onChange={handleChange}
                                         required
-                                    />
+                                    >
+                                        <option value="" disabled>
+                                            Pilih Kategori
+                                        </option>
+                                        {kategoriList.map((kategori) => (
+                                            <option key={kategori.id} value={kategori.id}>
+                                                {kategori.nama_kategori}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <label htmlFor="tgl_penitipan" className="form-label">Tanggal Penitipan</label>
