@@ -169,9 +169,9 @@ const router = createBrowserRouter([
     path: "/gudang/barang-titipan",
     element: (
       <div>
-        {/* <NavbarPage /> */}
+        <NavbarPage />
         <CRUDBarangTitipan />
-        {/* <Footer /> */}
+        <Footer />
       </div>
     ),
   },
