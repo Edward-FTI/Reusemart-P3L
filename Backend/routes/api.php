@@ -91,8 +91,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pembeli/search/{name}', [PembeliController::class, 'searchByName']);
     Route::get('/pembeli/searchByEmail/{email}', [PembeliController::class, 'searchByEmail']);
     Route::get('/pembeli/{id}', [PembeliController::class, 'searchById']);
-// Ganti route-nya menjadi tanpa parameter ID
-Route::post('/pembeli/reset-password', [PembeliController::class, 'resetPassword']);
+    // Ganti route-nya menjadi tanpa parameter ID
+    Route::post('/pembeli/reset-password', [PembeliController::class, 'resetPassword']);
 
 
     //Detail Pengiriman
@@ -121,7 +121,6 @@ Route::post('/pembeli/reset-password', [PembeliController::class, 'resetPassword
     Route::delete('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'destroy']);
     Route::get('/transaksi-donasi/searchByIdOrganisasi/{id}', [TransaksiDonasiController::class, 'searchByIdOrganisasi']);
 });
-
 
 
 

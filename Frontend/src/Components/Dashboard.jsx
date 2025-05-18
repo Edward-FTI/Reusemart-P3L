@@ -3,6 +3,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap-icons/font/bootstrap-icons.css";
 import Login from "./Login";
+
 import { Link } from "react-router-dom";
 import logo from "../assets/Logo/logo.png";
 import hp from "./gambar/hp";
@@ -11,6 +12,7 @@ import tas from "./gambar/tas";
 import meja from "./gambar/meja";
 import alatTulis from "./gambar/AlatTulis";
 import mainan from "./gambar/mainan";
+import "./DashboardCss.css";
 
 const Dashboard = () => {
     return (
@@ -35,9 +37,12 @@ const Dashboard = () => {
 
                         <div class="d-flex align-items-center">
                             <Link to="/login">
-                            <button className="btn btn-outline-success me-2">Masuk</button>
+                                <button className="btn btn-outline-success me-2">Masuk</button>
                             </Link>
-                            <button class="btn btn-success">Daftar</button>
+
+                            <Link to="/register">
+                                <button className="btn btn-outline-success me-2">Daftar</button>
+                            </Link>
                             <i class="bi bi-cart3 ms-3 fs-4"></i>
                         </div>
                     </div>
@@ -60,7 +65,7 @@ const Dashboard = () => {
 
             <main className="container mt-5">
                 <div id="elektronik">
-                    <div className="row row-cols-1 row-cols-md-5 g-3">
+                    {/* <div className="row row-cols-1 row-cols-md-5 g-3">
                         {products.map((product, index) => (
                             <div className="col" key={index}>
                                 <a>
@@ -74,7 +79,7 @@ const Dashboard = () => {
                                 </a>
                             </div>
                         ))}
-                    </div>
+                    </div> */}
 
                     <div className="row row-cols-1 row-cols-md-5 g-3">
                         {hp.map((hp, index) => (
