@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "reusemart-3xp3l",
+  "private_key_id": "c32a614065fdd35689e3108a45c644d46bb4a4e8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDM95wPrPBTG1+x\nqYTYODgo/pK2CIxuUX67wwS2flPmq/biaQNUjFpoUbG1wmohOBvxyhNx4FUDjdyi\n6qf0SMhiVX9ktLaFqRyxumehjUAfc0p97uH9mJDNt3S8s7zBNATKnzpguFgvncSx\nHM+HNtLf0Z4XwcbUDNoATrIwKgFDAXLAl7aSlG/XUXW+e1rLUC1gcsrHyx0+DItT\nwwaje8SINz4BCsATFGIesxBGsZN8Wu3oCuR41qW7wdzfuQaHFbCFd1jhnNewhZ4b\nlKOnEYXSPTF4X44H6oa0D16ppgTxRsS1+rsZQ9xOKEgnHQz3Q1xgOMqzS5JLFkv4\n0VL6+VHjAgMBAAECggEARvqMMaV6x9zX46dHmLTHRfL6jU0ijGVuVMkxDZ1ropr0\ncO1auOGtwShhOQctR3mtu6p1116PMh7jRAusw9ycf+kJp68o8dphVG6vynMmvH1p\nU3jxC6fUpViddWdsux8vdZd0WOAdsceZwJewiiuDFPz7GVECcJZOvAKElEdHjpMI\nAsJOhhKHiyrE+z9ng1o33oEQIS6Q71HOvptRfpQMMNDJBUL/IBW1Puhc09DEN9Uh\n6tQ83nCjcwUNVMgvDmZBwB4OW7IHwWMInU/KUqloSvHC+2RpnWQlYBX52NqU75p1\nbdWf87Hu65JFjwOl+ruoWQoh/RDLCY1YO/79IcKCcQKBgQDvaik5f/ZiTEUewwlb\nZf2hJt5tQlu4zMbpEA0yT1jgsFzGXsJaxx/nnKdqLypAdGcHkmFH5ucigEkG96dY\n4t1xnaFU9CT5ZBEWl0AzSf2YO7wtGmmp2IsWX84HxnX1lNF3hJ3QrvQciBBBOvWU\nR8IgK58QDWjBFWuTUyTegXqa6QKBgQDbKox6nAHljDH6wa/wXL3LsH6IBYXtsvJ6\nEbGnl+DCBBUl14v+EoTezY7wnfIlTnAHIykAED5WsP4sNjj1BrDT0fdajLcTlKwY\nPzZtSlJ80U5b/QyngxWi4jAPJgF28YfM5uFhHH3x8/HpD6CkNfpe0OQZEh7H1+RM\nAWZ2BdVu6wKBgH7pwuK1P7HKBpYRA8PMpA+qYByBIcgr3YGsvaIex9mMBBIwJ00h\n43rO4zx5ticmzXsJEMKh14LFiHDGFZMb6BGTYvN63KLLdfeIxEKsBV+OwukR6FNd\n9BUvQjOC9AL0GboGtfXq2ILLafp6O7aX94NAPHiw8wfvx+/4EkJVVt4JAoGAKaDL\nTf6T3aXjWF2xrVXwNuAvKGbkKWHz7Huv4sVWS4O7AJUQYhHiau9gVxOpCqz7Wl+z\nSe/L52t2267w4pmCvLkE4o4XuABlL7XSALA9OrgGyjImVSrw0R9lQXtWi+EUijbQ\nWEGxKmPLbxkoygf2pkvHB3wJnKvFESqy63fwMkECgYAiPwuPWMVa3EZRGgTlQaxZ\ns0+mgH1Xa8Ysl2QWFfvvodgd0TJNYtFsjWBnnJ9Gcpz2y7OxanSs4MYc1Ll8YDWl\nUNXCPSCrcE4J0Z2IfNJ1iysvEq50GfANVaoWxJjg06nTfIP4l2bMApnBW7N41nG8\nRvfuwp4gFT6gv5zmAWvstQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@reusemart-3xp3l.iam.gserviceaccount.com",
+  "client_id": "110183547598510886608",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40reusemart-3xp3l.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
