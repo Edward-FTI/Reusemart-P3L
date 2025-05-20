@@ -40,7 +40,8 @@ const CRUDBarangTitipan = () => {
         deskripsi: '',
         status_garansi: '',
         status_barang: '',
-        gambar: ''
+        gambar: '',
+        gambar_dua: ''
     })
 
     // const fetchBarang = async () => {
@@ -68,7 +69,6 @@ const CRUDBarangTitipan = () => {
         );
         setFilteredBarangList(filtered);
     };
-
 
     const fetchKategori = async () => {
         try {
@@ -110,8 +110,9 @@ const CRUDBarangTitipan = () => {
 
         try {
             const dataToSubmit = { ...form };
-            if (isEdit && !dataToSubmit.gambar) {
+            if ( (isEdit && !dataToSubmit.gambar) && (isEdit && !dataToSubmit.gambar_dua) ) {
                 delete dataToSubmit.gambar
+                delete dataToSubmit.gambar_dua
             }
 
             if (isEdit) {
@@ -132,7 +133,7 @@ const CRUDBarangTitipan = () => {
     }
 
     const handleEdit = (barang) => {
-        setForm({ ...barang, gambar: '' });
+        setForm({ ...barang, gambar: '', gambar_dua:'' });
         setIsEdit(true);
         const modal = new window.bootstrap.Modal(document.getElementById('formModal'));
         modal.show();
@@ -158,7 +159,8 @@ const CRUDBarangTitipan = () => {
             deskripsi: '',
             status_garansi: '',
             status_barang: '',
-            gambar: ''
+            gambar: '',
+            gambar:''
         });
         setIsEdit(false);
     }
@@ -411,6 +413,17 @@ const CRUDBarangTitipan = () => {
                                             <input
                                                 type="file"
                                                 name="gambar"
+                                                className="form-control"
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+
+                                        <label htmlFor="gambar_dua" className="form-label">Gambar 2</label>
+                                        <div className="mb-3">
+                                            <input
+                                                type="file"
+                                                name="gambar_dua"
                                                 className="form-control"
                                                 onChange={handleChange}
                                                 required

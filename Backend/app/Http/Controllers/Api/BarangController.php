@@ -24,6 +24,7 @@ class BarangController extends Controller
             'message' => 'Data Barang kosong',
             'data' => []
         ], 400);
+
     }
 
 
@@ -40,6 +41,7 @@ class BarangController extends Controller
             'status_garansi' => 'required',
             'status_barang' => 'required',
             'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'gambar_dua' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
         if ($validate->fails()) {
             return response([
@@ -47,11 +49,19 @@ class BarangController extends Controller
             ], 400);
         }
         $path_gambar = null;
-        if ($request->hasFile('gambar')) {
+        $path_gambar2 = null;
+        if ($request->hasFile('gambar') && $request->hasFile('gambar_dua')) {
             $imageName = time() . '.' . $request->file('gambar')->extension();
+            $imageName2 = time() . '.' . $request->file('gambar_dua')->extension();
+
             $path_gambar = 'images/barang/' . $imageName;
+            $path_gambar2 = 'images/barang/' . $imageName2;
+
             $request->file('gambar')->move(public_path('images/barang'), $imageName);
+            $request->file('gambar_dua')->move(public_path('images/barang'), $imageName2);
+
             $storeData['gambar'] = $path_gambar;
+            $storeData['gambar_dua'] = $path_gambar2;
         }
         $barang = Barang::create($storeData);
 
@@ -94,24 +104,24 @@ class BarangController extends Controller
             'status_garansi' => 'required',
             'status_barang' => 'required',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'gambar_dua' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $path_gambar = $barang->gambar;
-        if ($request->hasFile('gambar')) {
-            if ($barang->gambar && file_exists(public_path($barang->gambar))) {
+        $path_gambar2 = $barang->gambar;
+        if ($request->hasFile('gambar') && $request->hasFile('gambar_dua')) {
+            if (($barang->gambar && file_exists(public_path($barang->gambar))) && ($barang->gambar_dua && file_exists(public_path($barang->gambar_dua))) ) {
                 unlink(public_path($barang->gambar));
+                unlink(public_path($barang->gambar_dua));
             }
             $imageName = time() . '.' . $request->file('gambar')->extension();
+            $imageName2 = time() . '.' . $request->file('gambar_dua')->extension();
+
             $path_gambar = 'images/barang/' . $imageName;
+            $path_gambar2 = 'images/barang/' . $imageName2;
+
             $request->file('gambar')->move(public_path('images/barang'), $imageName);
-        }
-        if ($request->hasFile('gambar')) {
-            if ($barang->gambar && file_exists(public_path($barang->gambar))) {
-                unlink(public_path($barang->gambar));
-            }
-            $imageName = time() . '.' . $request->file('gambar')->extension();
-            $path_gambar = 'images/barang/' . $imageName;
-            $request->file('gambar')->move(public_path('images/barang'), $imageName);
+            $request->file('gambar_dua')->move(public_path('images/barang'), $imageName2);
         }
 
         $barang->update([
@@ -124,6 +134,7 @@ class BarangController extends Controller
             'status_garansi' => $request->status_garansi,
             'status_barang' => $request->status_barang,
             'gambar' => $path_gambar,
+            'gambar2' => $path_gambar2,
         ]);
 
         return response([
@@ -142,12 +153,13 @@ class BarangController extends Controller
                 'data' => null
             ], 404);
         }
-        if ($barang->gambar && file_exists(public_path($barang->gambar))) {
+        if ( ($barang->gambar && file_exists(public_path($barang->gambar))) && ($barang->gambar_dua && file_exists(public_path($barang->gambar_dua)))  ) {
             unlink(public_path($barang->gambar));
+            unlink(public_path($barang->gambar_dua));
         }
         if ($barang->delete()) {
             return response([
-                'message' => ' Berhasil hapus data barang',
+                'message' => ' Berhasil hapus data barang', 
                 'data' => $barang
             ], 200);
         }
