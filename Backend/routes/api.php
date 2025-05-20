@@ -122,7 +122,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transaksi-donasi/searchByIdOrganisasi/{id}', [TransaksiDonasiController::class, 'searchByIdOrganisasi']);
 });
 
-
+Route::get('/barang', [BarangController::class, 'index']);
 
 //Organisasi
 Route::get('/organisasi', [OrganisasiController::class, 'index']);

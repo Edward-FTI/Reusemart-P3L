@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('status_garansi');
             $table->string('status_barang');
             $table->string('gambar');
+            $table->string('gambar_dua');
             $table->timestamps();
         });
     }
