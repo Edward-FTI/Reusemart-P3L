@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             Transaksi_PenjualanSeeder::class,
             RequestDonasiSeeder::class,
             KategoriSeeder::class,
+            BarangSeeder::class,
             // Tambahkan seeder lainnya jika ada
         ]);
     }
