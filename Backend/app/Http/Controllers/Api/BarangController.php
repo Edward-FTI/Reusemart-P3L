@@ -209,7 +209,6 @@ class BarangController extends Controller
         $barang->update([
             'id_penitip' => $request->id_penitip,
             'id_kategori' => $request->id_kategori,
-            'id_pembeli' => $request->id_pembeli,
             'tgl_penitipan' => $request->tgl_penitipan,
             'nama_barang' => $request->nama_barang,
             'harga_barang' => $request->harga_barang,
