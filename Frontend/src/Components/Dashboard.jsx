@@ -70,7 +70,6 @@ const Dashboard = () => {
                             <button className="btn btn-outline-success d-flex justify-content-center align-items-center" style={{ width: "35px", height: "35px" }}>
                                 <i className="bi bi-cart3 fs-4"></i>
                             </button>
-
                         </div>
                     </div>
                 </div>
