@@ -19,7 +19,8 @@ class Barang extends Model
         'deskripsi',
         'status_garansi',
         'status_barang',
-        'gambar'
+        'gambar',
+        'gambar_dua',
     ];
 
     public function penitip(): BelongsTo {

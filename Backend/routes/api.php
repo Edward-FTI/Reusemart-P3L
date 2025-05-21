@@ -132,6 +132,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transaksi-donasi/searchByIdOrganisasi/{id}', [TransaksiDonasiController::class, 'searchByIdOrganisasi']);
 });
 
+Route::get('/barang', [BarangController::class, 'index']);
+
 // donasi
 Route::get('/donasi', [TransaksiDonasiController::class, 'index']);
 Route::put('/donasi/{id}', [TransaksiDonasiController::class, 'update']);
