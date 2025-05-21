@@ -10,7 +10,7 @@ import {
     CreateBarang,
     UpdateBarang,
     DeleteBarang
-} from "../Api/apiBarang";
+} from "../Api/apiBarangQC";
 import { GetAllKategori } from "../Api/apiKategori";
 import { GetAllPenitip } from "../Api/apiPenitip";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -110,7 +110,7 @@ const CRUDBarangTitipan = () => {
 
         try {
             const dataToSubmit = { ...form };
-            if ( (isEdit && !dataToSubmit.gambar) && (isEdit && !dataToSubmit.gambar_dua) ) {
+            if ((isEdit && !dataToSubmit.gambar) && (isEdit && !dataToSubmit.gambar_dua)) {
                 delete dataToSubmit.gambar
                 delete dataToSubmit.gambar_dua
             }
@@ -133,7 +133,7 @@ const CRUDBarangTitipan = () => {
     }
 
     const handleEdit = (barang) => {
-        setForm({ ...barang, gambar: '', gambar_dua:'' });
+        setForm({ ...barang, gambar: '', gambar_dua: '' });
         setIsEdit(true);
         const modal = new window.bootstrap.Modal(document.getElementById('formModal'));
         modal.show();
@@ -160,7 +160,7 @@ const CRUDBarangTitipan = () => {
             status_garansi: '',
             status_barang: '',
             gambar: '',
-            gambar_dua:''
+            gambar_dua: ''
         });
         setIsEdit(false);
     }
@@ -244,24 +244,33 @@ const CRUDBarangTitipan = () => {
                                     />
                                 </td>
                                 <td>
-                                    <button
-                                        className="btn btn-sm btn-warning me-2"
-                                        onClick={() => handleEdit(b)}
-                                    >
-                                        Edit
-                                    </button>
+                                    <div className="d-flex flex-column">
+                                        <button
+                                            className="btn btn-sm btn-warning me-2"
+                                            onClick={() => handleEdit(b)}
+                                        >
+                                            Edit
+                                        </button>
 
-                                    <button
-                                        className="btn btn-sm btn-danger me-2"
-                                        onClick={() => {
-                                            if (window.confirm('Yaking ingin menghaus data ini?')) {
-                                                DeleteBarang(b.id).then(fetchBarang);
-                                            }
-                                        }}
+                                        <button
+                                            className="btn btn-sm btn-danger me-2 mt-2"
+                                            onClick={() => {
+                                                if (window.confirm('Yaking ingin menghaus data ini?')) {
+                                                    DeleteBarang(b.id).then(fetchBarang);
+                                                }
+                                            }}
+                                        >
+                                            Hapus
+                                        </button>
 
-                                    >
-                                        Hapus
-                                    </button>
+                                        <button
+                                            className="btn btn-sm btn-primary me-2 mt-2"
+
+                                        >
+                                            Detail
+                                        </button>
+
+                                    </div>
                                 </td>
                             </tr>
                         ))
@@ -439,7 +448,7 @@ const CRUDBarangTitipan = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
