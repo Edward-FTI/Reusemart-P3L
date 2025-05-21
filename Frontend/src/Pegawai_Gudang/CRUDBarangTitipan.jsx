@@ -160,7 +160,7 @@ const CRUDBarangTitipan = () => {
             status_garansi: '',
             status_barang: '',
             gambar: '',
-            gambar:''
+            gambar_dua:''
         });
         setIsEdit(false);
     }
