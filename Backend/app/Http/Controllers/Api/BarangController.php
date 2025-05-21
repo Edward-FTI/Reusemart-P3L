@@ -178,7 +178,6 @@ class BarangController extends Controller
         $request->validate([
             'id_penitip' => 'required',
             'id_kategori' => 'required',
-            'id_pembeli' => 'required',
             'tgl_penitipan' => 'required',
             'nama_barang' => 'required',
             'harga_barang' => 'required',

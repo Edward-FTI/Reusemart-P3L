@@ -67,7 +67,9 @@ const Dashboard = () => {
                         <div className="d-flex align-items-center">
                             <button className="btn btn-outline-success me-2">Masuk</button>
                             <button className="btn btn-outline-success me-2">Daftar</button>
-                            <i className="bi bi-cart3 ms-3 fs-4"></i>
+                            <button className="btn btn-outline-success d-flex justify-content-center align-items-center" style={{ width: "35px", height: "35px" }}>
+                                <i className="bi bi-cart3 fs-4"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -147,11 +149,11 @@ const Dashboard = () => {
                                         </>
                                     )}
                                 </div>
-                                <br/>
+                                <br />
                                 <p>Nama Barang: {selectedBarang.nama_barang}</p>
-                                <p>Harga: Rp{ selectedBarang.harga_barang }</p>
-                                <p>Status Garansi: { selectedBarang.status_garansi}</p>
-                                <p>Deskripsi: { selectedBarang.deskripsi}</p>
+                                <p>Harga: Rp{selectedBarang.harga_barang}</p>
+                                <p>Status Garansi: {selectedBarang.status_garansi}</p>
+                                <p>Deskripsi: {selectedBarang.deskripsi}</p>
                             </div>
                             <div className="modal-footer">
                                 <button
@@ -161,7 +163,7 @@ const Dashboard = () => {
                                 >
                                     Tutup
                                 </button>
-                                <button type="button" className="btn btn-success">Beli</button>
+                                <button type="button" className="btn btn-success">+ Keranjang</button>
                             </div>
                         </div>
                     </div>
