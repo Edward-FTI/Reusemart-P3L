@@ -61,7 +61,7 @@ export const DeleteBarang = async (id) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     try {
-        const response = await useAxios.delete(`barang/${id}`, {
+        const response = await useAxios.delete(`barang-qc/${id}`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,

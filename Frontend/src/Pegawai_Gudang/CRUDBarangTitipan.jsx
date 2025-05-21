@@ -141,12 +141,26 @@ const CRUDBarangTitipan = () => {
 
     const handleDelete = async (id) => {
         try {
-            await api.delete(`/pegawai/${id}`);
-            fetchData(); // refetch data
+            if (window.confirm('Yakin ingin menghapus data ini?')) {
+                await DeleteBarang(id); // Menghapus barang berdasarkan ID
+                toast.success('Data barang berhasil dihapus');
+                fetchBarang(); // Mengambil data terbaru
+            }
         } catch (error) {
-            console.error("Gagal hapus:", error);
+            console.error("Gagal menghapus data barang:", error);
+            toast.error('Gagal menghapus data barang');
         }
-    }
+    };
+
+
+    // const handleDelete = async (id) => {
+    //     try {
+    //         await api.delete(`/pegawai/${id}`);
+    //         fetchData(); // refetch data
+    //     } catch (error) {
+    //         console.error("Gagal hapus:", error);
+    //     }
+    // }
 
     const resetForm = () => {
         setForm({
@@ -255,7 +269,7 @@ const CRUDBarangTitipan = () => {
                                         <button
                                             className="btn btn-sm btn-danger me-2 mt-2"
                                             onClick={() => {
-                                                if (window.confirm('Yaking ingin menghaus data ini?')) {
+                                                if (window.confirm('Yaking ingin menghapus data ini?')) {
                                                     DeleteBarang(b.id).then(fetchBarang);
                                                 }
                                             }}
