@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\KategoriBarangController;
 use App\Http\Controllers\Api\TransaksiDonasiController;
 use App\Http\Controllers\Api\DetailPengirimanController;
 use App\Http\Controllers\Api\TransaksiPenjualanController;
+// use App\Http\Controllers\Api\RequestDonasiController;
+use App\Http\Controllers\Api\RequestDonasiController;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -74,6 +76,14 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/organisasi/searchById/{id}', [OrganisasiController::class, 'searchById']);
     Route::get('/ujiankelas', [OrganisasiController::class, 'showPermintaan']);
 
+    // ======================= Request Donasi =======================
+    Route::get('/request-donasi', [RequestDonasiController::class, 'index']);
+    Route::post('/request-donasi', [RequestDonasiController::class, 'store']);
+    Route::get('/request-donasi/{id}', [RequestDonasiController::class, 'show']);
+    Route::put('/request-donasi/{id}', [RequestDonasiController::class, 'update']);
+    Route::delete('/request-donasi/{id}', [RequestDonasiController::class, 'destroy']);
+    Route::get('/request-donasi/searchByIdOrganisasi/{id}', [RequestDonasiController::class, 'searchByIdOrganisasi']);
+
 
     // ======================= Alamat Pembeli =======================
     Route::get('/alamat', [AlamatPembeliController::class, 'index']);
@@ -123,17 +133,6 @@ Route::middleware('auth:api')->group(function () {
 });
 
 Route::get('/barang', [BarangController::class, 'index']);
-
-//Organisasi
-Route::get('/organisasi', [OrganisasiController::class, 'index']);
-Route::post('/organisasi', [OrganisasiController::class, 'store']);
-Route::get('/organisasi/{id}', [OrganisasiController::class, 'show']);
-Route::put('/organisasi/{id}', [OrganisasiController::class, 'update']);
-Route::delete('/organisasi/{id}', [OrganisasiController::class, 'destroy']);
-Route::get('/organisasi/search/{name}', [OrganisasiController::class, 'searchByName']);
-Route::get('/organisasi/{id}', [OrganisasiController::class, 'searchById']);
-Route::get('/organisasi/searchByPermintaan/{permintaan}', [OrganisasiController::class, 'searchByPermintaan']);
-
 
 // donasi
 Route::get('/donasi', [TransaksiDonasiController::class, 'index']);

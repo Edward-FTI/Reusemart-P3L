@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             PembeliSeeder::class,
             PengirimanSeeder::class,
             Transaksi_PenjualanSeeder::class,
+            RequestDonasiSeeder::class,
             KategoriSeeder::class,
             BarangSeeder::class,
             // Tambahkan seeder lainnya jika ada
