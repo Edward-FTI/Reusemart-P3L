@@ -291,5 +291,4 @@ class PenitipController extends Controller
     }
 
     // Menampilkan data penitip berdasarkan ID
-
 }
