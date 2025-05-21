@@ -92,6 +92,34 @@ class UserSeeder extends Seeder
                 'role' => 'Pembeli',
                 'password' => 'user123',
             ],
+
+            [
+                'name' => 'Citra Wijay',
+                'email' => 'citra.wijaya@example.com',
+                'role' => 'Pegawai Gudang',
+                'password' => 'password123',
+            ],
+
+            [
+                'name' => 'Citra Wijay',
+                'email' => 'budi.santoso@example.com',
+                'role' => 'Pegawai Gudang',
+                'password' => 'password123',
+            ],
+
+            [
+                'name' => 'Citra Wijay',
+                'email' => 'eko.susanto@example.com',
+                'role' => 'Pegawai Gudang',
+                'password' => 'password123',
+            ],
+
+            [
+                'name' => 'Citra Wijay',
+                'email' => 'hendra.prabowo@example.com',
+                'role' => 'Pegawai Gudang',
+                'password' => 'password123',
+            ],
         ];
 
         // Insert predefined users

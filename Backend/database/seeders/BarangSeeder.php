@@ -13,10 +13,12 @@ class BarangSeeder extends Seeder
      */
     public function run(): void
     {
+        // ...
         DB::table('barangs')->insert([
             [
                 'id_penitip' => 1,
                 'id_kategori' => 1,
+                'id_pegawai' => 3,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Smartphone',
                 'harga_barang' => 2500000,
@@ -25,14 +27,13 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Dijual',
                 'gambar' => 'images/barang/smartphone.jpg',
                 'gambar_dua' => 'images/barang/smartphone.jpg',
-                // 'gambar3' => 'acer.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
             [
                 'id_penitip' => 2,
                 'id_kategori' => 2,
+                'id_pegawai' => 3,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Pakaian Pria',
                 'harga_barang' => 50000,
@@ -41,14 +42,13 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Dijual',
                 'gambar' => 'images/barang/pakaianPria.jpeg',
                 'gambar_dua' => 'images/barang/pakaianPria.jpeg',
-                // 'gambar3' => 'pakaian.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
             [
                 'id_penitip' => 3,
                 'id_kategori' => 3,
+                'id_pegawai' => 3,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Meja Belajar',
                 'harga_barang' => 150000,
@@ -57,14 +57,13 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Tersedia',
                 'gambar' => 'images/barang/meja.jpeg',
                 'gambar_dua' => 'images/barang/meja.jpeg',
-                // 'gambar3' => 'meja.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
             [
                 'id_penitip' => 4,
                 'id_kategori' => 4,
+                'id_pegawai' => 6,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Buku Pelajaran',
                 'harga_barang' => 20000,
@@ -73,14 +72,13 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Tersedia',
                 'gambar' => 'images/barang/buku.jpeg',
                 'gambar_dua' => 'images/barang/buku.jpeg',
-                // 'gambar3' => 'buku.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
             [
                 'id_penitip' => 5,
                 'id_kategori' => 5,
+                'id_pegawai' => 6,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Boneka Teddy Bear',
                 'harga_barang' => 250000,
@@ -89,14 +87,13 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Dijual',
                 'gambar' => 'images/barang/mainan.jpeg',
                 'gambar_dua' => 'images/barang/mainan.jpeg',
-                // 'gambar3' => 'gitar.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
             [
                 'id_penitip' => 6,
                 'id_kategori' => 6,
+                'id_pegawai' => 6,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Kereta Bayi',
                 'harga_barang' => 45000,
@@ -105,14 +102,13 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Dijual',
                 'gambar' => 'images/barang/keretabayi.jpeg',
                 'gambar_dua' => 'images/barang/keretabayi.jpeg',
-                // 'gambar3' => 'botolsusu.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
             [
                 'id_penitip' => 7,
                 'id_kategori' => 7,
+                'id_pegawai' => 9,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Sepeda Motor Beat 2018',
                 'harga_barang' => 2500000,
@@ -121,14 +117,13 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Dijual',
                 'gambar' => 'images/barang/motor.jpeg',
                 'gambar_dua' => 'images/barang/motor.jpeg',
-                // 'gambar3' => 'motor.jpg'
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
             [
                 'id_penitip' => 8,
                 'id_kategori' => 8,
+                'id_pegawai' => 9,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Cangkul Taman',
                 'harga_barang' => 40000,
@@ -137,14 +132,13 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Dijual',
                 'gambar' => 'images/barang/cangkul.jpeg',
                 'gambar_dua' => 'images/barang/cangkul.jpeg',
-                // 'gambar3' => 'tenda.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
             [
                 'id_penitip' => 9,
                 'id_kategori' => 9,
+                'id_pegawai' => 9,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Mesin Fotokopi',
                 'harga_barang' => 400000,
@@ -153,14 +147,13 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Dijual',
                 'gambar' => 'images/barang/fotocopy.jpeg',
                 'gambar_dua' => 'images/barang/fotocopy.jpeg',
-                // 'gambar3' => 'printer.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
             [
                 'id_penitip' => 10,
                 'id_kategori' => 10,
+                'id_pegawai' => 9,
                 'tgl_penitipan' => now(),
                 'nama_barang' => 'Parfum',
                 'harga_barang' => 20000,
@@ -169,7 +162,6 @@ class BarangSeeder extends Seeder
                 'status_barang' => 'Dijual',
                 'gambar' => 'images/barang/parfum.jpeg',
                 'gambar_dua' => 'images/barang/parfum.jpeg',
-                // 'gambar3' => 'parfum.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

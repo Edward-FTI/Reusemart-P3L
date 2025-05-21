@@ -46,6 +46,9 @@ import Layout from "../navbar/layout";
 // OWNER
 import Owner from "../Owner/Owner";
 
+// Detail Barang
+import DetailBarang from "../Components/DetailBarang";
+
 // ALAMAT
 import CRUDAlamat from "../pembeli/CrudAlamat";
 
@@ -253,6 +256,14 @@ const router = createBrowserRouter([
       </div>
     ),
   },
+
+  //Detiail Barang
+  {
+    path: "/detail/:id",
+    element: (
+      <DetailBarang/>
+    )
+  }
 ]);
 
 const AppRouter = () => {

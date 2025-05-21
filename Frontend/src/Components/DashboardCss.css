@@ -11,7 +11,8 @@
 
 .category-links a:hover {
     background-color: transparent !important;
-    color: #198754; /* jika ingin tetap hijau */
+    color: #198754;
+    /* jika ingin tetap hijau */
 }
 
 .col a {
@@ -49,4 +50,15 @@
 
 .logo:hover {
     background: transparent !important;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgb(194, 192, 192);
+    /* Ubah warna panah menjadi hitam */
+    border-radius: 50%;
+    /* Tambahkan efek bulat (opsional) */
+    width: 30px;
+    /* Atur ukuran panah */
+    height: 30px;
 }

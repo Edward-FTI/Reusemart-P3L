@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Barang extends Model
 {
@@ -13,6 +14,7 @@ class Barang extends Model
     protected $fillable = [
         'id_penitip',
         'id_kategori',
+        'id_pegawai',
         'tgl_penitipan',
         'nama_barang',
         'harga_barang',
@@ -28,5 +30,8 @@ class Barang extends Model
     }
     public function kategori_barang(): BelongsTo {
         return $this->belongsTo(KategoriBarang::class, 'id_kategori');
+    }
+    public function pegawai(): BelongsTo {
+        return $this->belongsTo(Pegawai::class, 'id_pegawai');
     }
 }
