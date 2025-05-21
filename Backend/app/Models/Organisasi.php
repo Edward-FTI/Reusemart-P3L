@@ -18,12 +18,11 @@ class Organisasi extends Authenticatable
 
     protected $fillable = [
         'nama',
-        'alamat', 
-        'permintaan', 
+        'alamat',
         'email',
         'password',
         'no_hp',
-        
+
     ];
 
     protected $hidden = [
@@ -34,5 +33,5 @@ class Organisasi extends Authenticatable
         public function transaksi_donasi(): BelongsTo {
         return $this->belongsTo(TransaksiDonasi::class, 'id_organisasi');
     }
-   
+
 }
