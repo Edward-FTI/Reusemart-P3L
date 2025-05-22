@@ -39,22 +39,69 @@ export const CreateBarang = async (value) => {
     }
 };
 
-
-
 export const UpdateBarang = async (values) => {
     try {
-        const response = await useAxios.put(`/barang-qc/${values.id}`, values, {
+        const formData = new FormData();
+
+        for (const key in values) {
+            formData.append(key, values[key]);
+        }
+
+        formData.append('_method', 'PUT'); // Tambahkan ini agar backend Laravel mengenali override PUT
+
+        const response = await useAxios.post(`/barang-qc/${values.id}`, formData, {
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
-        return response.data;
+
+        return response.data.data;
+    } catch (error) {
+        console.error(error);
+        throw error.response?.data || error;
     }
-    catch (error) {
-        throw error.response.data;
-    }
-}
+};
+
+
+// export const UpdateBarang = async (values) => {
+//     try {
+//         const formData = new FormData();
+
+//         for (const key in values) {
+//             formData.append(key, values[key]);
+//         }
+
+//         const response = await useAxios.post(`/barang-qc/${values.id}`, formData, {
+//             headers: {
+//                 "Content-Type": "multipart/form-data",
+//                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+//             },
+//         });
+//         return response.data.data;
+//     }
+//     catch (error) {
+//         console.error(error);
+//         throw error.response?.data || error;
+//     }
+// };
+
+
+// export const UpdateBarang = async (values) => {
+//     try {
+//         const response = await useAxios.put(`/barang-qc/${values.id}`, values, {
+//             headers: {
+//                 // "Content-Type": "application/json",
+//                 "Content-Type": "multipart/form-data",
+//                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+//             },
+//         });
+//         return response.data;
+//     }
+//     catch (error) {
+//         throw error.response.data;
+//     }
+// }
 
 
 export const DeleteBarang = async (id) => {
