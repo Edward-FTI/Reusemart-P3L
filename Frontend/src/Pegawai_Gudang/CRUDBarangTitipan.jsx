@@ -109,28 +109,41 @@ const CRUDBarangTitipan = () => {
         e.preventDefault();
 
         try {
-            const dataToSubmit = { ...form };
-            if ((isEdit && !dataToSubmit.gambar) && (isEdit && !dataToSubmit.gambar_dua)) {
-                delete dataToSubmit.gambar
-                delete dataToSubmit.gambar_dua
+            const formData = new FormData();
+            formData.append('id', form.id);
+            formData.append('id_penitip', form.id_penitip);
+            formData.append('id_kategori', form.id_kategori);
+            formData.append('tgl_penitipan', form.tgl_penitipan);
+            formData.append('nama_barang', form.nama_barang);
+            formData.append('harga_barang', form.harga_barang);
+            formData.append('deskripsi', form.deskripsi);
+            formData.append('status_garansi', form.status_garansi);
+            formData.append('status_barang', form.status_barang);
+
+            if (form.gambar) {
+                formData.append('gambar', form.gambar);
+            }
+            if (form.gambar_dua) {
+                formData.append('gambar_dua', form.gambar_dua);
             }
 
             if (isEdit) {
-                await UpdateBarang(dataToSubmit);
-                alert('Berhasil update data barang');
+                // await UpdateBarang(formData);
+                await UpdateBarang(form); // Kirim objek, bukan FormData
+                toast.success('Berhasil update data barang');
+            } else {
+                await CreateBarang(form);
+                toast.success('Berhasil menambahkan data barang');
             }
-            else {
-                await CreateBarang(dataToSubmit);
-                alert('Berhasil menambahkan data barang');
-            }
+
             resetForm();
             fetchBarang();
-        }
-        catch (error) {
-            alert('Gagal menyimpan data barang');
+        } catch (error) {
+            toast.error('Gagal menyimpan data barang');
             console.error(error);
         }
-    }
+    };
+
 
     const handleEdit = (barang) => {
         setForm({ ...barang, gambar: '', gambar_dua: '' });
@@ -187,8 +200,8 @@ const CRUDBarangTitipan = () => {
                     <form
                         className="d-flex"
                         onSubmit={(e) => {
-                            e.preventDefault(); // mencegah reload halaman
-                            handleSearch();     // jalankan pencarian
+                            e.preventDefault();
+                            handleSearch();
                         }}
                     >
                         <input
@@ -204,8 +217,6 @@ const CRUDBarangTitipan = () => {
                             Cari
                         </button>
                     </form>
-
-
                 </div>
                 <button
                     className="btn btn-success"
@@ -279,11 +290,9 @@ const CRUDBarangTitipan = () => {
 
                                         <button
                                             className="btn btn-sm btn-primary me-2 mt-2"
-
                                         >
                                             Detail
                                         </button>
-
                                     </div>
                                 </td>
                             </tr>
@@ -327,7 +336,6 @@ const CRUDBarangTitipan = () => {
                                         isClearable
                                     />
                                 </div>
-
 
                                 <label htmlFor="kategori" className="form-label">
                                     Nama Kategori
@@ -429,31 +437,51 @@ const CRUDBarangTitipan = () => {
                                     />
                                 </div>
 
-                                {!isEdit && (
-                                    <>
-                                        <label htmlFor="gambar" className="form-label">Gambar</label>
-                                        <div className="mb-3">
-                                            <input
-                                                type="file"
-                                                name="gambar"
-                                                className="form-control"
-                                                onChange={handleChange}
-                                                required
+                                {/* Gambar section, now also shown in edit mode */}
+                                <label htmlFor="gambar" className="form-label">Gambar</label>
+                                <div className="mb-3">
+                                    {isEdit && form.gambar_lama && (
+                                        <div className="mb-2">
+                                            <img
+                                                src={`http://localhost:8000/${form.gambar_lama}`}
+                                                alt="Gambar Lama"
+                                                className="img-thumbnail"
+                                                style={{ width: "100px", height: "100px", objectFit: "cover" }}
                                             />
+                                            <div className="text-muted small">Gambar saat ini</div>
                                         </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        name="gambar"
+                                        className="form-control"
+                                        onChange={handleChange}
+                                        required={!isEdit}
+                                    />
+                                </div>
 
-                                        <label htmlFor="gambar_dua" className="form-label">Gambar 2</label>
-                                        <div className="mb-3">
-                                            <input
-                                                type="file"
-                                                name="gambar_dua"
-                                                className="form-control"
-                                                onChange={handleChange}
-                                                required
+                                <label htmlFor="gambar_dua" className="form-label">Gambar 2</label>
+                                <div className="mb-3">
+                                    {isEdit && form.gambar_dua_lama && (
+                                        <div className="mb-2">
+                                            <img
+                                                src={`http://localhost:8000/${form.gambar_dua_lama}`}
+                                                alt="Gambar 2 Lama"
+                                                className="img-thumbnail"
+                                                style={{ width: "100px", height: "100px", objectFit: "cover" }}
                                             />
+                                            <div className="text-muted small">Gambar 2 saat ini</div>
                                         </div>
-                                    </>
-                                )}
+                                    )}
+                                    <input
+                                        type="file"
+                                        name="gambar_dua"
+                                        className="form-control"
+                                        onChange={handleChange}
+                                        required={!isEdit}
+                                    />
+                                </div>
+
                                 <button type="submit" className="btn btn-primary">
                                     {isEdit ? 'Update' : 'Tambah'}
                                 </button>
