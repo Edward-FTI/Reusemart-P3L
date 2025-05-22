@@ -24,9 +24,16 @@ const CRUDBarangTitipan = () => {
 
     const [isEdit, setIsEdit] = useState(false);
 
-
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredBarangList, setFilteredBarangList] = useState([]);
+    const [selectedBarang, setSelectedBarang] = useState(null);
+
+    const handleShowDetail = (barang) => {
+        setSelectedBarang(barang);
+        const modal = new window.bootstrap.Modal(document.getElementById('detailModal'));
+        modal.show();
+    };
+
 
 
 
@@ -43,15 +50,6 @@ const CRUDBarangTitipan = () => {
         gambar: '',
         gambar_dua: ''
     })
-
-    // const fetchBarang = async () => {
-    //     try {
-    //         const data = await GetAllBarang();
-    //         setBarangList(data);
-    //     } catch (error) {
-    //         toast.error("Gagal mengambil data barang");
-    //     }
-    // };
 
     const fetchBarang = async () => {
         try {
@@ -165,16 +163,6 @@ const CRUDBarangTitipan = () => {
         }
     };
 
-
-    // const handleDelete = async (id) => {
-    //     try {
-    //         await api.delete(`/pegawai/${id}`);
-    //         fetchData(); // refetch data
-    //     } catch (error) {
-    //         console.error("Gagal hapus:", error);
-    //     }
-    // }
-
     const resetForm = () => {
         setForm({
             id: '',
@@ -240,9 +228,9 @@ const CRUDBarangTitipan = () => {
                         <th>Nama Barang</th>
                         <th>Harga Barang</th>
                         <th>Deskripsi</th>
-                        <th>Status Garansi</th>
+                        {/* <th>Status Garansi</th> */}
                         <th>Status Barang</th>
-                        <th>Gambar</th>
+                        {/* <th>Gambar</th> */}
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -258,16 +246,16 @@ const CRUDBarangTitipan = () => {
                                 <td>{b.nama_barang}</td>
                                 <td>{b.harga_barang}</td>
                                 <td>{b.deskripsi}</td>
-                                <td>{b.status_garansi}</td>
+                                {/* <td>{b.status_garansi}</td> */}
                                 <td>{b.status_barang}</td>
-                                <td>
+                                {/* <td>
                                     <img
                                         src={`http://localhost:8000/${b.gambar}`}
                                         alt={b.nama_barang}
                                         className="img-thumbnail"
                                         style={{ width: "100px", height: "100px", objectFit: "cover" }}
                                     />
-                                </td>
+                                </td> */}
                                 <td>
                                     <div className="d-flex flex-column">
                                         <button
@@ -276,7 +264,6 @@ const CRUDBarangTitipan = () => {
                                         >
                                             Edit
                                         </button>
-
                                         <button
                                             className="btn btn-sm btn-danger me-2 mt-2"
                                             onClick={() => {
@@ -287,9 +274,9 @@ const CRUDBarangTitipan = () => {
                                         >
                                             Hapus
                                         </button>
-
                                         <button
                                             className="btn btn-sm btn-primary me-2 mt-2"
+                                            onClick={() => handleShowDetail(b)}
                                         >
                                             Detail
                                         </button>
@@ -306,6 +293,7 @@ const CRUDBarangTitipan = () => {
                 </tbody>
             </table>
 
+            {/* Modal untuk isi form */}
             <div className="modal fade" id="formModal" tabIndex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -486,6 +474,63 @@ const CRUDBarangTitipan = () => {
                                     {isEdit ? 'Update' : 'Tambah'}
                                 </button>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            {/* Modal untuk detail barang */}
+            <div className="modal fade" id="detailModal" tabIndex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="detailModalLabel">Detail Barang</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            {selectedBarang && (
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div id="carouselGambar" className="carousel slide" data-bs-ride="carousel">
+                                            <div className="carousel-inner">
+                                                <div className="carousel-item active">
+                                                    <img
+                                                        src={`http://localhost:8000/${selectedBarang.gambar}`}
+                                                        className="d-block w-100 rounded"
+                                                        alt="Gambar 1"
+                                                    />
+                                                </div>
+                                                {selectedBarang.gambar_dua && (
+                                                    <div className="carousel-item">
+                                                        <img
+                                                            src={`http://localhost:8000/${selectedBarang.gambar_dua}`}
+                                                            className="d-block w-100 rounded"
+                                                            alt="Gambar 2"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <button className="carousel-control-prev" type="button" data-bs-target="#carouselGambar" data-bs-slide="prev">
+                                                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span className="visually-hidden">Previous</span>
+                                            </button>
+                                            <button className="carousel-control-next" type="button" data-bs-target="#carouselGambar" data-bs-slide="next">
+                                                <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span className="visually-hidden">Next</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <h5>{selectedBarang.nama_barang}</h5>
+                                        {/* <p><strong>Status Barang:</strong> {selectedBarang.status_barang}</p> */}
+                                        <p><strong>Status Garansi:</strong> {selectedBarang.status_garansi}</p>
+                                        <p><strong>Penitip:</strong> {selectedBarang.penitip.nama_penitip}</p>
+                                        <p><strong>Kategori:</strong> {selectedBarang.kategori_barang.nama_kategori}</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
