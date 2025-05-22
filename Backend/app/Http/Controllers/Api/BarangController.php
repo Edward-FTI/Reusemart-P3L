@@ -50,6 +50,7 @@ class BarangController extends Controller
         ], 200);
     }
 
+
     public function indexPublic()
     {
         $barang = Barang::with(['penitip', 'kategori_barang'])->get();
@@ -63,7 +64,6 @@ class BarangController extends Controller
             'message' => 'Data Barang kosong',
             'data' => []
         ], 400);
-
     }
 
 
@@ -95,8 +95,8 @@ class BarangController extends Controller
             ], 400);
         }
         if ($request->hasFile('gambar') && $request->hasFile('gambar_dua')) {
-            $imageName = time() . '.' . $request->file('gambar')->extension();
-            $imageName2 = time() . '.' . $request->file('gambar_dua')->extension();
+            $imageName = time() . '_' . uniqid() . '.' . $request->file('gambar')->extension();
+            $imageName2 = time() . '_' . uniqid() . '.' . $request->file('gambar_dua')->extension();
 
             $path_gambar = 'images/barang/' . $imageName;
             $path_gambar2 = 'images/barang/' . $imageName2;
@@ -117,7 +117,6 @@ class BarangController extends Controller
     }
 
 
-
     public function show(string $id)
     {
         $pegawaiId = $this->getPegawaiId();
@@ -129,22 +128,20 @@ class BarangController extends Controller
                 'data' => null
             ], 404);
         }
-
-        // Jika ingin membatasi hanya pegawai pemilik data yang bisa lihat
         if ($barang->id_pegawai !== $pegawaiId) {
             return response([
                 'message' => 'Tidak diizinkan melihat barang ini',
                 'data' => null
             ], 403);
         }
-
         return response([
             'message' => 'Barang dengan nama ' . $barang->nama_barang . ' ditemukan',
             'data' => $barang
         ], 200);
     }
 
-     public function showPublic(string $id)
+
+    public function showPublic(string $id)
     {
         $barang = Barang::find($id);
         if (!is_null($barang)) {
@@ -174,7 +171,6 @@ class BarangController extends Controller
         if ($barang->id_pegawai !== $pegawaiId) {
             return response(['message' => 'Tidak diizinkan mengedit barang ini'], 403);
         }
-
         $request->validate([
             'id_penitip' => 'required',
             'id_kategori' => 'required',
@@ -187,7 +183,6 @@ class BarangController extends Controller
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'gambar_dua' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-
         $path_gambar = $barang->gambar;
         $path_gambar2 = $barang->gambar_dua;
 
@@ -195,8 +190,8 @@ class BarangController extends Controller
             if (file_exists(public_path($path_gambar))) unlink(public_path($path_gambar));
             if (file_exists(public_path($path_gambar2))) unlink(public_path($path_gambar2));
 
-            $imageName = time() . '.' . $request->file('gambar')->extension();
-            $imageName2 = time() . '.' . $request->file('gambar_dua')->extension();
+            $imageName = time() . '_' . uniqid() . '.' . $request->file('gambar')->extension();
+            $imageName2 = time() . '_' . uniqid() . '.' . $request->file('gambar_dua')->extension();
 
             $path_gambar = 'images/barang/' . $imageName;
             $path_gambar2 = 'images/barang/' . $imageName2;
@@ -217,13 +212,11 @@ class BarangController extends Controller
             'gambar' => $path_gambar,
             'gambar_dua' => $path_gambar2,
         ]);
-
         return response([
             'message' => 'Berhasil update barang',
             'data' => $barang
         ], 200);
     }
-
 
 
     public function destroy(string $id)
@@ -246,18 +239,15 @@ class BarangController extends Controller
         if ($barang->gambar && file_exists(public_path($barang->gambar))) {
             unlink(public_path($barang->gambar));
         }
-
         if ($barang->gambar_dua && file_exists(public_path($barang->gambar_dua))) {
             unlink(public_path($barang->gambar_dua));
         }
-
         if ($barang->delete()) {
             return response([
                 'message' => 'Berhasil hapus data barang',
                 'data' => $barang
             ], 200);
         }
-
         return response([
             'message' => 'Gagal menghapus data barang',
             'data' => null
