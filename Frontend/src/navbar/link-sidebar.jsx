@@ -15,6 +15,11 @@ const LinkSidebar = () => {
                     className="d-inline-block" />
                 Data Pegawai
             </Link>
+            <Link to="organisasi/" className="d-flex align-items-center gap-2 text-white link-side">
+                <img src="https://img.icons8.com/?size=100&id=13547&format=png&color=000000" alt="" width="30"
+                    className="d-inline-block" />
+                Data Organisasi
+            </Link>
             {/* <a href="" className="d-flex align-items-center gap-2 text-white">
                 <img src="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" alt="" width="30"
                     className="d-inline-block" />

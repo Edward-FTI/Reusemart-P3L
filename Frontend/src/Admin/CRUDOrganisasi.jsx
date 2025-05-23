@@ -83,14 +83,14 @@ const CRUDOrganisasi = () => {
   return (
     <div className="container mt-5 bg-white p-4 rounded shadow">
       {/* Tombol kembali ke halaman Pegawai */}
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <button
           className="btn btn-outline-primary"
           onClick={() => navigate("/admin/pegawai")}
         >
           &larr; ke Halaman Pegawai
         </button>
-      </div>
+      </div> */}
 
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Data Organisasi</h2>

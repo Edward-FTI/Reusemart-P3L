@@ -18,6 +18,7 @@ import CRUDPenitip from "../Customer_Service/CRUDPenitip";
 import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
 
 // ADMIN
+import Admin from "../Admin/Admin";
 import CRUDJabatan from "../admin/CRUDJabatan";
 import CRUDMercandise from "../admin/CRUDMercandise";
 import CRUDOrganisasi from "../Admin/CRUDOrganisasi";
@@ -51,6 +52,7 @@ import DetailBarang from "../Components/DetailBarang";
 
 // ALAMAT
 import CRUDAlamat from "../pembeli/CrudAlamat";
+import CRUDPegawai from "../admin/CRUDPegawai";
 
 const router = createBrowserRouter([
   {
@@ -92,21 +94,32 @@ const router = createBrowserRouter([
 
   // ADMIN
   {
-    path: "/admin/jabatan",
-    element: <CRUDJabatan />,
-  },
-  {
-    path: "/admin/mercandise",
-    element: <CRUDMercandise />,
-  },
-  {
-    path: "/admin/organisasi",
-    element: <CRUDOrganisasi />,
-  },
-  {
-    path: "/admin/pegawai",
+    path: "/admin",
     element: <Layout />,
+    children: [
+      {
+        path: "/admin",
+        element: <Admin/>// atau komponen dashboard admin Anda
+      },
+      {
+        path: "pegawai",
+        element: <CRUDPegawai />,
+      },
+      {
+        path: "jabatan",
+        element: <CRUDJabatan />,
+      },
+      {
+        path: "mercandise",
+        element: <CRUDMercandise />,
+      },
+      {
+        path: "organisasi",
+        element: <CRUDOrganisasi />,
+      },
+    ],
   },
+
 
   // CUSTOMER SERVICE
   {
@@ -263,7 +276,7 @@ const router = createBrowserRouter([
   {
     path: "/detail/:id",
     element: (
-      <DetailBarang/>
+      <DetailBarang />
     )
   }
 ]);
