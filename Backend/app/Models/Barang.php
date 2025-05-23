@@ -16,6 +16,7 @@ class Barang extends Model
         'id_kategori',
         'id_pegawai',
         'tgl_penitipan',
+        'masa_penitipan',
         'nama_barang',
         'harga_barang',
         'deskripsi',

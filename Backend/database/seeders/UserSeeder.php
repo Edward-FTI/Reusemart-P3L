@@ -93,6 +93,7 @@ class UserSeeder extends Seeder
                 'password' => 'user123',
             ],
 
+            // untuk pegawai gudang
             [
                 'name' => 'Citra Wijay',
                 'email' => 'citra.wijaya@example.com',
@@ -101,22 +102,15 @@ class UserSeeder extends Seeder
             ],
 
             [
-                'name' => 'Citra Wijay',
-                'email' => 'budi.santoso@example.com',
+                'name' => 'Fani Lestari',
+                'email' => 'fani.lestari@example.com',
                 'role' => 'Pegawai Gudang',
                 'password' => 'password123',
             ],
 
             [
-                'name' => 'Citra Wijay',
-                'email' => 'eko.susanto@example.com',
-                'role' => 'Pegawai Gudang',
-                'password' => 'password123',
-            ],
-
-            [
-                'name' => 'Citra Wijay',
-                'email' => 'hendra.prabowo@example.com',
+                'name' => 'Irma Widya',
+                'email' => 'irma.widya@example.com',
                 'role' => 'Pegawai Gudang',
                 'password' => 'password123',
             ],

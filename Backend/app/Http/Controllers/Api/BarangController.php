@@ -7,6 +7,8 @@ use App\Models\Pegawai;
 use Illuminate\Http\Request;
 use App\Models\KategoriBarang;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -79,7 +81,6 @@ class BarangController extends Controller
         $validate = Validator::make($storeData, [
             'id_penitip' => 'required',
             'id_kategori' => 'required',
-            // 'id_pegawai' => 'required',
             'tgl_penitipan' => 'required',
             'nama_barang' => 'required',
             'harga_barang' => 'required',
@@ -103,11 +104,16 @@ class BarangController extends Controller
 
             $request->file('gambar')->move(public_path('images/barang'), $imageName);
             $request->file('gambar_dua')->move(public_path('images/barang'), $imageName2);
-
             $storeData['gambar'] = $path_gambar;
             $storeData['gambar_dua'] = $path_gambar2;
         }
         $storeData['id_pegawai'] = $pegawaiId;
+        $storeData['tgl_penitipan'] = Carbon::parse($storeData['tgl_penitipan'])->setTimeFromTimeString(now()->format('H:i:s'));
+
+
+        $tglPenitipan = Carbon::parse($storeData['tgl_penitipan'])->copy()->addDays(30);
+        $storeData['masa_penitipan'] = $tglPenitipan;
+
         $barang = Barang::create($storeData);
 
         return response([
