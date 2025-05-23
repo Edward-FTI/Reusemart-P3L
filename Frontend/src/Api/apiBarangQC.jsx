@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import useAxios from ".";
 
 
@@ -114,6 +115,7 @@ export const DeleteBarang = async (id) => {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
+        toast.success('Berhasil menghapus');
         return response.data;
     }
     catch (error) {
