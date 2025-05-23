@@ -61,7 +61,12 @@ const CRUDBarangTitipan = () => {
 
     const handleSearch = () => {
         const filtered = barangList.filter(b =>
-            b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase())
+            b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.penitip?.nama_penitip?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.kategori_barang?.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.status_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.tgl_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredBarangList(filtered);
     };
