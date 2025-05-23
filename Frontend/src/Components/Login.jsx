@@ -35,7 +35,7 @@ const LoginForm = () => {
               navigate("/customer/profile"); // Ensure this route exists
               break;
             case "Admin":
-              navigate("/admin/pegawai"); // Ensure this route exists
+              navigate("/admin"); // Ensure this route exists
               break;
             case "Customer Service":
               navigate("/customer-service/penitip"); // Ensure this route exists

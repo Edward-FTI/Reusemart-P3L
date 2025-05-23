@@ -100,14 +100,14 @@ const CRUDPegawai = () => {
 
   return (
     <>
-      <div className="container mt-3">
+      {/* <div className="container mt-3">
         <button
           className="btn btn-outline-primary mb-3"
           onClick={() => navigate("/admin/organisasi")}
         >
           &larr; ke Halaman Organisasi
         </button>
-      </div>
+      </div> */}
 
       <div className="container mt-5 bg-white p-4 rounded shadow">
         <div className="d-flex justify-content-between align-items-center mb-3">
