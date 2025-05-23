@@ -2,16 +2,56 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Controller;
 use App\Models\Barang;
+use App\Models\Pegawai;
 use Illuminate\Http\Request;
 use App\Models\KategoriBarang;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class BarangController extends Controller
 {
 
+    private function getPegawaiId()
+    {
+        $userEmail = Auth::user()->email;
+        $pegawai = Pegawai::where('email', $userEmail)->first();
+
+        if (!$pegawai) {
+            return null;
+        }
+        return $pegawai->id;
+    }
+
+
     public function index()
+    {
+        $pegawaiId = $this->getPegawaiId();
+
+        if (!$pegawaiId) {
+            return response([
+                'message' => 'Pegawai tidak ditemukan untuk user yang login'
+            ], 404);
+        }
+        $barang = Barang::with(['penitip', 'kategori_barang'])
+            ->where('id_pegawai', $pegawaiId)
+            ->get();
+
+        if ($barang->count() > 0) {
+            return response([
+                'message' => 'Berhasil mengambil data barang',
+                'data' => $barang
+            ], 200);
+        }
+        return response([
+            'message' => 'Data Barang kosong',
+            'data' => []
+        ], 200);
+    }
+
+
+    public function indexPublic()
     {
         $barang = Barang::with(['penitip', 'kategori_barang'])->get();
         if (count($barang) > 0) {
@@ -24,16 +64,22 @@ class BarangController extends Controller
             'message' => 'Data Barang kosong',
             'data' => []
         ], 400);
-
     }
 
 
     public function store(Request $request)
     {
+        $pegawaiId = $this->getPegawaiId();
+        if (!$pegawaiId) {
+            return response([
+                'message' => 'Pegawai tidak ditemukan untuk user yang login'
+            ], 404);
+        }
         $storeData = $request->all();
         $validate = Validator::make($storeData, [
             'id_penitip' => 'required',
             'id_kategori' => 'required',
+            // 'id_pegawai' => 'required',
             'tgl_penitipan' => 'required',
             'nama_barang' => 'required',
             'harga_barang' => 'required',
@@ -48,11 +94,9 @@ class BarangController extends Controller
                 'message' => $validate->errors()
             ], 400);
         }
-        $path_gambar = null;
-        $path_gambar2 = null;
         if ($request->hasFile('gambar') && $request->hasFile('gambar_dua')) {
-            $imageName = time() . '.' . $request->file('gambar')->extension();
-            $imageName2 = time() . '.' . $request->file('gambar_dua')->extension();
+            $imageName = time() . '_' . uniqid() . '.' . $request->file('gambar')->extension();
+            $imageName2 = time() . '_' . uniqid() . '.' . $request->file('gambar_dua')->extension();
 
             $path_gambar = 'images/barang/' . $imageName;
             $path_gambar2 = 'images/barang/' . $imageName2;
@@ -63,16 +107,41 @@ class BarangController extends Controller
             $storeData['gambar'] = $path_gambar;
             $storeData['gambar_dua'] = $path_gambar2;
         }
+        $storeData['id_pegawai'] = $pegawaiId;
         $barang = Barang::create($storeData);
 
         return response([
             'message' => 'Berhasil menambahkan data barang',
             'data' => $barang
-        ], 200);
+        ], 201);
     }
 
 
     public function show(string $id)
+    {
+        $pegawaiId = $this->getPegawaiId();
+        $barang = Barang::find($id);
+
+        if (is_null($barang)) {
+            return response([
+                'message' => 'Data barang tidak ditemukan',
+                'data' => null
+            ], 404);
+        }
+        if ($barang->id_pegawai !== $pegawaiId) {
+            return response([
+                'message' => 'Tidak diizinkan melihat barang ini',
+                'data' => null
+            ], 403);
+        }
+        return response([
+            'message' => 'Barang dengan nama ' . $barang->nama_barang . ' ditemukan',
+            'data' => $barang
+        ], 200);
+    }
+
+
+    public function showPublic(string $id)
     {
         $barang = Barang::find($id);
         if (!is_null($barang)) {
@@ -88,11 +157,19 @@ class BarangController extends Controller
     }
 
 
+
     public function update(Request $request, string $id)
     {
+        $pegawaiId = $this->getPegawaiId();
         $barang = Barang::find($id);
+
         if (is_null($barang)) {
             return response(['message' => 'Data tidak ditemukan', 'data' => null], 404);
+        }
+
+        // Cek apakah barang dimiliki oleh pegawai yang login
+        if ($barang->id_pegawai !== $pegawaiId) {
+            return response(['message' => 'Tidak diizinkan mengedit barang ini'], 403);
         }
         $request->validate([
             'id_penitip' => 'required',
@@ -106,16 +183,15 @@ class BarangController extends Controller
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'gambar_dua' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-
         $path_gambar = $barang->gambar;
-        $path_gambar2 = $barang->gambar;
+        $path_gambar2 = $barang->gambar_dua;
+
         if ($request->hasFile('gambar') && $request->hasFile('gambar_dua')) {
-            if (($barang->gambar && file_exists(public_path($barang->gambar))) && ($barang->gambar_dua && file_exists(public_path($barang->gambar_dua))) ) {
-                unlink(public_path($barang->gambar));
-                unlink(public_path($barang->gambar_dua));
-            }
-            $imageName = time() . '.' . $request->file('gambar')->extension();
-            $imageName2 = time() . '.' . $request->file('gambar_dua')->extension();
+            if (file_exists(public_path($path_gambar))) unlink(public_path($path_gambar));
+            if (file_exists(public_path($path_gambar2))) unlink(public_path($path_gambar2));
+
+            $imageName = time() . '_' . uniqid() . '.' . $request->file('gambar')->extension();
+            $imageName2 = time() . '_' . uniqid() . '.' . $request->file('gambar_dua')->extension();
 
             $path_gambar = 'images/barang/' . $imageName;
             $path_gambar2 = 'images/barang/' . $imageName2;
@@ -134,9 +210,8 @@ class BarangController extends Controller
             'status_garansi' => $request->status_garansi,
             'status_barang' => $request->status_barang,
             'gambar' => $path_gambar,
-            'gambar2' => $path_gambar2,
+            'gambar_dua' => $path_gambar2,
         ]);
-
         return response([
             'message' => 'Berhasil update barang',
             'data' => $barang
@@ -146,22 +221,36 @@ class BarangController extends Controller
 
     public function destroy(string $id)
     {
+        $pegawaiId = $this->getPegawaiId();
         $barang = Barang::find($id);
+
         if (is_null($barang)) {
             return response([
                 'message' => 'Data barang tidak ditemukan',
                 'data' => null
             ], 404);
         }
-        if ( ($barang->gambar && file_exists(public_path($barang->gambar))) && ($barang->gambar_dua && file_exists(public_path($barang->gambar_dua)))  ) {
+
+        // Cek apakah barang dimiliki oleh pegawai login
+        if ($barang->id_pegawai !== $pegawaiId) {
+            return response(['message' => 'Tidak diizinkan menghapus barang ini'], 403);
+        }
+
+        if ($barang->gambar && file_exists(public_path($barang->gambar))) {
             unlink(public_path($barang->gambar));
+        }
+        if ($barang->gambar_dua && file_exists(public_path($barang->gambar_dua))) {
             unlink(public_path($barang->gambar_dua));
         }
         if ($barang->delete()) {
             return response([
-                'message' => ' Berhasil hapus data barang', 
+                'message' => 'Berhasil hapus data barang',
                 'data' => $barang
             ], 200);
         }
+        return response([
+            'message' => 'Gagal menghapus data barang',
+            'data' => null
+        ], 500);
     }
 }

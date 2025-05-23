@@ -47,11 +47,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/jabatan/{id}', [JabatanController::class, 'show']);
 
     // ======================= Barang =======================
-    Route::get('/barang', [BarangController::class, 'index']);
-    Route::post('/barang', [BarangController::class, 'store']);
-    Route::get('/barang/{id}', [BarangController::class, 'show']);
-    Route::put('/barang/{id}', [BarangController::class, 'update']);
-    Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
+    Route::get('/barang-qc', [BarangController::class, 'index']);
+    Route::post('/barang-qc', [BarangController::class, 'store']);
+    Route::get('/barang-qc/{id}', [BarangController::class, 'show']);
+    Route::put('/barang-qc/{id}', [BarangController::class, 'update']);
+    Route::delete('/barang-qc/{id}', [BarangController::class, 'destroy']);
+
 
     // ======================= Kategori Barang =======================
     Route::get('/kategori', [KategoriBarangController::class, 'index']);
@@ -132,7 +133,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transaksi-donasi/searchByIdOrganisasi/{id}', [TransaksiDonasiController::class, 'searchByIdOrganisasi']);
 });
 
-Route::get('/barang', [BarangController::class, 'index']);
+Route::get('/barang', [BarangController::class, 'indexPublic']);
+// Route::post('/barang', [BarangController::class, 'store']);
+Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
+// Route::put('/barang/{id}', [BarangController::class, 'update']);
+// Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 
 // donasi
 Route::get('/donasi', [TransaksiDonasiController::class, 'index']);

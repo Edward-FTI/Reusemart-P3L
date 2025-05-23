@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_penitip')->constrained('penitips');
             $table->foreignId('id_kategori')->constrained('kategori_barangs');
+            $table->foreignId('id_pegawai')->constrained('pegawais');
             $table->date('tgl_penitipan');
             $table->string('nama_barang');
             $table->double('harga_barang');
