@@ -50,6 +50,20 @@ class UserSeeder extends Seeder
                 'role' => 'Penitip',
                 'password' => 'penitip123',
             ],
+            // password: admin123
+            [
+                'name' => 'Andi Sutrisno',
+                'email' => 'andi.sutrisno@example.com',
+                'role' => 'Penitip',
+                'password' => 'password123',
+            ],
+            // password: budi123
+            [
+                'name' => 'Penitip1',
+                'email' => 'penitip1@example.com',
+                'role' => 'Penitip',
+                'password' => 'password123',
+            ],
             // password: pembeli123
             [
                 'name' => 'Pembeli User',
