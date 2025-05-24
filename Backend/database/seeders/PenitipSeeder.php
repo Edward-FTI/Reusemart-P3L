@@ -2,11 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class PenitipSeeder extends Seeder
 {
@@ -15,18 +13,99 @@ class PenitipSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = \Faker\Factory::create('id_ID');
+        $penitips = [
+            [
+                'nama_penitip' => 'Andi Sutrisno',
+                'no_ktp'       => '7304010101010001',
+                'gambar_ktp'   => 'ktp_andi.jpg',
+                'saldo'        => 2500000,
+                'point'        => 150,
+                'email'        => 'andi.sutrisno@example.com',
+            ],
+            [
+                'nama_penitip' => 'Penitip1',
+                'no_ktp'       => '7304010202020002',
+                'gambar_ktp'   => 'ktp_budi.jpg',
+                'saldo'        => 3100000,
+                'point'        => 200,
+                'email'        => 'penitip1@example.com',
+            ],
+            [
+                'nama_penitip' => 'Citra Wijaya',
+                'no_ktp'       => '7304010303030003',
+                'gambar_ktp'   => 'ktp_citra.jpg',
+                'saldo'        => 2750000,
+                'point'        => 180,
+                'email'        => 'citra.wijaya@example.com',
+            ],
+            [
+                'nama_penitip' => 'Dina Pratama',
+                'no_ktp'       => '7304010404040004',
+                'gambar_ktp'   => 'ktp_dina.jpg',
+                'saldo'        => 2950000,
+                'point'        => 190,
+                'email'        => 'dina.pratama@example.com',
+            ],
+            [
+                'nama_penitip' => 'Eko Susanto',
+                'no_ktp'       => '7304010505050005',
+                'gambar_ktp'   => 'ktp_eko.jpg',
+                'saldo'        => 3200000,
+                'point'        => 210,
+                'email'        => 'eko.susanto@example.com',
+            ],
+            [
+                'nama_penitip' => 'Fani Lestari',
+                'no_ktp'       => '7304010606060006',
+                'gambar_ktp'   => 'ktp_fani.jpg',
+                'saldo'        => 2800000,
+                'point'        => 175,
+                'email'        => 'fani.lestari@example.com',
+            ],
+            [
+                'nama_penitip' => 'Gina Hidayati',
+                'no_ktp'       => '7304010707070007',
+                'gambar_ktp'   => 'ktp_gina.jpg',
+                'saldo'        => 2650000,
+                'point'        => 160,
+                'email'        => 'gina.hidayati@example.com',
+            ],
+            [
+                'nama_penitip' => 'Hendra Prabowo',
+                'no_ktp'       => '7304010808080008',
+                'gambar_ktp'   => 'ktp_hendra.jpg',
+                'saldo'        => 3050000,
+                'point'        => 220,
+                'email'        => 'hendra.prabowo@example.com',
+            ],
+            [
+                'nama_penitip' => 'Irma Widya',
+                'no_ktp'       => '7304010909090009',
+                'gambar_ktp'   => 'ktp_irma.jpg',
+                'saldo'        => 2900000,
+                'point'        => 195,
+                'email'        => 'irma.widya@example.com',
+            ],
+            [
+                'nama_penitip' => 'Joko Riyadi',
+                'no_ktp'       => '7304011010100010',
+                'gambar_ktp'   => 'ktp_joko.jpg',
+                'saldo'        => 2700000,
+                'point'        => 170,
+                'email'        => 'joko.riyadi@example.com',
+            ],
+        ];
 
-        for ($i = 1; $i <= 10; $i++) {
+        foreach ($penitips as $penitip) {
             DB::table('penitips')->insert([
-                'nama_penitip' => $faker->name,
-                'no_ktp'       => $faker->nik(),
-                'gambar_ktp'   => 'ktp_' . Str::random(5) . '.jpg',
-                'saldo'        => $faker->numberBetween(100000, 5000000),
-                'point'        => $faker->numberBetween(50, 500),
-                'email'        => $faker->unique()->safeEmail,
-                'password'     => Hash::make('password123'), // default password
-                'badge'        => "Null",
+                'nama_penitip' => $penitip['nama_penitip'],
+                'no_ktp'       => $penitip['no_ktp'],
+                'gambar_ktp'   => $penitip['gambar_ktp'],
+                'saldo'        => $penitip['saldo'],
+                'point'        => $penitip['point'],
+                'email'        => $penitip['email'],
+                'password'     => Hash::make('password123'), // sama seperti di PegawaiSeeder
+                'badge'        => 'Null',
                 'created_at'   => now(),
                 'updated_at'   => now(),
             ]);

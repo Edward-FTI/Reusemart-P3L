@@ -50,6 +50,20 @@ class UserSeeder extends Seeder
                 'role' => 'Penitip',
                 'password' => 'penitip123',
             ],
+            // password: admin123
+            [
+                'name' => 'Andi Sutrisno',
+                'email' => 'andi.sutrisno@example.com',
+                'role' => 'Penitip',
+                'password' => 'password123',
+            ],
+            // password: budi123
+            [
+                'name' => 'Penitip1',
+                'email' => 'penitip1@example.com',
+                'role' => 'Penitip',
+                'password' => 'password123',
+            ],
             // password: pembeli123
             [
                 'name' => 'Pembeli User',
@@ -101,22 +115,15 @@ class UserSeeder extends Seeder
             ],
 
             [
-                'name' => 'Citra Wijay',
-                'email' => 'budi.santoso@example.com',
+                'name' => 'Fani Lestari',
+                'email' => 'fani.lestari@example.com',
                 'role' => 'Pegawai Gudang',
                 'password' => 'password123',
             ],
 
             [
-                'name' => 'Citra Wijay',
-                'email' => 'eko.susanto@example.com',
-                'role' => 'Pegawai Gudang',
-                'password' => 'password123',
-            ],
-
-            [
-                'name' => 'Citra Wijay',
-                'email' => 'hendra.prabowo@example.com',
+                'name' => 'Irma Widya',
+                'email' => 'irma.widya@example.com',
                 'role' => 'Pegawai Gudang',
                 'password' => 'password123',
             ],
