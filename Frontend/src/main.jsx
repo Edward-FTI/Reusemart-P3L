@@ -1,7 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from 'react-dom/client';
 // import './index.css';
-import AppRouter from './routes/Routes';
+// import AppRouter from './routes/Routes';
+import AppRouter from "./Routes/Routes.jsx";
 import App from "./App.jsx";
 
 import Login from './Components/Login.jsx';
@@ -16,7 +17,6 @@ import Dashboard from "./Components/Dashboard.jsx";
 // import NavbarPage from './Components/Navbar.jsx'
 // import Footer from './Components/Footer.jsx'
 // import Admin from './Admin/Admin.jsx'
-
 
 
 

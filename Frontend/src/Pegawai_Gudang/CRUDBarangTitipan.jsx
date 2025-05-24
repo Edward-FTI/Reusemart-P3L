@@ -35,8 +35,6 @@ const CRUDBarangTitipan = () => {
     };
 
 
-
-
     const [form, setForm] = useState({
         id: '',
         id_penitip: '',
@@ -63,7 +61,12 @@ const CRUDBarangTitipan = () => {
 
     const handleSearch = () => {
         const filtered = barangList.filter(b =>
-            b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase())
+            b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.penitip?.nama_penitip?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.kategori_barang?.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.status_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.tgl_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredBarangList(filtered);
     };
@@ -225,6 +228,7 @@ const CRUDBarangTitipan = () => {
                         <th>Nama Penitip</th>
                         <th>Kategori Barang</th>
                         <th>Tanggal Penitipan</th>
+                        <th>Masa Penitipan</th>
                         <th>Nama Barang</th>
                         <th>Harga Barang</th>
                         <th>Deskripsi</th>
@@ -243,6 +247,7 @@ const CRUDBarangTitipan = () => {
                                 <td>{b.penitip.nama_penitip}</td>
                                 <td>{b.kategori_barang.nama_kategori || "Kategori tidak ditemukan"}</td>
                                 <td>{b.tgl_penitipan}</td>
+                                <td>{b.masa_penitipan}</td>
                                 <td>{b.nama_barang}</td>
                                 <td>{b.harga_barang}</td>
                                 <td>{b.deskripsi}</td>
@@ -499,6 +504,7 @@ const CRUDBarangTitipan = () => {
                                                         src={`http://localhost:8000/${selectedBarang.gambar}`}
                                                         className="d-block w-100 rounded"
                                                         alt="Gambar 1"
+                                                        style={{ maxHeight: "300px", objectFit: "contain" }}
                                                     />
                                                 </div>
                                                 {selectedBarang.gambar_dua && (
@@ -507,6 +513,7 @@ const CRUDBarangTitipan = () => {
                                                             src={`http://localhost:8000/${selectedBarang.gambar_dua}`}
                                                             className="d-block w-100 rounded"
                                                             alt="Gambar 2"
+                                                            style={{ maxHeight: "300px", objectFit: "contain" }}
                                                         />
                                                     </div>
                                                 )}

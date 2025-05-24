@@ -45,7 +45,8 @@ const NavbarCustomer_Service = () => {
       <div
         className="offcanvas offcanvas-start bg-success text-white"
         data-bs-scroll="true"
-        tabIndex="-1"
+        // tabIndex="-1"
+        tabIndex={-1}
         id="offcanvasWithBothOptions"
         aria-labelledby="offcanvasWithBothOptionsLabel"
       >

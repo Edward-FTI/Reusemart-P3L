@@ -107,6 +107,7 @@ class UserSeeder extends Seeder
                 'password' => 'user123',
             ],
 
+            // untuk pegawai gudang
             [
                 'name' => 'Citra Wijay',
                 'email' => 'citra.wijaya@example.com',
