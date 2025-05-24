@@ -6,6 +6,8 @@ use App\Models\Barang;
 use App\Models\TransaksiPenitipan;
 use App\Models\Penitip;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use DateTime;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -81,16 +83,18 @@ class TransaksiPenitipanController extends Controller
 
         if (!$barang) {
             return response([
-                'message' => 'Barang tidak ditemukan'
+                'message' => 'Barang tidak ditemukan',
+                'data' => null
             ], 404);
         }
         if ($barang->id_penitip != $penitipId) {
             return response([
-                'message' => 'Barang tidak ditemukan untuk penitip ini'
+                'message' => 'Barang tidak ditemukan untuk penitip ini',
+                'data' => null
             ], 404);
         }
         return response([
-            'message' => 'Berhasil mengambil data barang',
+            'message' => 'Barang dengan nama ' . $barang->nama_barang . ' ditemukan',
             'data' => $barang
         ], 200);
     }
@@ -100,7 +104,7 @@ class TransaksiPenitipanController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
     }
 
     /**

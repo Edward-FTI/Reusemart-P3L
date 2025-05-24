@@ -233,9 +233,9 @@ const router = createBrowserRouter([
     path: "/penitip/pengambilan",
     element: (
       <div>
-        <NavbarPage />
+        {/* <NavbarPage /> */}
         <PengambilanBarangKembali />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
