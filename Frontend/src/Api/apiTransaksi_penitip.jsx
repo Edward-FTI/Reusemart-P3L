@@ -1,6 +1,6 @@
 import useAxios from ".";
 
-export const GettRequest_donasi = async () => {
+export const GetTransaksi_Penitipan = async () => {
     try {
         const response = await useAxios.get('/transaksi-penitipan', {
             headers: {
@@ -15,7 +15,7 @@ export const GettRequest_donasi = async () => {
     }
 }
 
-export const GettRequest_donasiById = async (id) => {
+export const GetTransaksi_PenitipanById = async (id) => {
     try {
         const response = await useAxios.get(`/transaksi-penitipan/${id}`, {
             headers: {
@@ -30,7 +30,7 @@ export const GettRequest_donasiById = async (id) => {
     }
 }
 
-export const GettRequest_donasiByNama = async (nama) => {
+export const GetTransaksi_PenitipanByNama = async (nama) => {
     try {
         const response = await useAxios.get(`/transaksi-penitipan/search/${nama}`, {
             headers: {
@@ -45,7 +45,7 @@ export const GettRequest_donasiByNama = async (nama) => {
     }
 }
 
-export const CreatetRequest_donasi = async (value) => {
+export const CreatetTransaksi_Penitipan = async (value) => {
     try {
         const response = await useAxios.post('/transaksi-penitipan', value, {
             headers: {
@@ -60,7 +60,7 @@ export const CreatetRequest_donasi = async (value) => {
     }
 }
 
-export const UpdatetRequest_donasi = async (id, values) => {
+export const UpdatetTransaksi_Penitipan = async (id, values) => {
     try {
         const response = await useAxios.put(`/transaksi-penitipan/${id}`, values, {
             headers: {
@@ -77,7 +77,7 @@ export const UpdatetRequest_donasi = async (id, values) => {
 
 
 
-export const DeletetRequest_donasi = async (id) => {
+export const DeletetTransaksi_Penitipan = async (id) => {
     try {
         const response = await useAxios.delete(`/transaksi-penitipan/${id}`, {
             headers: {
