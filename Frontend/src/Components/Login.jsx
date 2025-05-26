@@ -41,7 +41,7 @@ const LoginForm = () => {
               navigate("/customer-service/penitip"); // Ensure this route exists
               break;
             case "Penitip":
-              navigate("/penitip/profile"); // Ensure this route exists
+              navigate("/penitip/pengambilan"); // Ensure this route exists
               break;
             case "Pegawai Gudang":
               navigate("/gudang/barang-titipan"); // Ensure this route exists

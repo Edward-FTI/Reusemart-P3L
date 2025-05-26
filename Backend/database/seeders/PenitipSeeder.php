@@ -17,6 +17,7 @@ class PenitipSeeder extends Seeder
             [
                 'nama_penitip' => 'Andi Sutrisno',
                 'no_ktp'       => '7304010101010001',
+
                 'alamat'       => 'Jl. Merdeka No. 12, Makassar',
                 'gambar_ktp'   => 'ktp_andi.jpg',
                 'saldo'        => 2500000,
@@ -116,6 +117,7 @@ class PenitipSeeder extends Seeder
                 'point'        => $penitip['point'],
                 'email'        => $penitip['email'],
                 'password'     => Hash::make('password123'),
+                'password'     => Hash::make('password123'), // sama seperti di PegawaiSeeder
                 'badge'        => 'Null',
                 'created_at'   => now(),
                 'updated_at'   => now(),

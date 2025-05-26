@@ -12,7 +12,6 @@
 .category-links a:hover {
     background-color: transparent !important;
     color: #198754;
-    /* jika ingin tetap hijau */
 }
 
 .col a {

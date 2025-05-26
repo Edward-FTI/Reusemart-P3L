@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\TransaksiDonasiController;
 use App\Http\Controllers\Api\DetailPengirimanController;
 use App\Http\Controllers\api\OwnerController;
 use App\Http\Controllers\Api\TransaksiPenjualanController;
+use App\Http\Controllers\Api\TransaksiPenitipanController;
 // use App\Http\Controllers\Api\RequestDonasiController;
 use App\Http\Controllers\Api\RequestDonasiController;
 
@@ -113,6 +114,13 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/detail-pengiriman/{id}', [DetailPengirimanController::class, 'show']);
     Route::put('/detail-pengiriman/{id}', [DetailPengirimanController::class, 'update']);
     Route::delete('/detail-pengiriman/{id}', [DetailPengirimanController::class, 'destroy']);
+
+    //Transaksi Penitipan
+    Route::get('/transaksi-penitipan', [TransaksiPenitipanController::class, 'index']);
+    Route::post('/transaksi-penitipan', [TransaksiPenitipanController::class, 'store']);
+    Route::get('/transaksi-penitipan/{id}', [TransaksiPenitipanController::class, 'show']);
+    Route::put('/transaksi-penitipan/{id}', [TransaksiPenitipanController::class, 'update']);
+    Route::delete('/transaksi-penitipan/{id}', [TransaksiPenitipanController::class, 'destroy']);
 
     //Transaksi Penjualan
     Route::get('/transaksi-penjualan', [TransaksiPenjualanController::class, 'index']);
