@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('id_pegawai')->constrained('pegawais');
             $table->dateTime('tgl_penitipan');
             $table->dateTime('masa_penitipan');
-            $table->string('penambahan_durasi')->nullable();
+            $table->integer('penambahan_durasi')->default(0);
             $table->string('nama_barang');
             $table->double('harga_barang');
             $table->string('deskripsi');
