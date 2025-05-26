@@ -68,10 +68,7 @@ class TransaksiPenitipanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-
-    }
+    public function store(Request $request) {}
 
     /**
      * Display the specified resource.
@@ -104,8 +101,49 @@ class TransaksiPenitipanController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $penitipId = $this->getPenitipId();
 
+        // Cek apakah barangnya ada
+        $barang = Barang::find($id);
+
+        if (!$barang) {
+            return response([
+                'message' => 'Barang tidak ditemukan',
+                'data' => null
+            ], 404);
+        }
+
+        // Pastikan barang itu milik penitip yang login
+        if ($barang->id_penitip != $penitipId) {
+            return response([
+                'message' => 'Anda tidak berhak mengubah barang ini',
+                'data' => null
+            ], 403);
+        }
+
+        // Validasi input (opsional, tapi direkomendasikan)
+        $validator = Validator::make($request->all(), [
+            'tgl_penitipan' => 'nullable|date',
+            'masa_penitipan' => 'nullable|date',
+            'penambahan_durasi' => 'nullable|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response([
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Lakukan update
+        $barang->update($request->only(['tgl_penitipan', 'masa_penitipan', 'penambahan_durasi']));
+
+        return response([
+            'message' => 'Data barang berhasil diperbarui',
+            'data' => $barang
+        ], 200);
     }
+
 
     /**
      * Remove the specified resource from storage.

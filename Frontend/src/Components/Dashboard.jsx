@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../assets/Logo/logo.png";
 import "./DashboardCss.css";
@@ -8,6 +9,12 @@ const Dashboard = () => {
     const [barang, setBarang] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedBarang, setSelectedBarang] = useState(null); // Untuk barang yang dipilih
+
+    const navigate = useNavigate();
+
+    const handleMasukClick = () => {
+    navigate('/login');
+  };
 
     useEffect(() => {
         const fetchBarang = async () => {
@@ -65,7 +72,7 @@ const Dashboard = () => {
                             </form>
                         </div>
                         <div className="d-flex align-items-center">
-                            <button className="btn btn-outline-success me-2">Masuk</button>
+                            <button className="btn btn-outline-success me-2" onClick={handleMasukClick}>Masuk</button>
                             <button className="btn btn-outline-success me-2">Daftar</button>
                             <button className="btn btn-outline-success d-flex justify-content-center align-items-center" style={{ width: "35px", height: "35px" }}>
                                 <i className="bi bi-cart3 fs-4"></i>

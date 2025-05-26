@@ -37,7 +37,7 @@ import CRUDTransaksiPenjualanCustomer from "../Customers/CRUDTransaksiPenjualanC
 import ShowProfilePenitip from "../Penitip/ShowProfilePenitip";
 import ShowHistoryPenitip from "../penitip/ShowHistoryPenitip";
 import CRUDPenitipan from "../penitip/CRUDPenitipan";
-import PengambilanBarangKembali from "../penitip/PengambilanBarangKembali";
+import PengambilanBarangKembali from "../Penitip/PengambilanBarangKembali";
 
 // ORGANISASI
 import CRUDTransaksiRequestDonasi from "../Organisasi/CRUDTransaksiRequestDonasi";
