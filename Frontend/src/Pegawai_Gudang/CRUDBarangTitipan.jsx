@@ -43,6 +43,7 @@ const CRUDBarangTitipan = () => {
         tgl_penitipan: '',
         nama_barang: '',
         harga_barang: '',
+        berat_barang: '',
         deskripsi: '',
         status_garansi: '',
         status_barang: '',
@@ -118,6 +119,7 @@ const CRUDBarangTitipan = () => {
             formData.append('tgl_penitipan', form.tgl_penitipan);
             formData.append('nama_barang', form.nama_barang);
             formData.append('harga_barang', form.harga_barang);
+            formData.append('berat_barang', form.berat_barang);
             formData.append('deskripsi', form.deskripsi);
             formData.append('status_garansi', form.status_garansi);
             formData.append('status_barang', form.status_barang);
@@ -175,6 +177,7 @@ const CRUDBarangTitipan = () => {
             tgl_penitipan: '',
             nama_barang: '',
             harga_barang: '',
+            berat_barang: '',
             deskripsi: '',
             status_garansi: '',
             status_barang: '',
@@ -193,41 +196,39 @@ const CRUDBarangTitipan = () => {
         doc.text("Nota Penitipan Barang", 10, 15);
 
         doc.setFontSize(12);
-        doc.setFont("times", "normal");
+        doc.setFont("times", "bold");
         doc.text("ReUse Mart", 20, 25);
+
+        doc.setFont("times", "normal");
         doc.text("Jl. Green Eco Park No. 456 Yogyakarta", 20, 30);
 
         // Info Nota
         doc.setFontSize(11);
-        doc.text(`No Nota : ${barang.nomor_nota || '24.02.101'}`, 20, 40);
-        doc.text(`Tanggal penitipan : ${barang.tgl_penitipan || '15/2/2025 12:16:56'}`, 20, 45);
-        doc.text(`Masa penitipan sampai: ${barang.masa_penitipan || '17/3/2025'}`, 20, 50);
+        doc.text(`No Nota                       : ${barang.nomor_nota || '24.02.101'}`, 20, 40); // nomor nota
+        doc.text(`Tanggal penitipan        : ${barang.tgl_penitipan || '15/2/2025 12:16:56'}`, 20, 45); // tanggal penitipan
+        doc.text(`Masa penitipan sampai: ${barang.masa_penitipan || '17/3/2025'}`, 20, 50); // masa penitipan
 
         // Penitip
-        const nama_penitip = barang.penitip?.nama_penitip || 'T21 / Valentino';
-        const alamat_penitip = barang.penitip?.alamat || 'Perumahan Margonda 2/50\nCaturtunggal, Depok, Sleman';
-        doc.text(`\nPenitip : ${nama_penitip}`, 20, 60);
-        doc.text(`Alamat : ${alamat_penitip}`, 20, 70);
-        doc.text(`Delivery : Kurir ReUseMart (Cahyono)`, 20, 85);
+        const penitip = `T${barang.penitip.id} / ${barang.penitip?.nama_penitip}` //nama penitip
+        const alamat_penitip = barang.penitip?.alamat; // alamat penitip
+
+        doc.setFont("times", "bold");
+        doc.text("Penitip :", 20, 60);  // label bold
+
+        doc.setFont("times", "normal");
+        doc.text(penitip, 35, 60); // panggil penitip
+        doc.text(`Alamat : ${alamat_penitip}`, 20, 65); // panggil alamat
+        doc.text(`Delivery : Kurir ReUseMart (Cahyono)`, 20, 70); // kurir
 
         // Barang 1
-        let y = 100;
-        doc.setFont("times", "bold");
+        let y = 80;
+        doc.setFont("times", "normal");
         doc.text(`${barang.nama_barang}`, 20, y);
         doc.text(`${barang.harga_barang?.toLocaleString()}`, 90, y, { align: "right" });
 
         doc.setFont("times", "normal");
         doc.text(`Garansi ON Juli 2025`, 20, y + 7);
-        doc.text(`Berat barang: ${barang.berat || '20 kg'}`, 20, y + 14);
-
-        // Contoh barang ke-2 (jika ada)
-        // y += 28;
-        // doc.setFont("times", "bold");
-        // doc.text(`Sepeda statis`, 10, y);
-        // doc.text(`1.000.000`, 100, y, { align: "right" });
-
-        // doc.setFont("times", "normal");
-        // doc.text(`Berat barang: 10 kg`, 10, y + 7);
+        doc.text(`Berat barang: ${barang.berat_barang} kg`, 20, y + 14);
 
         // Footer
         doc.text("Diterima dan QC oleh:", 50, y + 25);
@@ -453,6 +454,19 @@ const CRUDBarangTitipan = () => {
                                     />
                                 </div>
 
+                                <label htmlFor="berat_barang" className="form-label">Berat Barang</label>
+                                <div className="mb-3">
+                                    <input
+                                        type='number'
+                                        name="berat_barang"
+                                        className="form-control"
+                                        placeholder="Berat Barang"
+                                        value={form.berat_barang}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
                                 <label htmlFor="deskripsi" className="form-label">Deskripsi</label>
                                 <div className="mb-3">
                                     <input
@@ -597,6 +611,7 @@ const CRUDBarangTitipan = () => {
                                         <p><strong>Status Garansi:</strong> {selectedBarang.status_garansi}</p>
                                         <p><strong>Penitip:</strong> {selectedBarang.penitip.nama_penitip}</p>
                                         <p><strong>Kategori:</strong> {selectedBarang.kategori_barang.nama_kategori}</p>
+                                        <p><strong>Berat Barang:</strong> {selectedBarang.berat_barang} kg</p>
                                     </div>
                                 </div>
                             )}
