@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\AlamatPembeliController;
 use App\Http\Controllers\Api\KategoriBarangController;
 use App\Http\Controllers\Api\TransaksiDonasiController;
 use App\Http\Controllers\Api\DetailPengirimanController;
+use App\Http\Controllers\api\OwnerController;
 use App\Http\Controllers\Api\TransaksiPenjualanController;
 use App\Http\Controllers\Api\TransaksiPenitipanController;
 // use App\Http\Controllers\Api\RequestDonasiController;
@@ -139,6 +140,9 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'update']);
     Route::delete('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'destroy']);
     Route::get('/transaksi-donasi/searchByIdOrganisasi/{id}', [TransaksiDonasiController::class, 'searchByIdOrganisasi']);
+
+    // Owner
+    Route::get('/owner', [OwnerController::class, 'indexOwner']);
 });
 
 Route::get('/barang', [BarangController::class, 'indexPublic']);
@@ -148,5 +152,5 @@ Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
 // Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 
 // donasi
-Route::get('/donasi', [TransaksiDonasiController::class, 'index']);
-Route::put('/donasi/{id}', [TransaksiDonasiController::class, 'update']);
+// Route::get('/donasi', [TransaksiDonasiController::class, 'index']);
+// Route::put('/donasi/{id}', [TransaksiDonasiController::class, 'update']);

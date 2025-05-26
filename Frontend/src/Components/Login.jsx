@@ -47,10 +47,10 @@ const LoginForm = () => {
               navigate("/gudang/barang-titipan"); // Ensure this route exists
               break;
             case "Organisasi":
-              navigate("/"); // Ensure this route exists
+              navigate("/organisasi/transaksi-request-donasi"); // Ensure this route exists/organisasi/transaksi-request-donasi
               break;
             case "Owner":
-              navigate("/"); // Ensure this route exists
+              navigate("/owner"); // Ensure this route exists
               break;
             case "Kurir":
               navigate("/"); // Ensure this route exists

@@ -265,14 +265,14 @@ const router = createBrowserRouter([
     path: "/owner",
     element: (
       <div>
-        <NavbarPage />
+        {/* <NavbarPage /> */}
         <Owner />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
 
-  //Detiail Barang
+  //Detail Barang
   {
     path: "/detail/:id",
     element: (

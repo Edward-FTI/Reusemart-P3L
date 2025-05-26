@@ -18,6 +18,7 @@ return new class extends Migration
             // $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('nama_penitip');
             $table->string('no_ktp');
+            $table->string('alamat');
             $table->string('gambar_ktp');
             $table->double('saldo')->nullable()->default(000.00);
             $table->integer('point');

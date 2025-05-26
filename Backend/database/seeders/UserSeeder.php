@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
                 'role' => 'Admin',
                 'password' => 'admin123',
             ],
+
             // password: cs123
             [
                 'name' => 'Customer Service User',
@@ -29,6 +30,7 @@ class UserSeeder extends Seeder
                 'role' => 'Customer Service',
                 'password' => 'cs12345',
             ],
+
             // password: gudang123
             [
                 'name' => 'Pegawai Gudang User',
@@ -36,6 +38,7 @@ class UserSeeder extends Seeder
                 'role' => 'Pegawai Gudang',
                 'password' => 'gudang123',
             ],
+
             // password: kurir123
             [
                 'name' => 'Kurir User',
@@ -43,6 +46,7 @@ class UserSeeder extends Seeder
                 'role' => 'Kurir',
                 'password' => 'kurir123',
             ],
+
             // password: penitip123
             [
                 'name' => 'Penitip User',
@@ -64,6 +68,7 @@ class UserSeeder extends Seeder
                 'role' => 'Penitip',
                 'password' => 'password123',
             ],
+          
             // password: pembeli123
             [
                 'name' => 'Pembeli User',
@@ -71,6 +76,7 @@ class UserSeeder extends Seeder
                 'role' => 'Pembeli',
                 'password' => 'pembeli123',
             ],
+
             // password: organisasi123
             [
                 'name' => 'Organisasi User',
@@ -78,6 +84,7 @@ class UserSeeder extends Seeder
                 'role' => 'Organisasi',
                 'password' => 'organisasi123',
             ],
+
             // password: organisasi123
             [
                 'name' => 'Organisasi A',
@@ -85,6 +92,7 @@ class UserSeeder extends Seeder
                 'role' => 'Organisasi',
                 'password' => 'organisasi123',
             ],
+
             // password: owner123
             [
                 'name' => 'Owner User',
@@ -92,6 +100,7 @@ class UserSeeder extends Seeder
                 'role' => 'Owner',
                 'password' => 'owner123',
             ],
+
             // password: hunter123
             [
                 'name' => 'Hunter User',
@@ -99,6 +108,7 @@ class UserSeeder extends Seeder
                 'role' => 'Hunter',
                 'password' => 'hunter123',
             ],
+
             // password: user123
             [
                 'name' => 'Generic User',
