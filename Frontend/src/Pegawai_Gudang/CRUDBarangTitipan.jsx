@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "sonner";
 import Select from "react-select";
+import jsPDF from "jspdf";
 
 
 import {
@@ -183,6 +184,61 @@ const CRUDBarangTitipan = () => {
         setIsEdit(false);
     }
 
+    const handleDownloadNota = (barang) => {
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFont("times", "bold");
+        doc.setFontSize(14);
+        doc.text("Nota Penitipan Barang", 10, 15);
+
+        doc.setFontSize(12);
+        doc.setFont("times", "normal");
+        doc.text("ReUse Mart", 20, 25);
+        doc.text("Jl. Green Eco Park No. 456 Yogyakarta", 20, 30);
+
+        // Info Nota
+        doc.setFontSize(11);
+        doc.text(`No Nota : ${barang.nomor_nota || '24.02.101'}`, 20, 40);
+        doc.text(`Tanggal penitipan : ${barang.tgl_penitipan || '15/2/2025 12:16:56'}`, 20, 45);
+        doc.text(`Masa penitipan sampai: ${barang.masa_penitipan || '17/3/2025'}`, 20, 50);
+
+        // Penitip
+        const nama_penitip = barang.penitip?.nama_penitip || 'T21 / Valentino';
+        const alamat_penitip = barang.penitip?.alamat || 'Perumahan Margonda 2/50\nCaturtunggal, Depok, Sleman';
+        doc.text(`\nPenitip : ${nama_penitip}`, 20, 60);
+        doc.text(`Alamat : ${alamat_penitip}`, 20, 70);
+        doc.text(`Delivery : Kurir ReUseMart (Cahyono)`, 20, 85);
+
+        // Barang 1
+        let y = 100;
+        doc.setFont("times", "bold");
+        doc.text(`${barang.nama_barang}`, 20, y);
+        doc.text(`${barang.harga_barang?.toLocaleString()}`, 90, y, { align: "right" });
+
+        doc.setFont("times", "normal");
+        doc.text(`Garansi ON Juli 2025`, 20, y + 7);
+        doc.text(`Berat barang: ${barang.berat || '20 kg'}`, 20, y + 14);
+
+        // Contoh barang ke-2 (jika ada)
+        // y += 28;
+        // doc.setFont("times", "bold");
+        // doc.text(`Sepeda statis`, 10, y);
+        // doc.text(`1.000.000`, 100, y, { align: "right" });
+
+        // doc.setFont("times", "normal");
+        // doc.text(`Berat barang: 10 kg`, 10, y + 7);
+
+        // Footer
+        doc.text("Diterima dan QC oleh:", 50, y + 25);
+        doc.text("P18 - Farida", 50, y + 35);
+
+        doc.setLineWidth(0.5);
+        doc.rect(8, 10, 190, y + 35); // kotak sekitar seluruh isi
+
+        doc.save(`Nota_${barang.nama_barang || 'Barang'}.pdf`);
+    };
+
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -284,6 +340,12 @@ const CRUDBarangTitipan = () => {
                                             onClick={() => handleShowDetail(b)}
                                         >
                                             Detail
+                                        </button>
+                                        <button
+                                            className="btn btn-sm btn-success me-2 mt-2"
+                                            onClick={() => handleDownloadNota(b)}
+                                        >
+                                            Unduh Nota
                                         </button>
                                     </div>
                                 </td>

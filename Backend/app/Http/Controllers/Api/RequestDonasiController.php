@@ -12,6 +12,22 @@ use Exception;
 
 class RequestDonasiController extends Controller
 {
+
+    public function indexOwner()
+    {
+        $request = Request_Donasi::all();
+        if (count($request) > 0) {
+            return response([
+                'message' => 'Berhasil mengambil data request donasi',
+                'data' => $request,
+            ], 200);
+        }
+        return response([
+            'message' => 'Gagal mengambil data request donasi',
+            'data' => null,
+        ], 400);
+    }
+
     private function getOrganisasiId()
     {
         $userEmail = Auth::user()->email;
