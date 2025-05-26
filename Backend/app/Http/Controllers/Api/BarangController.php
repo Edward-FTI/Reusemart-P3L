@@ -84,6 +84,8 @@ class BarangController extends Controller
             'tgl_penitipan' => 'required',
             'nama_barang' => 'required',
             'harga_barang' => 'required',
+            'berat_barang' => 'required',
+            'penambahan_durasi' => 'nullable|required',
             'penambahan_durasi' => 'required',
             'deskripsi' => 'required',
             'status_garansi' => 'required',
@@ -110,7 +112,6 @@ class BarangController extends Controller
         }
         $storeData['id_pegawai'] = $pegawaiId;
         $storeData['tgl_penitipan'] = Carbon::parse($storeData['tgl_penitipan'])->setTimeFromTimeString(now()->format('H:i:s'));
-
 
         $tglPenitipan = Carbon::parse($storeData['tgl_penitipan'])->copy()->addDays(30);
         $storeData['masa_penitipan'] = $tglPenitipan;
@@ -184,6 +185,8 @@ class BarangController extends Controller
             'tgl_penitipan' => 'required',
             'nama_barang' => 'required',
             'harga_barang' => 'required',
+            'berat_barang' => 'required',
+            'penambahan_durasi' => 'nullable|required',
             'penambahan_durasi' => 'required',
             'deskripsi' => 'required',
             'status_garansi' => 'required',
@@ -214,6 +217,7 @@ class BarangController extends Controller
             'tgl_penitipan' => $request->tgl_penitipan,
             'nama_barang' => $request->nama_barang,
             'harga_barang' => $request->harga_barang,
+            'berat_barang' => $request->berat_barang,
             'penambahan_durasi' => $request->penambahan_durasi,
             'deskripsi' => $request->deskripsi,
             'status_garansi' => $request->status_garansi,

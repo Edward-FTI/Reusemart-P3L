@@ -20,6 +20,7 @@ class Barang extends Model
         'penambahan_durasi',
         'nama_barang',
         'harga_barang',
+        'berat_barang',
         'deskripsi',
         'status_garansi',
         'status_barang',
