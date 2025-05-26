@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('penambahan_durasi')->nullable();
             $table->string('nama_barang');
             $table->double('harga_barang');
+            $table->integer('berat_barang');
             $table->string('deskripsi');
             $table->string('status_garansi');
             $table->string('status_barang');
