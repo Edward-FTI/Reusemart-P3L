@@ -23,7 +23,7 @@ return new class extends Migration
             $table->double('harga_barang');
             $table->integer('berat_barang');
             $table->string('deskripsi');
-            $table->string('status_garansi');
+            $table->date('status_garansi')->nullable();
             $table->string('status_barang');
             $table->string('gambar');
             $table->string('gambar_dua');

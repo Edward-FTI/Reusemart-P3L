@@ -187,7 +187,7 @@ const CRUDBarangTitipan = () => {
         setIsEdit(false);
     }
 
-    const handleDownloadNota = (barang) => {
+    const handleDownloadNota = (barangList) => {
         const doc = new jsPDF();
 
         // Header
@@ -202,43 +202,59 @@ const CRUDBarangTitipan = () => {
         doc.setFont("times", "normal");
         doc.text("Jl. Green Eco Park No. 456 Yogyakarta", 20, 30);
 
+        // Ambil barang pertama untuk informasi umum (karena penitip sama)
+        const barangPertama = barangList[0];
+
         // Info Nota
         doc.setFontSize(11);
-        doc.text(`No Nota                       : ${barang.nomor_nota || '24.02.101'}`, 20, 40); // nomor nota
-        doc.text(`Tanggal penitipan        : ${barang.tgl_penitipan || '15/2/2025 12:16:56'}`, 20, 45); // tanggal penitipan
-        doc.text(`Masa penitipan sampai: ${barang.masa_penitipan || '17/3/2025'}`, 20, 50); // masa penitipan
+        doc.text(`No Nota                       : ${barangPertama.nomor_nota || '24.02.101'}`, 20, 40);
+
+        const [tanggal, waktu] = barangPertama.tgl_penitipan.split(' ');
+        const [tahun, bulan, hari] = tanggal.split('-');
+        const formattedDate = `${hari}/${bulan}/${tahun} ${waktu}`;
+
+        doc.text(`Tanggal penitipan        : ${formattedDate}`, 20, 45);
+        doc.text(`Masa penitipan sampai: ${new Date(barangPertama.masa_penitipan).toLocaleDateString('id-ID')}`, 20, 50);
 
         // Penitip
-        const penitip = `T${barang.penitip.id} / ${barang.penitip?.nama_penitip}` //nama penitip
-        const alamat_penitip = barang.penitip?.alamat; // alamat penitip
+        const penitip = `T${barangPertama.penitip.id} / ${barangPertama.penitip?.nama_penitip}`;
+        const alamat_penitip = barangPertama.penitip?.alamat;
 
         doc.setFont("times", "bold");
-        doc.text("Penitip :", 20, 60);  // label bold
+        doc.text("Penitip :", 20, 60);
 
         doc.setFont("times", "normal");
-        doc.text(penitip, 35, 60); // panggil penitip
-        doc.text(`Alamat : ${alamat_penitip}`, 20, 65); // panggil alamat
-        doc.text(`Delivery : Kurir ReUseMart (Cahyono)`, 20, 70); // kurir
+        doc.text(penitip, 35, 60);
+        doc.text(alamat_penitip, 20, 65);
+        doc.text(`Delivery : Kurir ReUseMart (Cahyono)`, 20, 70);
 
-        // Barang 1
+        // Tampilkan daftar semua barang
         let y = 80;
-        doc.setFont("times", "normal");
-        doc.text(`${barang.nama_barang}`, 20, y);
-        doc.text(`${barang.harga_barang?.toLocaleString()}`, 90, y, { align: "right" });
+        barangList.forEach((barang, index) => {
+            doc.setFont("times", "normal");
+            doc.text(`${barang.nama_barang}`, 20, y);
+            doc.text(`${barang.harga_barang?.toLocaleString()}`, 90, y, { align: "right" });
+            y += 5;
 
-        doc.setFont("times", "normal");
-        doc.text(`Garansi ON Juli 2025`, 20, y + 7);
-        doc.text(`Berat barang: ${barang.berat_barang} kg`, 20, y + 14);
+            if (barang.status_garansi != null) {
+                doc.text(`Garansi ON ${barang.status_garansi}`, 20, y);
+                y += 5;
+            }
+            doc.text(`Berat barang: ${barang.berat_barang} kg`, 20, y);
+            y += 5;
+        });
 
         // Footer
-        doc.text("Diterima dan QC oleh:", 50, y + 25);
-        doc.text("P18 - Farida", 50, y + 35);
+        y += 10;
+        doc.text("Diterima dan QC oleh:", 50, y);
+        doc.text(`P${barangPertama.pegawai?.id} - ${barangPertama.pegawai.nama}`, 50, y + 10);
 
         doc.setLineWidth(0.5);
-        doc.rect(8, 10, 190, y + 35); // kotak sekitar seluruh isi
+        doc.rect(8, 10, 190, y + 10); // kotak sekitar seluruh isi
 
-        doc.save(`Nota_${barang.nama_barang || 'Barang'}.pdf`);
+        doc.save(`Nota_${barangPertama.penitip.nama_penitip}.pdf`);
     };
+
 
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
@@ -344,10 +360,16 @@ const CRUDBarangTitipan = () => {
                                         </button>
                                         <button
                                             className="btn btn-sm btn-success me-2 mt-2"
-                                            onClick={() => handleDownloadNota(b)}
+                                            onClick={() => {
+                                                const barangPenitipTerkait = barangList.filter(
+                                                    (barangItem) => barangItem.penitip.id === b.penitip.id
+                                                );
+                                                handleDownloadNota(barangPenitipTerkait);
+                                            }}
                                         >
                                             Unduh Nota
                                         </button>
+
                                     </div>
                                 </td>
                             </tr>
@@ -483,13 +505,12 @@ const CRUDBarangTitipan = () => {
                                 <label htmlFor="status_garansi" className="form-label">Status Garansi</label>
                                 <div className="mb-3">
                                     <input
-                                        type='text'
+                                        type='date'
                                         name="status_garansi"
                                         className="form-control"
                                         placeholder="Status Garansi"
                                         value={form.status_garansi}
                                         onChange={handleChange}
-                                        required
                                     />
                                 </div>
 

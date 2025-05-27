@@ -30,13 +30,12 @@ class BarangController extends Controller
     public function index()
     {
         $pegawaiId = $this->getPegawaiId();
-
         if (!$pegawaiId) {
             return response([
                 'message' => 'Pegawai tidak ditemukan untuk user yang login'
             ], 404);
         }
-        $barang = Barang::with(['penitip', 'kategori_barang'])
+        $barang = Barang::with(['penitip', 'kategori_barang', 'pegawai'])
             ->where('id_pegawai', $pegawaiId)
             ->get();
 
@@ -87,7 +86,7 @@ class BarangController extends Controller
             'berat_barang' => 'required',
             'penambahan_durasi' => 'nullable|integer',
             'deskripsi' => 'required',
-            'status_garansi' => 'required',
+            'status_garansi' => 'nullable|date',
             'status_barang' => 'required',
             'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'gambar_dua' => 'required|image|mimes:jpeg,png,jpg|max:2048',
@@ -187,7 +186,7 @@ class BarangController extends Controller
             'berat_barang' => 'required',
             'penambahan_durasi' => 'nullable|integer',
             'deskripsi' => 'required',
-            'status_garansi' => 'required',
+            'status_garansi' => 'nullable|date',
             'status_barang' => 'required',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'gambar_dua' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
