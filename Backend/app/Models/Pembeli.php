@@ -32,4 +32,10 @@ class Pembeli extends Authenticatable
     public function beliBarang(): BelongsTo {
         return $this->belongsTo(Barang::class);
     }
+
+    public function carts()
+{
+    return $this->hasMany(Cart::class, 'id_pembeli');
+}
+
 }

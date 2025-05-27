@@ -19,6 +19,9 @@ class TransaksiPenjualan extends Model
         'alamat_pengiriman',
         'ongkir',
         'bukti_pembayaran',
+        'id_pegawai',
+        'status_pembelian',
+        'verifikasi_pembayaran',
     ];
 
     public function detailPengiriman(): BelongsTo
@@ -29,4 +32,9 @@ class TransaksiPenjualan extends Model
     {
         return $this->belongsTo(Pembeli::class, 'id_pembeli');
     }
+    public function carts()
+    {
+        return $this->hasMany(Cart::class, 'id_transaksi_penjualan');
+    }
+
 }

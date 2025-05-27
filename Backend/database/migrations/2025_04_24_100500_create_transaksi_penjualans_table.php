@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('alamat_pengiriman');
             $table->double('ongkir');
             $table->string('bukti_pembayaran');
+            $table->foreignId('id_pegawai')->constrained('pegawais');
+            $table->string('status_pembelian');
+            $table->string('verifikasi_pembayaran');
             $table->timestamps();
         });
     }

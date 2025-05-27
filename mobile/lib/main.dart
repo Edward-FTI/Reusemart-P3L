@@ -1,20 +1,31 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/data/firebase_mesaging_remote_datasource.dart';
+import 'package:mobile/data/datasource/remote/firebase_mesaging_remote_datasource.dart';
+import 'package:mobile/data/datasource/remote/user_remote_datasource.dart';
 import 'package:mobile/data/permission_helper.dart';
 import 'package:mobile/firebase_options.dart';
 
-// void main() {
-//   runApp(const MyApp());
-// }
+final firebaseMessagingRemote = FirebaseMessangingRemoteDatasource();
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  firebaseMessagingRemote.firebaseBackgroundHandler(message);
+}
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
 await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
 // bool isPermissionGranted = await requestLocationPermission();
 await PermessionHelper().requestNotificationPermission();
+FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  await firebaseMessagingRemote.initialize();       
 await FirebaseMessangingRemoteDatasource().initialize();
+
   runApp(const MyApp());
 }
 
@@ -79,6 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+
+      UserRemoteDatasource().registerOrg();
     });
   }
 

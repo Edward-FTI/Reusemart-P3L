@@ -49,6 +49,7 @@ class PegawaiController extends Controller
         if ($validate->fails()) {
             return response(['message' => $validate->errors()], 400);
         }
+
         $pegawai = Pegawai::create($storeData);
 
         $jabatan = Jabatan::find($storeData['id_jabatan']);
