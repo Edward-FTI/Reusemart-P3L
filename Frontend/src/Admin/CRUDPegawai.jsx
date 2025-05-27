@@ -100,14 +100,14 @@ const CRUDPegawai = () => {
 
   return (
     <>
-      <div className="container mt-3">
+      {/* <div className="container mt-3">
         <button
           className="btn btn-outline-primary mb-3"
           onClick={() => navigate("/admin/organisasi")}
         >
           &larr; ke Halaman Organisasi
         </button>
-      </div>
+      </div> */}
 
       <div className="container mt-5 bg-white p-4 rounded shadow">
         <div className="d-flex justify-content-between align-items-center mb-3">
@@ -147,7 +147,7 @@ const CRUDPegawai = () => {
                   <td>{p.tgl_lahir}</td>
                   <td>{p.email}</td>
                   <td>{p.gaji}</td>
-                  <td>{p.jabatan?.role || "Jabatan Tidak Ditemukan"}</td>
+                  <td>{p.jabatan?.role || "Jabatan tidak ditemukan"}</td>
                   <td>
                     <button
                       className="btn btn-sm btn-warning me-2"
@@ -299,6 +299,7 @@ const CRUDPegawai = () => {
                   <label htmlFor="jabatan" className="form-label">
                     Jabatan
                   </label>
+
                   <div className="mb-3">
                     <select
                       name="id_jabatan"

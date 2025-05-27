@@ -18,6 +18,7 @@ import CRUDPenitip from "../Customer_Service/CRUDPenitip";
 import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
 
 // ADMIN
+import Admin from "../Admin/Admin";
 import CRUDJabatan from "../admin/CRUDJabatan";
 import CRUDMercandise from "../admin/CRUDMercandise";
 import CRUDOrganisasi from "../Admin/CRUDOrganisasi";
@@ -36,18 +37,22 @@ import CRUDTransaksiPenjualanCustomer from "../Customers/CRUDTransaksiPenjualanC
 import ShowProfilePenitip from "../Penitip/ShowProfilePenitip";
 import ShowHistoryPenitip from "../penitip/ShowHistoryPenitip";
 import CRUDPenitipan from "../penitip/CRUDPenitipan";
-import PengambilanBarangKembali from "../penitip/PengambilanBarangKembali";
+import PengambilanBarangKembali from "../Penitip/PengambilanBarangKembali";
 
 // ORGANISASI
-import CRUDTransaksiRequestDonasi from "../organisasi/CRUDTransaksiRequestDonasi";
+import CRUDTransaksiRequestDonasi from "../Organisasi/CRUDTransaksiRequestDonasi";
 import Organisasi from "../Organisasi/Organisasi";
 import Layout from "../navbar/layout";
 
 // OWNER
 import Owner from "../Owner/Owner";
 
+// Detail Barang
+import DetailBarang from "../Components/DetailBarang";
+
 // ALAMAT
 import CRUDAlamat from "../pembeli/CrudAlamat";
+import CRUDPegawai from "../admin/CRUDPegawai";
 
 const router = createBrowserRouter([
   {
@@ -82,24 +87,39 @@ const router = createBrowserRouter([
     path: "/ambil-barang",
     element: <AmbilBarang />,
   },
+  {
+    path: "/alamat",
+    element: <CRUDAlamat />
+  },
 
   // ADMIN
   {
-    path: "/admin/jabatan",
-    element: <CRUDJabatan />,
-  },
-  {
-    path: "/admin/mercandise",
-    element: <CRUDMercandise />,
-  },
-  {
-    path: "/admin/organisasi",
-    element: <CRUDOrganisasi />,
-  },
-  {
-    path: "/admin/pegawai",
+    path: "/admin",
     element: <Layout />,
+    children: [
+      {
+        path: "/admin",
+        element: <Admin/>// atau komponen dashboard admin Anda
+      },
+      {
+        path: "pegawai",
+        element: <CRUDPegawai />,
+      },
+      {
+        path: "jabatan",
+        element: <CRUDJabatan />,
+      },
+      {
+        path: "mercandise",
+        element: <CRUDMercandise />,
+      },
+      {
+        path: "organisasi",
+        element: <CRUDOrganisasi />,
+      },
+    ],
   },
+
 
   // CUSTOMER SERVICE
   {
@@ -213,9 +233,9 @@ const router = createBrowserRouter([
     path: "/penitip/pengambilan",
     element: (
       <div>
-        <NavbarPage />
+        {/* <NavbarPage /> */}
         <PengambilanBarangKembali />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
@@ -235,9 +255,7 @@ const router = createBrowserRouter([
     path: "/organisasi/transaksi-request-donasi",
     element: (
       <div>
-        <NavbarPage />
         <CRUDTransaksiRequestDonasi />
-        <Footer />
       </div>
     ),
   },
@@ -247,12 +265,20 @@ const router = createBrowserRouter([
     path: "/owner",
     element: (
       <div>
-        <NavbarPage />
+        {/* <NavbarPage /> */}
         <Owner />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     ),
   },
+
+  //Detail Barang
+  {
+    path: "/detail/:id",
+    element: (
+      <DetailBarang />
+    )
+  }
 ]);
 
 const AppRouter = () => {

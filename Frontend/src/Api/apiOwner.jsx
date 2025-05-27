@@ -3,7 +3,7 @@ import useAxios from ".";
 
 export const GetAllDonasi = async () => {
     try {
-        const response = await useAxios.get('/donasi', {
+        const response = await useAxios.get('/owner', {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`
@@ -18,7 +18,7 @@ export const GetAllDonasi = async () => {
 
 export const UpdateDonasi = async (values) => {
     try {
-        const response = await useAxios.put(`/donasi/${values.id}`, values, {
+        const response = await useAxios.put(`/owner/${values.id}`, values, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,

@@ -35,22 +35,22 @@ const LoginForm = () => {
               navigate("/customer/profile"); // Ensure this route exists
               break;
             case "Admin":
-              navigate("/admin/pegawai"); // Ensure this route exists
+              navigate("/admin"); // Ensure this route exists
               break;
             case "Customer Service":
               navigate("/customer-service/penitip"); // Ensure this route exists
               break;
             case "Penitip":
-              navigate("/penitip/profile"); // Ensure this route exists
+              navigate("/penitip/pengambilan"); // Ensure this route exists
               break;
             case "Pegawai Gudang":
               navigate("/gudang/barang-titipan"); // Ensure this route exists
               break;
             case "Organisasi":
-              navigate("/"); // Ensure this route exists
+              navigate("/organisasi/transaksi-request-donasi"); // Ensure this route exists/organisasi/transaksi-request-donasi
               break;
             case "Owner":
-              navigate("/"); // Ensure this route exists
+              navigate("/owner"); // Ensure this route exists
               break;
             case "Kurir":
               navigate("/"); // Ensure this route exists

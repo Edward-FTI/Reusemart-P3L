@@ -1,18 +1,41 @@
 import React, { useEffect, useState } from "react";
+// import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "sonner";
+import Select from "react-select";
+import jsPDF from "jspdf";
+
+
 import {
     GetAllBarang,
     CreateBarang,
     UpdateBarang,
     DeleteBarang
-} from "../Api/apiBarang";
+} from "../Api/apiBarangQC";
 import { GetAllKategori } from "../Api/apiKategori";
+import { GetAllPenitip } from "../Api/apiPenitip";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const CRUDBarangTitipan = () => {
     const [barangList, setBarangList] = useState([]);
+
     const [kategoriList, setKategoriList] = useState([]);
+    const [penitipList, setPenitipList] = useState([]);
+
     const [isEdit, setIsEdit] = useState(false);
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredBarangList, setFilteredBarangList] = useState([]);
+    const [selectedBarang, setSelectedBarang] = useState(null);
+
+    const handleShowDetail = (barang) => {
+        setSelectedBarang(barang);
+        const modal = new window.bootstrap.Modal(document.getElementById('detailModal'));
+        modal.show();
+    };
+
+
     const [form, setForm] = useState({
         id: '',
         id_penitip: '',
@@ -20,19 +43,34 @@ const CRUDBarangTitipan = () => {
         tgl_penitipan: '',
         nama_barang: '',
         harga_barang: '',
+        berat_barang: '',
         deskripsi: '',
         status_garansi: '',
         status_barang: '',
-        gambar: ''
+        gambar: '',
+        gambar_dua: ''
     })
 
     const fetchBarang = async () => {
         try {
             const data = await GetAllBarang();
             setBarangList(data);
+            setFilteredBarangList(data); // Awalnya tampilkan semua
         } catch (error) {
-            console.error("Gagal mengambil data barang:", error);
+            toast.error("Gagal mengambil data barang");
         }
+    };
+
+    const handleSearch = () => {
+        const filtered = barangList.filter(b =>
+            b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.penitip?.nama_penitip?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.kategori_barang?.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.status_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.tgl_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredBarangList(filtered);
     };
 
     const fetchKategori = async () => {
@@ -41,13 +79,24 @@ const CRUDBarangTitipan = () => {
             setKategoriList(data);
         }
         catch (error) {
-            alert('Gagal mengambil data barang')
+            toast.error('Gagal mengambil data kategori')
+        }
+    }
+
+    const fetchPenitip = async () => {
+        try {
+            const data = await GetAllPenitip();
+            setPenitipList(data);
+        }
+        catch (error) {
+            toast.error('Gagal mengambil data penitip');
         }
     }
 
     useEffect(() => {
         fetchBarang();
         fetchKategori();
+        fetchPenitip();
     }, []);
 
     const handleChange = (e) => {
@@ -63,34 +112,62 @@ const CRUDBarangTitipan = () => {
         e.preventDefault();
 
         try {
-            const dataToSubmit = { ...form };
-            if (isEdit && !dataToSubmit.gambar) {
-                delete dataToSubmit.gambar
+            const formData = new FormData();
+            formData.append('id', form.id);
+            formData.append('id_penitip', form.id_penitip);
+            formData.append('id_kategori', form.id_kategori);
+            formData.append('tgl_penitipan', form.tgl_penitipan);
+            formData.append('nama_barang', form.nama_barang);
+            formData.append('harga_barang', form.harga_barang);
+            formData.append('berat_barang', form.berat_barang);
+            formData.append('deskripsi', form.deskripsi);
+            formData.append('status_garansi', form.status_garansi);
+            formData.append('status_barang', form.status_barang);
+
+            if (form.gambar) {
+                formData.append('gambar', form.gambar);
+            }
+            if (form.gambar_dua) {
+                formData.append('gambar_dua', form.gambar_dua);
             }
 
             if (isEdit) {
-                await UpdateBarang(dataToSubmit);
-                alert('Berhasil update data barang');
+                // await UpdateBarang(formData);
+                await UpdateBarang(form); // Kirim objek, bukan FormData
+                toast.success('Berhasil update data barang');
+            } else {
+                await CreateBarang(form);
+                toast.success('Berhasil menambahkan data barang');
             }
-            else {
-                await CreateBarang(dataToSubmit);
-                alert('Berhasil menambahkan data barang');
-            }
+
             resetForm();
             fetchBarang();
-        }
-        catch (error) {
-            alert('Gagal menyimpan data barang');
+        } catch (error) {
+            toast.error('Gagal menyimpan data barang');
             console.error(error);
         }
-    }
+    };
+
 
     const handleEdit = (barang) => {
-        setForm({ ...barang, gambar: '' });
+        setForm({ ...barang, gambar: '', gambar_dua: '' });
         setIsEdit(true);
         const modal = new window.bootstrap.Modal(document.getElementById('formModal'));
         modal.show();
     }
+
+    const handleDelete = async (id) => {
+        try {
+            if (window.confirm('Yakin ingin menghapus data ini?')) {
+                await DeleteBarang(id); // Menghapus barang berdasarkan ID
+                toast.success('Data barang berhasil dihapus');
+                fetchBarang(); // Mengambil data terbaru
+            }
+        } catch (error) {
+            console.error("Gagal menghapus data barang:", error);
+            toast.error('Gagal menghapus data barang');
+        }
+    };
 
     const resetForm = () => {
         setForm({
@@ -100,18 +177,95 @@ const CRUDBarangTitipan = () => {
             tgl_penitipan: '',
             nama_barang: '',
             harga_barang: '',
+            berat_barang: '',
             deskripsi: '',
             status_garansi: '',
             status_barang: '',
-            gambar: ''
+            gambar: '',
+            gambar_dua: ''
         });
         setIsEdit(false);
     }
 
+    const handleDownloadNota = (barang) => {
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFont("times", "bold");
+        doc.setFontSize(14);
+        doc.text("Nota Penitipan Barang", 10, 15);
+
+        doc.setFontSize(12);
+        doc.setFont("times", "bold");
+        doc.text("ReUse Mart", 20, 25);
+
+        doc.setFont("times", "normal");
+        doc.text("Jl. Green Eco Park No. 456 Yogyakarta", 20, 30);
+
+        // Info Nota
+        doc.setFontSize(11);
+        doc.text(`No Nota                       : ${barang.nomor_nota || '24.02.101'}`, 20, 40); // nomor nota
+        doc.text(`Tanggal penitipan        : ${barang.tgl_penitipan || '15/2/2025 12:16:56'}`, 20, 45); // tanggal penitipan
+        doc.text(`Masa penitipan sampai: ${barang.masa_penitipan || '17/3/2025'}`, 20, 50); // masa penitipan
+
+        // Penitip
+        const penitip = `T${barang.penitip.id} / ${barang.penitip?.nama_penitip}` //nama penitip
+        const alamat_penitip = barang.penitip?.alamat; // alamat penitip
+
+        doc.setFont("times", "bold");
+        doc.text("Penitip :", 20, 60);  // label bold
+
+        doc.setFont("times", "normal");
+        doc.text(penitip, 35, 60); // panggil penitip
+        doc.text(`Alamat : ${alamat_penitip}`, 20, 65); // panggil alamat
+        doc.text(`Delivery : Kurir ReUseMart (Cahyono)`, 20, 70); // kurir
+
+        // Barang 1
+        let y = 80;
+        doc.setFont("times", "normal");
+        doc.text(`${barang.nama_barang}`, 20, y);
+        doc.text(`${barang.harga_barang?.toLocaleString()}`, 90, y, { align: "right" });
+
+        doc.setFont("times", "normal");
+        doc.text(`Garansi ON Juli 2025`, 20, y + 7);
+        doc.text(`Berat barang: ${barang.berat_barang} kg`, 20, y + 14);
+
+        // Footer
+        doc.text("Diterima dan QC oleh:", 50, y + 25);
+        doc.text("P18 - Farida", 50, y + 35);
+
+        doc.setLineWidth(0.5);
+        doc.rect(8, 10, 190, y + 35); // kotak sekitar seluruh isi
+
+        doc.save(`Nota_${barang.nama_barang || 'Barang'}.pdf`);
+    };
+
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2>Data Barang</h2>
+                <div>
+                    <h2>Data Barang</h2>
+                    <form
+                        className="d-flex"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSearch();
+                        }}
+                    >
+                        <input
+                            type="search"
+                            name="cari"
+                            className="form-control me-2"
+                            placeholder="Cari barang..."
+                            style={{ width: "250px" }}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button className="btn btn-outline-primary" type="submit">
+                            Cari
+                        </button>
+                    </form>
+                </div>
                 <button
                     className="btn btn-success"
                     onClick={() => {
@@ -128,70 +282,86 @@ const CRUDBarangTitipan = () => {
                 <thead className="table-light">
                     <tr>
                         <th>No</th>
-                        <th>ID Penitip</th>
-                        <th>ID Kategori</th>
+                        <th>Nama Penitip</th>
+                        <th>Kategori Barang</th>
                         <th>Tanggal Penitipan</th>
+                        <th>Masa Penitipan</th>
                         <th>Nama Barang</th>
                         <th>Harga Barang</th>
                         <th>Deskripsi</th>
-                        <th>Status Garansi</th>
+                        {/* <th>Status Garansi</th> */}
                         <th>Status Barang</th>
-                        <th>Gambar</th>
+                        {/* <th>Gambar</th> */}
                         <th>Aksi</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {barangList.length > 0 ? (
-                        barangList.map((b, index) => (
+                    {filteredBarangList.length > 0 ? (
+                        filteredBarangList.map((b, index) => (
                             <tr key={b.id}>
                                 <td>{index + 1}</td>
-                                <td>{b.id_penitip}</td>
-                                <td>{b.id_kategori}</td>
+                                <td>{b.penitip.nama_penitip}</td>
+                                <td>{b.kategori_barang.nama_kategori || "Kategori tidak ditemukan"}</td>
                                 <td>{b.tgl_penitipan}</td>
+                                <td>{b.masa_penitipan}</td>
                                 <td>{b.nama_barang}</td>
                                 <td>{b.harga_barang}</td>
                                 <td>{b.deskripsi}</td>
-                                <td>{b.status_garansi}</td>
+                                {/* <td>{b.status_garansi}</td> */}
                                 <td>{b.status_barang}</td>
-                                <td>
+                                {/* <td>
                                     <img
                                         src={`http://localhost:8000/${b.gambar}`}
                                         alt={b.nama_barang}
                                         className="img-thumbnail"
                                         style={{ width: "100px", height: "100px", objectFit: "cover" }}
                                     />
-                                </td>
+                                </td> */}
                                 <td>
-                                    <button
-                                        className="btn btn-sm btn-warning me-2"
-                                        onClick={() => handleEdit(b)}
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        className="btn btn-sm btn-danger me-2"
-                                        onClick={() => {
-                                            if (window.confirm('Yakin hapus data ini?')) {
-                                                DeleteBarang(b.id).then(fetchBarang);
-                                            }
-                                        }}
-                                    >
-                                        Hapus
-                                    </button>
+                                    <div className="d-flex flex-column">
+                                        <button
+                                            className="btn btn-sm btn-warning me-2"
+                                            onClick={() => handleEdit(b)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="btn btn-sm btn-danger me-2 mt-2"
+                                            onClick={() => {
+                                                if (window.confirm('Yaking ingin menghapus data ini?')) {
+                                                    DeleteBarang(b.id).then(fetchBarang);
+                                                }
+                                            }}
+                                        >
+                                            Hapus
+                                        </button>
+                                        <button
+                                            className="btn btn-sm btn-primary me-2 mt-2"
+                                            onClick={() => handleShowDetail(b)}
+                                        >
+                                            Detail
+                                        </button>
+                                        <button
+                                            className="btn btn-sm btn-success me-2 mt-2"
+                                            onClick={() => handleDownloadNota(b)}
+                                        >
+                                            Unduh Nota
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="10" className="text-center fs-2">Belum ada data barang</td>
+                            <td colSpan="11" className="text-center fs-2">Belum ada data barang</td>
                         </tr>
                     )
                     }
                 </tbody>
             </table>
 
+            {/* Modal untuk isi form */}
             <div className="modal fade" id="formModal" tabIndex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -204,30 +374,45 @@ const CRUDBarangTitipan = () => {
 
                         <div className="modal-body">
                             <form onSubmit={handleSubmit}>
-                                <label htmlFor="id_penitip" className="form-label">ID Penitip</label>
+                                <label htmlFor="penitip" className="form-label">Nama Penitip</label>
                                 <div className="mb-3">
-                                    <input
-                                        type='number'
+                                    <Select
                                         name="id_penitip"
-                                        className="form-control"
-                                        placeholder="ID Penitip"
-                                        value={form.id_penitip}
-                                        onChange={handleChange}
-                                        required
+                                        options={penitipList.map(p => ({
+                                            value: p.id,
+                                            label: p.nama_penitip
+                                        }))}
+                                        value={penitipList
+                                            .map(p => ({ value: p.id, label: p.nama_penitip }))
+                                            .find(option => option.value === form.id_penitip)}
+                                        onChange={(selectedOption) =>
+                                            setForm({ ...form, id_penitip: selectedOption?.value || '' })
+                                        }
+                                        placeholder="Cari penitip..."
+                                        isClearable
                                     />
                                 </div>
 
-                                <label htmlFor="id_kategori" className="form-label">ID Kategori</label>
+                                <label htmlFor="kategori" className="form-label">
+                                    Nama Kategori
+                                </label>
                                 <div className="mb-3">
-                                    <input
-                                        type='number'
+                                    <select
                                         name="id_kategori"
-                                        className="form-control"
-                                        placeholder="ID Kategori"
+                                        className="form-select"
                                         value={form.id_kategori}
                                         onChange={handleChange}
                                         required
-                                    />
+                                    >
+                                        <option value="" disabled>
+                                            Pilih Kategori
+                                        </option>
+                                        {kategoriList.map((kategori) => (
+                                            <option key={kategori.id} value={kategori.id}>
+                                                {kategori.nama_kategori}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <label htmlFor="tgl_penitipan" className="form-label">Tanggal Penitipan</label>
@@ -264,6 +449,19 @@ const CRUDBarangTitipan = () => {
                                         className="form-control"
                                         placeholder="Harga Barang"
                                         value={form.harga_barang}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                <label htmlFor="berat_barang" className="form-label">Berat Barang</label>
+                                <div className="mb-3">
+                                    <input
+                                        type='number'
+                                        name="berat_barang"
+                                        className="form-control"
+                                        placeholder="Berat Barang"
+                                        value={form.berat_barang}
                                         onChange={handleChange}
                                         required
                                     />
@@ -308,19 +506,51 @@ const CRUDBarangTitipan = () => {
                                     />
                                 </div>
 
-                                {!isEdit && (
-                                    <>
-                                        <label htmlFor="gambar" className="form-label">Gambar</label>
-                                        <div className="mb-3">
-                                            <input
-                                                type="file"
-                                                name="gambar"
-                                                className="form-control"
-                                                onChange={handleChange}
-                                                required
+                                {/* Gambar section, now also shown in edit mode */}
+                                <label htmlFor="gambar" className="form-label">Gambar</label>
+                                <div className="mb-3">
+                                    {isEdit && form.gambar_lama && (
+                                        <div className="mb-2">
+                                            <img
+                                                src={`http://localhost:8000/${form.gambar_lama}`}
+                                                alt="Gambar Lama"
+                                                className="img-thumbnail"
+                                                style={{ width: "100px", height: "100px", objectFit: "cover" }}
                                             />
-                                        </div></>
-                                )}
+                                            <div className="text-muted small">Gambar saat ini</div>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        name="gambar"
+                                        className="form-control"
+                                        onChange={handleChange}
+                                        required={!isEdit}
+                                    />
+                                </div>
+
+                                <label htmlFor="gambar_dua" className="form-label">Gambar 2</label>
+                                <div className="mb-3">
+                                    {isEdit && form.gambar_dua_lama && (
+                                        <div className="mb-2">
+                                            <img
+                                                src={`http://localhost:8000/${form.gambar_dua_lama}`}
+                                                alt="Gambar 2 Lama"
+                                                className="img-thumbnail"
+                                                style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                                            />
+                                            <div className="text-muted small">Gambar 2 saat ini</div>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        name="gambar_dua"
+                                        className="form-control"
+                                        onChange={handleChange}
+                                        required={!isEdit}
+                                    />
+                                </div>
+
                                 <button type="submit" className="btn btn-primary">
                                     {isEdit ? 'Update' : 'Tambah'}
                                 </button>
@@ -329,7 +559,67 @@ const CRUDBarangTitipan = () => {
                     </div>
                 </div>
             </div>
-        </div>
+
+
+            {/* Modal untuk detail barang */}
+            <div className="modal fade" id="detailModal" tabIndex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="detailModalLabel">Detail Barang</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            {selectedBarang && (
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div id="carouselGambar" className="carousel slide" data-bs-ride="carousel">
+                                            <div className="carousel-inner">
+                                                <div className="carousel-item active">
+                                                    <img
+                                                        src={`http://localhost:8000/${selectedBarang.gambar}`}
+                                                        className="d-block w-100 rounded"
+                                                        alt="Gambar 1"
+                                                        style={{ maxHeight: "300px", objectFit: "contain" }}
+                                                    />
+                                                </div>
+                                                {selectedBarang.gambar_dua && (
+                                                    <div className="carousel-item">
+                                                        <img
+                                                            src={`http://localhost:8000/${selectedBarang.gambar_dua}`}
+                                                            className="d-block w-100 rounded"
+                                                            alt="Gambar 2"
+                                                            style={{ maxHeight: "300px", objectFit: "contain" }}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <button className="carousel-control-prev" type="button" data-bs-target="#carouselGambar" data-bs-slide="prev">
+                                                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span className="visually-hidden">Previous</span>
+                                            </button>
+                                            <button className="carousel-control-next" type="button" data-bs-target="#carouselGambar" data-bs-slide="next">
+                                                <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span className="visually-hidden">Next</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <h5>{selectedBarang.nama_barang}</h5>
+                                        {/* <p><strong>Status Barang:</strong> {selectedBarang.status_barang}</p> */}
+                                        <p><strong>Status Garansi:</strong> {selectedBarang.status_garansi}</p>
+                                        <p><strong>Penitip:</strong> {selectedBarang.penitip.nama_penitip}</p>
+                                        <p><strong>Kategori:</strong> {selectedBarang.kategori_barang.nama_kategori}</p>
+                                        <p><strong>Berat Barang:</strong> {selectedBarang.berat_barang} kg</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div >
     );
 };
 

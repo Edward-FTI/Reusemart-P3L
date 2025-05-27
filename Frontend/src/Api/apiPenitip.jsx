@@ -53,6 +53,7 @@ export const CreatePenitip = async (value) => {
 
         const response = await useAxios.post("/penitip", formData, {
             headers: {
+                "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
@@ -78,12 +79,13 @@ export const CreatePenitip = async (value) => {
 // }
 
 export const UpdatePenitip = async (id, data) => {
-  const response = await axios.put(`/penitip/${id}`, data, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  });
-  return response.data;
+    const response = await axios.put(`/penitip/${id}`, data, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        }
+    });
+    return response.data;
 };
 
 // DELETE penitip
@@ -91,6 +93,7 @@ export const DeletePenitip = async (id) => {
     try {
         const response = await useAxios.delete(`/penitip/${id}`, {
             headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
