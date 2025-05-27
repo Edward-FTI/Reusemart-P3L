@@ -1,10 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import login from '../Components/Login.jsx';
 
 // Main Navbar + Sidebar Component
 const NavbarCustomer_Service = () => {
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    // Clear session storage or any other logout logic
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    navigate('/'); // Redirect to login page
+  }
   return (
     <>
       {/* Navbar */}
@@ -23,7 +30,7 @@ const NavbarCustomer_Service = () => {
           />
         </button>
 
-        <button style={styles.logoutButton} onClick={() => {/* handle logout */}}>
+        <button style={styles.logoutButton} onClick={() => { handleLogout() }}>
           <img
             src="https://img.icons8.com/?size=100&id=24337&format=png&color=FFFFFF"
             alt="logout"

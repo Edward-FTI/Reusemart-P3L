@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const LinkSidebar = () => {
     return (
         <div className="d-flex flex-column gap-3">
-            <Link to="/" className="d-flex align-items-center gap-2 text-white">
+            <Link to="" className="d-flex align-items-center gap-2 text-white">
                 <img src="https://img.icons8.com/?size=100&id=iPqKoSmxmAyJ&format=png&color=000000" alt="" width="30"
                     className="d-inline-block" />
                 Dashboard
