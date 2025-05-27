@@ -68,7 +68,7 @@ class UserSeeder extends Seeder
                 'role' => 'Penitip',
                 'password' => 'password123',
             ],
-          
+
             // password: pembeli123
             [
                 'name' => 'Pembeli User',
