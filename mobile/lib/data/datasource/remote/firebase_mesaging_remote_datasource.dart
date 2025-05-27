@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:mobile/data/datasource/remote/user_remote_datasource.dart';
 
 // import '../../presentation/admin/pages/chat_menu_page.dart';
 // import '../../presentation/user/bloc/bloc.dart';
@@ -69,6 +70,7 @@ class FirebaseMessangingRemoteDatasource {
 
     final fcmToken = await _firebaseMessaging.getToken();
     log("FCM Token: $fcmToken");
+     UserRemoteDatasource().updateFcmToken(fcmToken!);
     // final modelDevice = deviceInfoDatasource.getAllDeviceInfo();
     //String deviceInfoString = '';
     // modelDevice.forEach((key, value) {
@@ -90,7 +92,7 @@ class FirebaseMessangingRemoteDatasource {
     });
 
     FirebaseMessaging.onMessage.listen(firebaseBackgroundHandler);
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessageOpenedApp.listen(firebaseBackgroundHandler);
   }
 

@@ -37,4 +37,10 @@ class Pembeli extends Authenticatable
     public function alamatPembeli(): BelongsTo {
         return $this->belongsTo(AlamatPembeli::class, 'id_Pembeli');
     }
+
+    public function carts()
+{
+    return $this->hasMany(Cart::class, 'id_pembeli');
+}
+
 }
