@@ -206,8 +206,13 @@ const CRUDBarangTitipan = () => {
         const barangPertama = barangList[0];
 
         // Info Nota
+        const today = new Date();
+        const year = String(today.getFullYear()).slice(2);
+        const month = String(today.getMonth() + 1).padStart(2, 0);
+        const nomor_nota = `${year}.${month}.${barangPertama.penitip.id}`;
         doc.setFontSize(11);
-        doc.text(`No Nota                       : ${barangPertama.nomor_nota || '24.02.101'}`, 20, 40);
+        doc.text(`No Nota                       : ${nomor_nota}`, 20, 40);
+        // doc.text(`No Nota                       : ${barangPertama.nomor_nota || '24.02.101'}`, 20, 40);
 
         const [tanggal, waktu] = barangPertama.tgl_penitipan.split(' ');
         const [tahun, bulan, hari] = tanggal.split('-');
@@ -237,7 +242,11 @@ const CRUDBarangTitipan = () => {
             y += 5;
 
             if (barang.status_garansi != null) {
-                doc.text(`Garansi ON ${barang.status_garansi}`, 20, y);
+                const garansiDate = new Date(barang.status_garansi);
+                const options = { year: 'numeric', month: 'long' }; // Format: "Bulan Tahun"
+                const formattedGaransiDate = garansiDate.toLocaleString('id-ID', options);
+
+                doc.text(`Garansi ON ${formattedGaransiDate}`, 20, y);
                 y += 5;
             }
             doc.text(`Berat barang: ${barang.berat_barang} kg`, 20, y);
@@ -251,7 +260,6 @@ const CRUDBarangTitipan = () => {
 
         doc.setLineWidth(0.5);
         doc.rect(8, 10, 190, y + 10); // kotak sekitar seluruh isi
-
         doc.save(`Nota_${barangPertama.penitip.nama_penitip}.pdf`);
     };
 
