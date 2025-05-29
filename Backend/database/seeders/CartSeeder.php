@@ -40,11 +40,6 @@ class CartSeeder extends Seeder
                 'id_barang' => 6,
                 'id_transaksi_penjualan' => 3,
             ],
-            [
-                'id_pembeli' => 3,
-                'id_barang' => 7,
-                'id_transaksi_penjualan' => null, // belum checkout
-            ],
         ]);
     }
 }
