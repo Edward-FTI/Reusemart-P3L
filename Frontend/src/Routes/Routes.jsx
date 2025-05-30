@@ -24,8 +24,10 @@ import CRUDMercandise from "../admin/CRUDMercandise";
 import CRUDOrganisasi from "../Admin/CRUDOrganisasi";
 
 // PEGAWAI GUDANG
+import NavbarGudang from "../navbar/NavbarPegawai_gudang";
 import CRUDBarangTitipan from "../Pegawai_Gudang/CRUDBarangTitipan";
-import CRUDPengiriman from "../Pegawai_Gudang/CRUDPengiriman";
+import CRUDPengirimanPembeli from "../Pegawai_Gudang/CRUDPengiriman(Pembeli)";
+import CRUDPengirimanPenitip from "../Pegawai_Gudang/CRUDPengiriman(Penitip)";
 
 // CUSTOMER
 import NavbarCustomer from "../navbar/NavbarCustomer";
@@ -46,6 +48,9 @@ import Layout from "../navbar/layout";
 
 // OWNER
 import Owner from "../Owner/Owner";
+import PenjualanBulanan from "../Owner/PenjualanBulanan"
+import KomisiBulanan from "../Owner/KomisiBulanan";
+import StokGudang from "../Owner/StokGudang";
 
 // Detail Barang
 import DetailBarang from "../Components/DetailBarang";
@@ -152,14 +157,27 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "/gudang/pengiriman",
+        path: "/gudang/pengiriman/pembeli",
         element: (
           <div>
-            <CRUDPengiriman />
+            <NavbarGudang />
+            <CRUDPengirimanPembeli />
+            <Footer />
           </div>
         ),
       },
-    ]
+
+      {
+        path: "/gudang/pengiriman/penitip",
+        element: (
+          <div>
+            <NavbarGudang />
+            <CRUDPengirimanPenitip />
+            <Footer />
+          </div>
+        ),
+      },
+    ],
   },
 
   // CUSTOMER
@@ -268,13 +286,28 @@ const router = createBrowserRouter([
   // OWNER
   {
     path: "/owner",
-    element: (
-      <div>
-        {/* <NavbarPage /> */}
-        <Owner />
-        {/* <Footer /> */}
-      </div>
-    ),
+    element: <Layout />,
+    children: [
+      {
+        path: "/owner/request-donasi",
+        element: <Owner />,
+      },
+
+      {
+        path: "penjualan-bulanan",
+        element: <PenjualanBulanan />
+      },
+
+      {
+        path: "komisi-bulanan",
+        element: <KomisiBulanan />
+      },
+
+      {
+        path: "stok-gudang",
+        element: <StokGudang />
+      }
+    ]
   },
 
   //Detail Barang
