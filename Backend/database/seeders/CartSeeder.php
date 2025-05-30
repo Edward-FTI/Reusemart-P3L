@@ -29,6 +29,7 @@ class CartSeeder extends Seeder
 
             // Transaksi Penjualan ID 5
             ['id_pembeli' => 5, 'id_barang' => 10],
+
         ]);
     }
 }

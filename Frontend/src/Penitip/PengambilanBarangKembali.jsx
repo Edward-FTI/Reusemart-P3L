@@ -20,10 +20,12 @@ const Transaksi_penitip = () => {
   const [barangList, setBarangList] = useState([]);
   const [penitipList, setPenitipList] = useState([]);
   const [kategoriList, setKategoriList] = useState([]);
-  const [isEdit, setIsEdit] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBarangList, setFilteredBarangList] = useState([]);
   const [selectedBarang, setSelectedBarang] = useState(null);
+  const [selectedPengambilanBarang, setSelectedPengambilanBarang] = useState(null);
+  const [tglPengambilan, setTglPengambilan] = useState("");
+
 
   const [form, setForm] = useState({
     id: "",
@@ -66,7 +68,10 @@ const Transaksi_penitip = () => {
           .includes(searchTerm.toLowerCase()) ||
         b.status_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
         b.tgl_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase())
+        b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        b.harga_barang.toString().includes(searchTerm) ||
+        b.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sisaHari(b.masa_penitipan).toString().includes(searchTerm)
     );
     setFilteredBarangList(filtered);
   };
@@ -95,13 +100,58 @@ const Transaksi_penitip = () => {
     fetchPenitip();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setForm({
-      ...form,
-      [name]: files ? files[0] : value,
-    });
+  const getSisaHari = (masaPenitipan) => {
+    const today = new Date();
+    const endDate = new Date(masaPenitipan);
+    const diffTime = endDate - today;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
+
+  const handlePengambilan = (barang) => {
+    const sisaHari = getSisaHari(barang.masa_penitipan);
+    if (sisaHari <= 0) {
+      setSelectedPengambilanBarang(barang);
+      setTglPengambilan(""); // reset
+      const modal = new window.bootstrap.Modal(
+        document.getElementById("pengambilanModal")
+      );
+      modal.show();
+    } else {
+      toast.info("Barang hanya bisa diambil jika masa penitipan telah habis.");
+    }
+  };
+
+  const handleSubmitPengambilan = async () => {
+    const masaPenitipanDate = new Date(selectedPengambilanBarang.masa_penitipan);
+    const inputDate = new Date(tglPengambilan);
+    const diffDays = Math.ceil(
+      (inputDate - masaPenitipanDate) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays < 0 || diffDays > 7) {
+      toast.error("Tanggal pengambilan harus dalam 7 hari setelah masa penitipan.");
+      return;
+    }
+
+    try {
+      await UpdatetTransaksi_Penitipan(selectedPengambilanBarang.id, {
+        ...selectedPengambilanBarang,
+        tgl_pengambilan: tglPengambilan,
+        status_barang: "Ditunggu",
+      });
+
+      toast.success("Barang berhasil diambil.");
+      fetchBarang();
+      const modal = window.bootstrap.Modal.getInstance(
+        document.getElementById("pengambilanModal")
+      );
+      modal.hide();
+    } catch (error) {
+      toast.error("Gagal memperbarui data pengambilan.");
+    }
+  };
+
+
 
   const handleUpdateTanggalPenitipan = async (barang) => {
     const sisaHariStr = getSisaWaktuPenitipan(
@@ -202,6 +252,7 @@ const Transaksi_penitip = () => {
             <th>Harga Barang</th>
             <th>Deskripsi</th>
             <th>Status Barang</th>
+            <th>Tanggal Pengambilan</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -225,29 +276,36 @@ const Transaksi_penitip = () => {
                 <td>{b.harga_barang}</td>
                 <td>{b.deskripsi}</td>
                 <td>{b.status_barang}</td>
+                <td>{b.tgl_pengambilan}</td>
                 <td>
-                  <div className="d-flex flex-column">
+                <div className="d-flex flex-column">
+                  <button
+                    className="btn btn-sm btn-primary me-2 mt-2"
+                    onClick={() => handleShowDetail(b)}
+                  >
+                    Detail
+                  </button>
+
+                  {b.status_barang !== "Diambil" && b.status_barang !== "Ditunggu" && (
                     <button
-                      className="btn btn-sm btn-warning me-2"
-                      disabled={
-                        getSisaWaktuPenitipan(
-                          b.tgl_penitipan,
-                          b.masa_penitipan
-                        ) === "Kadaluarsa" && b.penambahan_durasi === null
-                      }
+                      className="btn btn-sm btn-warning mt-2"
+                      onClick={() => handlePengambilan(b)}
+                    >
+                      Pengambilan
+                    </button>
+                  )}
+
+                  {b.penambahan_durasi !== 1 && (
+                    <button
+                      className="btn btn-sm btn-danger me-2 mt-2"
                       onClick={() => handleUpdateTanggalPenitipan(b)}
                     >
-                      Update Tgl Penitipan
+                      Update Tanggal
                     </button>
+                  )}
+                </div>
+              </td>
 
-                    <button
-                      className="btn btn-sm btn-primary me-2 mt-2"
-                      onClick={() => handleShowDetail(b)}
-                    >
-                      Detail
-                    </button>
-                  </div>
-                </td>
               </tr>
             ))
           ) : (
@@ -357,6 +415,55 @@ const Transaksi_penitip = () => {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="modal fade"
+        id="pengambilanModal"
+        tabIndex="-1"
+        aria-labelledby="pengambilanModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="pengambilanModalLabel">
+                Input Tanggal Pengambilan
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <p>
+                Masukkan tanggal pengambilan untuk barang:{" "}
+                <strong>{selectedPengambilanBarang?.nama_barang}</strong>
+              </p>
+              <input
+                type="date"
+                className="form-control"
+                value={tglPengambilan}
+                onChange={(e) => setTglPengambilan(e.target.value)}
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Batal
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleSubmitPengambilan}
+              >
+                Simpan
+              </button>
             </div>
           </div>
         </div>
