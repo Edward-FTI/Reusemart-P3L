@@ -25,6 +25,7 @@ class TransaksiPenitipanController extends Controller
         return $penitip->id;
     }
 
+
     public function indexPublic()
     {
         $barang = Barang::with(['penitip', 'kategori_barang'])->get();
@@ -126,6 +127,8 @@ class TransaksiPenitipanController extends Controller
             'tgl_penitipan' => 'nullable|date',
             'masa_penitipan' => 'nullable|date',
             'penambahan_durasi' => 'nullable|integer',
+            'tgl_pengambilan' => 'nullable|date',
+            'status_barang' => 'nullable|string|in:Dijual,Diambil,Ditunggu',
         ]);
 
         if ($validator->fails()) {
@@ -136,7 +139,7 @@ class TransaksiPenitipanController extends Controller
         }
 
         // Lakukan update
-        $barang->update($request->only(['tgl_penitipan', 'masa_penitipan', 'penambahan_durasi']));
+        $barang->update($request->only(['tgl_penitipan', 'masa_penitipan', 'penambahan_durasi', 'tgl_pengambilan', 'status_barang']));
 
         return response([
             'message' => 'Data barang berhasil diperbarui',
