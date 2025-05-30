@@ -24,8 +24,10 @@ import CRUDMercandise from "../admin/CRUDMercandise";
 import CRUDOrganisasi from "../Admin/CRUDOrganisasi";
 
 // PEGAWAI GUDANG
+import NavbarGudang from "../navbar/NavbarPegawai_gudang";
 import CRUDBarangTitipan from "../Pegawai_Gudang/CRUDBarangTitipan";
-import CRUDPengiriman from "../Pegawai_Gudang/CRUDPengiriman";
+import CRUDPengirimanPembeli from "../Pegawai_Gudang/CRUDPengiriman(Pembeli)";
+import CRUDPengirimanPenitip from "../Pegawai_Gudang/CRUDPengiriman(Penitip)";
 
 // CUSTOMER
 import NavbarCustomer from "../navbar/NavbarCustomer";
@@ -150,17 +152,29 @@ const router = createBrowserRouter([
         path: "/gudang/barang-titipan",
         element: <CRUDBarangTitipan />,
       },
-
-      {
-        path: "/gudang/pengiriman",
-        element: (
-          <div>
-            <CRUDPengiriman />
-          </div>
-        ),
-      },
-    ]
+                                   
+                                   {
+    path: "/gudang/pengiriman/pembeli",
+    element: (
+      <div>
+        <NavbarGudang />
+        <CRUDPengirimanPembeli />
+        <Footer />
+      </div>
+    ),
   },
+
+  {
+    path: "/gudang/pengiriman/penitip",
+    element: (
+      <div>
+        <NavbarGudang />
+        <CRUDPengirimanPenitip />
+        <Footer />
+      </div>
+    ),
+  },
+    ]
 
   // CUSTOMER
   {
