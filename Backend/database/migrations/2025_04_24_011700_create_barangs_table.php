@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('deskripsi');
             $table->date('status_garansi')->nullable();
             $table->string('status_barang');
+            $table->dateTime('tgl_pengambilan')->nullable();
             $table->string('gambar');
             $table->string('gambar_dua');
             $table->timestamps();

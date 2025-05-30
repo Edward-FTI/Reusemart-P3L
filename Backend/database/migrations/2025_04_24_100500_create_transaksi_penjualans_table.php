@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('transaksi_penjualans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_pengiriman')->constrained('detail_pengirimans');
             $table->foreignId('id_pembeli')->constrained('pembelis');
             $table->double('total_harga_pembelian');
+            $table->string('metode_pengiriman');
             $table->string('alamat_pengiriman');
             $table->double('ongkir');
             $table->string('bukti_pembayaran');
+            $table->string('status_pengiriman');
             $table->foreignId('id_pegawai')->constrained('pegawais');
             $table->string('status_pembelian');
             $table->string('verifikasi_pembayaran');

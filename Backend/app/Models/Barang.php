@@ -18,6 +18,7 @@ class Barang extends Model
         'tgl_penitipan',
         'masa_penitipan',
         'penambahan_durasi',
+        'tgl_pengambilan',
         'nama_barang',
         'harga_barang',
         'berat_barang',

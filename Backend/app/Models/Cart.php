@@ -21,14 +21,11 @@ class Cart extends Model
         return $this->belongsTo(Pembeli::class, 'id_pembeli');
     }
 
+
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'id_barang');
     }
-    public function transaksiPenjualan()
-    {
-        return $this->belongsTo(TransaksiPenjualan::class, 'id_transaksi_penjualan');
-    }
-
+   
 }
 

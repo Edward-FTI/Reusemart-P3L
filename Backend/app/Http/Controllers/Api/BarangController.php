@@ -88,6 +88,7 @@ class BarangController extends Controller
             'deskripsi' => 'required',
             'status_garansi' => 'nullable|date',
             'status_barang' => 'required',
+            'tgl_pengambilan' => 'nullable|date',
             'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'gambar_dua' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -188,6 +189,7 @@ class BarangController extends Controller
             'deskripsi' => 'required',
             'status_garansi' => 'nullable|date',
             'status_barang' => 'required',
+            'tgl_pengambilan' => 'nullable|date',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'gambar_dua' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -219,6 +221,7 @@ class BarangController extends Controller
             'deskripsi' => $request->deskripsi,
             'status_garansi' => $request->status_garansi,
             'status_barang' => $request->status_barang,
+            'tgl_pengambilan' => $request->tgl_pengambilan,
             'gambar' => $path_gambar,
             'gambar_dua' => $path_gambar2,
         ]);
