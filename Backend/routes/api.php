@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\DetailPengirimanController;
 use App\Http\Controllers\api\OwnerController;
 use App\Http\Controllers\Api\TransaksiPenjualanController;
 use App\Http\Controllers\Api\TransaksiPenitipanController;
+use App\Http\Controllers\Api\CartController;
 // use App\Http\Controllers\Api\RequestDonasiController;
 use App\Http\Controllers\Api\RequestDonasiController;
 
@@ -143,6 +144,14 @@ Route::middleware('auth:api')->group(function () {
 
     // Owner
     Route::get('/owner', [OwnerController::class, 'indexOwner']);
+
+    //Cart
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::get('/cart/{id}', [CartController::class, 'show']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+    Route::patch('/cart/{id}/update-transaksi', [CartController::class, 'updateTransaksi']);
+
 });
 
 Route::get('/barang', [BarangController::class, 'indexPublic']);
