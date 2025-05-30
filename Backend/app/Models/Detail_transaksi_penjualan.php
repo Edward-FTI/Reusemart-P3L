@@ -1,31 +1,26 @@
 <?php
-// app/Models/Cart.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cart extends Model
+class DetailTransaksiPenjualan extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'id_pembeli',
+        'id_transaksi_penjualan',
         'id_barang',
-        
+        'harga_saat_transaksi'
     ];
 
-    public function pembeli()
+    public function transaksi()
     {
-        return $this->belongsTo(Pembeli::class, 'id_pembeli');
+        return $this->belongsTo(TransaksiPenjualan::class, 'id_transaksi_penjualan');
     }
-
 
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'id_barang');
     }
-   
 }
-

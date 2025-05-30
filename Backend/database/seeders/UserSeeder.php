@@ -22,7 +22,6 @@ class UserSeeder extends Seeder
                 'role' => 'Admin',
                 'password' => 'admin123',
             ],
-
             // password: cs123
             [
                 'name' => 'Customer Service User',
@@ -30,7 +29,6 @@ class UserSeeder extends Seeder
                 'role' => 'Customer Service',
                 'password' => 'cs12345',
             ],
-
             // password: gudang123
             [
                 'name' => 'Pegawai Gudang User',
@@ -38,7 +36,6 @@ class UserSeeder extends Seeder
                 'role' => 'Pegawai Gudang',
                 'password' => 'gudang123',
             ],
-
             // password: kurir123
             [
                 'name' => 'Kurir User',
@@ -46,7 +43,6 @@ class UserSeeder extends Seeder
                 'role' => 'Kurir',
                 'password' => 'kurir123',
             ],
-
             // password: penitip123
             [
                 'name' => 'Penitip User',
@@ -54,84 +50,66 @@ class UserSeeder extends Seeder
                 'role' => 'Penitip',
                 'password' => 'penitip123',
             ],
-            // password: admin123
             [
                 'name' => 'Andi Sutrisno',
                 'email' => 'andi.sutrisno@example.com',
                 'role' => 'Penitip',
                 'password' => 'password123',
             ],
-            // password: budi123
             [
                 'name' => 'Penitip1',
                 'email' => 'penitip1@example.com',
                 'role' => 'Penitip',
                 'password' => 'password123',
             ],
-
-            // password: pembeli123
             [
                 'name' => 'Pembeli User',
                 'email' => 'pembeli@example.com',
                 'role' => 'Pembeli',
                 'password' => 'pembeli123',
             ],
-
-            // password: organisasi123
             [
                 'name' => 'Organisasi User',
                 'email' => 'organisasi@example.com',
                 'role' => 'Organisasi',
                 'password' => 'organisasi123',
             ],
-
-            // password: organisasi123
             [
                 'name' => 'Organisasi A',
                 'email' => 'organisasi_a@example.com',
                 'role' => 'Organisasi',
                 'password' => 'organisasi123',
             ],
-
-            // password: owner123
             [
                 'name' => 'Owner User',
                 'email' => 'owner@example.com',
                 'role' => 'Owner',
                 'password' => 'owner123',
             ],
-
-            // password: hunter123
             [
                 'name' => 'Hunter User',
                 'email' => 'hunter@example.com',
                 'role' => 'Hunter',
                 'password' => 'hunter123',
             ],
-
-            // password: user123
             [
                 'name' => 'Generic User',
                 'email' => 'user@example.com',
                 'role' => 'Pembeli',
                 'password' => 'user123',
             ],
-
-            // untuk pegawai gudang
             [
                 'name' => 'Citra Wijay',
                 'email' => 'citra.wijaya@example.com',
                 'role' => 'Pegawai Gudang',
                 'password' => 'password123',
             ],
-
             [
                 'name' => 'Fani Lestari',
                 'email' => 'fani.lestari@example.com',
                 'role' => 'Pegawai Gudang',
                 'password' => 'password123',
             ],
-
             [
                 'name' => 'Irma Widya',
                 'email' => 'irma.widya@example.com',
@@ -140,7 +118,6 @@ class UserSeeder extends Seeder
             ],
         ];
 
-        // Insert predefined users
         foreach ($users as $user) {
             User::create([
                 'name' => $user['name'],
@@ -153,23 +130,49 @@ class UserSeeder extends Seeder
             ]);
         }
 
-        // Ambil data dari tabel organisasis untuk membuat akun user-nya juga
+        // Tambahkan user dari tabel organisasis
         $organisasiList = DB::table('organisasis')->get();
-
         foreach ($organisasiList as $org) {
-            // Cek apakah sudah ada user dengan email tersebut untuk menghindari duplikasi
             $exists = User::where('email', $org->email)->exists();
             if (!$exists) {
                 User::create([
                     'name' => $org->nama,
                     'email' => $org->email,
                     'role' => 'Organisasi',
-                    'password' => Hash::make('password123'), // bisa diganti sesuai kebutuhan
+                    'password' => Hash::make('password123'),
                     'email_verified_at' => now(),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
             }
+        }
+
+        // Tambahkan user dari data pembeli manual
+        $pembelis = [
+            ['nama_pembeli' => 'Aliyah Putri', 'email' => 'aliyah@example.com', 'password' => 'password123'],
+            ['nama_pembeli' => 'Budi Santoso', 'email' => 'budi@example.com', 'password' => 'password123'],
+            ['nama_pembeli' => 'Citra Dewi', 'email' => 'citra@example.com', 'password' => 'password123'],
+            ['nama_pembeli' => 'Dani Rahman', 'email' => 'dani@example.com', 'password' => 'password123'],
+            ['nama_pembeli' => 'Erika Nasution', 'email' => 'erika@example.com', 'password' => 'password123'],
+            ['nama_pembeli' => 'Fajar Hidayat', 'email' => 'fajar@example.com', 'password' => 'password123'],
+            ['nama_pembeli' => 'Gina Lestari', 'email' => 'gina@example.com', 'password' => 'password123'],
+            ['nama_pembeli' => 'Hendra Wijaya', 'email' => 'hendra@example.com', 'password' => 'password123'],
+            ['nama_pembeli' => 'Indah Kurniawati', 'email' => 'indah@example.com', 'password' => 'password123'],
+            ['nama_pembeli' => 'Joko Prabowo', 'email' => 'joko@example.com', 'password' => 'password123'],
+        ];
+
+        foreach ($pembelis as $pembeli) {
+            User::firstOrCreate(
+                ['email' => $pembeli['email']],
+                [
+                    'name' => $pembeli['nama_pembeli'],
+                    'role' => 'Pembeli',
+                    'password' => Hash::make($pembeli['password']),
+                    'email_verified_at' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
         }
     }
 }

@@ -30,13 +30,12 @@ class DatabaseSeeder extends Seeder
             PegawaiSeeder::class,
             PembeliSeeder::class,
             PengirimanSeeder::class,
-            Transaksi_PenjualanSeeder::class,
             RequestDonasiSeeder::class,
             KategoriSeeder::class,
             BarangSeeder::class,
             CartSeeder ::class,
-
-            // Tambahkan seeder lainnya jika ada
+            Transaksi_PenjualanSeeder::class,
+            Detail_transaksi_penjualanSeeder ::class,
         ]);
     }
 }

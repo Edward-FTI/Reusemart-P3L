@@ -101,7 +101,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/admin",
-        element: <Admin/>// atau komponen dashboard admin Anda
+        element: <Admin />// atau komponen dashboard admin Anda
       },
       {
         path: "pegawai",
@@ -145,17 +145,15 @@ const router = createBrowserRouter([
 
   // PEGAWAI GUDANG
   {
-    path: "/gudang/barang-titipan",
-    element: (
-      <div>
-        <NavbarGudang />
-        <CRUDBarangTitipan />
-        <Footer />
-      </div>
-    ),
-  },
-
-  {
+    path: "/gudang",
+    element: <Layout />,
+    children: [
+      {
+        path: "/gudang/barang-titipan",
+        element: <CRUDBarangTitipan />,
+      },
+                                   
+                                   {
     path: "/gudang/pengiriman/pembeli",
     element: (
       <div>
@@ -176,6 +174,7 @@ const router = createBrowserRouter([
       </div>
     ),
   },
+    ]
 
   // CUSTOMER
   {
