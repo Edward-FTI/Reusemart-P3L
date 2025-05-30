@@ -2,172 +2,102 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
-use App\Models\TransaksiPenjualan;
-use App\Models\DetailPengiriman;
+use App\Models\Cart;
 use App\Models\Pembeli;
+use App\Models\Barang;
+use App\Models\TransaksiPenjualan;
+use App\Models\DetailTransaksiPenjualan;
 use Illuminate\Http\Request;
-use Exception;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 class TransaksiPenjualanController extends Controller
 {
-    public function index()
+    private function getPembeliId()
     {
-        $transaksiPenjualans = TransaksiPenjualan::with(['detailPengiriman', 'pembeli'])->get();
-        if ($transaksiPenjualans->isNotEmpty()) {
-            return response([
-                'message' => 'Berhasil mengambil data transaksi penjualan',
-                'data' => $transaksiPenjualans
-            ], 200);
-        }
-        return response([
-            'message' => 'Data transaksi penjualan kosong',
-            'data' => []
-        ], 400);
+        $userEmail = Auth::user()->email;
+        $pembeli = Pembeli::where('email', $userEmail)->first();
+        return $pembeli ? $pembeli->id : null;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $storeData = $request->all();
-
-        $validate = Validator::make($storeData, [
-            'id_detail_pengiriman' => 'required',
-            'id_pembeli' => 'required',
-            'total_harga' => 'required',
-            'status' => 'required',
+        $validated = $request->validate([
+            'selected_cart_ids' => 'required|array',
+            'selected_cart_ids.*' => 'exists:carts,id',
+            'metode_pengiriman' => 'required|in:ambil sendiri,di antar',
+            'alamat_pengiriman' => 'required|string',
+            'bukti_pembayaran' => 'required|image|max:2048',
+            'status_pengiriman' => 'required|string',
+            'id_pegawai' => 'nullable|exists:pegawais,id',
+            'status_pembelian' => 'nullable|string',
+            'verifikasi_pembayaran' => 'nullable|string'
         ]);
 
-        if ($validate->fails()) {
-            return response(['message' => $validate->errors()], 400);
+        $pembeliId = $this->getPembeliId();
+        if (!$pembeliId) {
+            return response()->json(['message' => 'Pembeli tidak ditemukan'], 404);
         }
 
-        try {
-            $transaksiPenjualan = TransaksiPenjualan::create($storeData);
-            return response([
-                'message' => 'Berhasil menambahkan data transaksi penjualan',
-                'data' => $transaksiPenjualan
-            ], 201);
-        } catch (Exception $e) {
-            return response([
-                'message' => 'Gagal menambahkan data transaksi penjualan',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
+        // Ambil cart yang dipilih
+        $carts = Cart::whereIn('id', $validated['selected_cart_ids'])
+                     ->where('id_pembeli', $pembeliId)
+                     ->with('barang')
+                     ->get();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $transaksiPenjualan = TransaksiPenjualan::with(['detailPengiriman', 'pembeli'])->find($id);
-        if ($transaksiPenjualan) {
-            return response([
-                'message' => 'Berhasil mengambil data transaksi penjualan',
-                'data' => $transaksiPenjualan
-            ], 200);
+        if ($carts->isEmpty()) {
+            return response()->json(['message' => 'Cart tidak valid atau kosong'], 422);
         }
-        return response([
-            'message' => 'Data transaksi penjualan tidak ditemukan',
-            'data' => []
-        ], 404);
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $transaksiPenjualan = TransaksiPenjualan::find($id);
-        if (!$transaksiPenjualan) {
-            return response([
-                'message' => 'Data transaksi penjualan tidak ditemukan',
-                'data' => null
-            ], 404);
+        // Hitung total harga
+        $totalHarga = 0;
+        foreach ($carts as $cart) {
+            $totalHarga += $cart->barang->harga;
         }
-        $validate = Validator::make($request->all(), [
-            'id_detail_pengiriman' => 'required',
-            'id_pembeli' => 'required',
-            'total_harga' => 'required',
-            'status' => 'required',
+
+        // Hitung ongkir
+        $ongkir = $totalHarga > 1500000 ? 0 : 100000;
+
+        // Simpan foto
+        $buktiPath = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
+
+        // Simpan transaksi penjualan
+        $transaksi = TransaksiPenjualan::create([
+            'id_pembeli' => $pembeliId,
+            'total_harga_pembelian' => $totalHarga,
+            'alamat_pengiriman' => $validated['alamat_pengiriman'],
+            'metode_pengiriman' => $validated['metode_pengiriman'],
+            'ongkir' => $ongkir,
+            'bukti_pembayaran' => $buktiPath,
+            'status_pengiriman' => $validated['status_pengiriman'],
+            'id_pegawai' => $validated['id_pegawai'] ?? null,
+            'status_pembelian' => $validated['status_pembelian'] ?? 'menunggu',
+            'verifikasi_pembayaran' => $validated['verifikasi_pembayaran'] ?? 'belum diverifikasi',
         ]);
-        if ($validate->fails()) {
-            return response(['message' => $validate->errors()], 400);
-        }
-        $transaksiPenjualan->id_detail_pengiriman = $request->id_detail_pengiriman;
-        $transaksiPenjualan->id_pembeli = $request->id_pembeli;
-        $transaksiPenjualan->total_harga = $request->total_harga;
-        $transaksiPenjualan->status = $request->status;
-        $transaksiPenjualan->save();
-        return response([
-            'message' => 'Berhasil mengupdate data transaksi penjualan',
-            'data' => $transaksiPenjualan
-        ], 200);
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $transaksiPenjualan = TransaksiPenjualan::find($id);
-        if (!$transaksiPenjualan) {
-            return response([
-                'message' => 'Data transaksi penjualan tidak ditemukan',
-                'data' => null
-            ], 404);
-        }
-        $transaksiPenjualan->delete();
-        return response([
-            'message' => 'Berhasil menghapus data transaksi penjualan',
-            'data' => $transaksiPenjualan
-        ], 200);
-    }
+        // Simpan detail transaksi
+        foreach ($carts as $cart) {
+            DetailTransaksiPenjualan::create([
+                'transaksi_penjualan_id' => $transaksi->id,
+                'id_barang' => $cart->id_barang,
+                'harga_saat_transaksi' => $cart->barang->harga
+            ]);
 
-    public function getPembeli()
-    {
-        $pembeli = Pembeli::all();
-        if ($pembeli->isNotEmpty()) {
-            return response([
-                'message' => 'Berhasil mengambil data pembeli',
-                'data' => $pembeli
-            ], 200);
+            // Tandai barang sebagai sold out
+            $cart->barang->update(['status_barang' => 'sold out']);
         }
-        return response([
-            'message' => 'Data pembeli kosong',
-            'data' => []
-        ], 400);
-    }
-    public function getDetailPengiriman()
-    {
-        $detailPengiriman = DetailPengiriman::all();
-        if ($detailPengiriman->isNotEmpty()) {
-            return response([
-                'message' => 'Berhasil mengambil data detail pengiriman',
-                'data' => $detailPengiriman
-            ], 200);
-        }
-        return response([
-            'message' => 'Data detail pengiriman kosong',
-            'data' => []
-        ], 400);
-    }
-    public function searchByIdPembeli($id)
-    {
-        $transaksiPenjualans = TransaksiPenjualan::where('id_pembeli', $id)->get();
-        if ($transaksiPenjualans->isNotEmpty()) {
-            return response([
-                'message' => 'Berhasil mengambil data transaksi penjualan',
-                'data' => $transaksiPenjualans
-            ], 200);
-        }
-        return response([
-            'message' => 'Data transaksi penjualan tidak ditemukan',
-            'data' => []
-        ], 404);
+
+        // Hapus cart
+        Cart::whereIn('id', $validated['selected_cart_ids'])->delete();
+
+        return response()->json([
+            'message' => 'Transaksi berhasil disimpan',
+            'transaksi' => $transaksi->load('detail.barang')
+        ], 201);
     }
 }
