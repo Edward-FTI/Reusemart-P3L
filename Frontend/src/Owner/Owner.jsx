@@ -50,19 +50,21 @@ const CRUDTransaksiRequestDonasi = () => {
                                 <td>{index + 1}</td>
                                 <td>{requestDonasi.request}</td>
                                 <td>{requestDonasi.status}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-success btn-sm me-2"
-                                        onClick={() => handleStatusChange(requestDonasi.id, 'Diterima')}
-                                    >
-                                        Terima
-                                    </button>
-                                    <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() => handleStatusChange(requestDonasi.id, 'Ditolak')}
-                                    >
-                                        Tolak
-                                    </button>
+                                <td >
+                                    <div className="d-flex flex-column">
+                                        <button
+                                            className="btn btn-success btn-sm"
+                                            onClick={() => handleStatusChange(requestDonasi.id, 'Diterima')}
+                                        >
+                                            Terima
+                                        </button>
+                                        <button
+                                            className="btn btn-danger btn-sm mt-2"
+                                            onClick={() => handleStatusChange(requestDonasi.id, 'Ditolak')}
+                                        >
+                                            Tolak
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))

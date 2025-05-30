@@ -21,6 +21,10 @@ class OwnerController extends Controller
             'message' => 'Gagal mengambil data request donasi',
             'data' => null,
         ], 400);
-
     }
+
+    // public function PenjualanBulanan() {
+
+    // }
+
 }
