@@ -54,10 +54,37 @@ const LinkSidebar = () => {
                             className="d-inline-block" />
                         Pengiriman
                     </Link>
-
                 </>
-
             )}
+
+            {role === "Owner" && (
+                <>
+                    <Link to="request-donasi" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=gEoGYhaNOcQl&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Request Donasi
+                    </Link>
+
+                    <Link to="penjualan-bulanan" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=11890&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Laporan Penjualan Bulanan
+                    </Link>
+
+                    <Link to="komisi-bulanan" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=JI2bnOlUlrmw&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Laporan Komisi Bulanan
+                    </Link>
+
+                    <Link to="stok-gudang" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=j87nOIHCmSZK&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Laporan Stok Gudang
+                    </Link>
+                </>
+            )}
+
         </div>
     );
 

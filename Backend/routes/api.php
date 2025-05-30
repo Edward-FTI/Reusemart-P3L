@@ -144,6 +144,9 @@ Route::middleware('auth:api')->group(function () {
 
     // Owner
     Route::get('/owner', [OwnerController::class, 'indexOwner']);
+<<<<<<< HEAD
+    // Route::get('/penjualan-bulanan', [OwnerController::class, 'PenjualanBulanan']);
+=======
 
     //Cart
     Route::get('/cart', [CartController::class, 'index']);
@@ -152,6 +155,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/cart/{id}', [CartController::class, 'destroy']);
     Route::patch('/cart/{id}/update-transaksi', [CartController::class, 'updateTransaksi']);
 
+>>>>>>> 8963d12f285c8aeacf54bad733952456e27e1140
 });
 
 Route::get('/barang', [BarangController::class, 'indexPublic']);

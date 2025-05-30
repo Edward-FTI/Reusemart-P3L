@@ -48,6 +48,9 @@ import Layout from "../navbar/layout";
 
 // OWNER
 import Owner from "../Owner/Owner";
+import PenjualanBulanan from "../Owner/PenjualanBulanan"
+import KomisiBulanan from "../Owner/KomisiBulanan";
+import StokGudang from "../Owner/StokGudang";
 
 // Detail Barang
 import DetailBarang from "../Components/DetailBarang";
@@ -152,29 +155,30 @@ const router = createBrowserRouter([
         path: "/gudang/barang-titipan",
         element: <CRUDBarangTitipan />,
       },
-                                   
-                                   {
-    path: "/gudang/pengiriman/pembeli",
-    element: (
-      <div>
-        <NavbarGudang />
-        <CRUDPengirimanPembeli />
-        <Footer />
-      </div>
-    ),
-  },
 
-  {
-    path: "/gudang/pengiriman/penitip",
-    element: (
-      <div>
-        <NavbarGudang />
-        <CRUDPengirimanPenitip />
-        <Footer />
-      </div>
-    ),
+      {
+        path: "/gudang/pengiriman/pembeli",
+        element: (
+          <div>
+            <NavbarGudang />
+            <CRUDPengirimanPembeli />
+            <Footer />
+          </div>
+        ),
+      },
+
+      {
+        path: "/gudang/pengiriman/penitip",
+        element: (
+          <div>
+            <NavbarGudang />
+            <CRUDPengirimanPenitip />
+            <Footer />
+          </div>
+        ),
+      },
+    ],
   },
-    ]
 
   // CUSTOMER
   {
@@ -282,13 +286,28 @@ const router = createBrowserRouter([
   // OWNER
   {
     path: "/owner",
-    element: (
-      <div>
-        {/* <NavbarPage /> */}
-        <Owner />
-        {/* <Footer /> */}
-      </div>
-    ),
+    element: <Layout />,
+    children: [
+      {
+        path: "/owner/request-donasi",
+        element: <Owner />,
+      },
+
+      {
+        path: "penjualan-bulanan",
+        element: <PenjualanBulanan />
+      },
+
+      {
+        path: "komisi-bulanan",
+        element: <KomisiBulanan />
+      },
+
+      {
+        path: "stok-gudang",
+        element: <StokGudang />
+      }
+    ]
   },
 
   //Detail Barang

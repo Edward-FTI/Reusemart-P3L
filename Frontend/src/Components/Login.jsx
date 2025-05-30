@@ -50,7 +50,7 @@ const LoginForm = () => {
               navigate("/organisasi/transaksi-request-donasi"); // Ensure this route exists/organisasi/transaksi-request-donasi
               break;
             case "Owner":
-              navigate("/owner"); // Ensure this route exists
+              navigate("/owner/request-donasi"); // Ensure this route exists
               break;
             case "Kurir":
               navigate("/"); // Ensure this route exists
