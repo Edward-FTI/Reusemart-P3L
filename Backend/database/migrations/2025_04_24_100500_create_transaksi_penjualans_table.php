@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_pembeli')->constrained('pembelis');
             $table->double('total_harga_pembelian');
+            $table->string('metode_pengiriman');
             $table->string('alamat_pengiriman');
             $table->double('ongkir');
             $table->string('bukti_pembayaran');

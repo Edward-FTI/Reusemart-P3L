@@ -15,6 +15,7 @@ class TransaksiPenjualan extends Model
     protected $fillable = [
         'id_pembeli',
         'total_harga_pembelian',
+        'metode_pengiriman',
         'alamat_pengiriman',
         'ongkir',
         'bukti_pembayaran',
