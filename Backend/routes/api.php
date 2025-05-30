@@ -154,7 +154,6 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/cart/{id}', [CartController::class, 'destroy']);
     Route::patch('/cart/{id}/update-transaksi', [CartController::class, 'updateTransaksi']);
 
-
 });
 
 Route::get('/barang', [BarangController::class, 'indexPublic']);
