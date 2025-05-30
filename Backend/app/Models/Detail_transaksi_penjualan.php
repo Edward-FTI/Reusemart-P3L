@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DetailTransaksiPenjualan extends Model
 {
@@ -14,12 +15,12 @@ class DetailTransaksiPenjualan extends Model
         'harga_saat_transaksi'
     ];
 
-    public function transaksi()
+    public function transaksi(): BelongsTo
     {
         return $this->belongsTo(TransaksiPenjualan::class, 'id_transaksi_penjualan');
     }
 
-    public function barang()
+    public function barang(): BelongsTo
     {
         return $this->belongsTo(Barang::class, 'id_barang');
     }

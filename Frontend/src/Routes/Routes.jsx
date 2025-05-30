@@ -158,24 +158,12 @@ const router = createBrowserRouter([
 
       {
         path: "/gudang/pengiriman/pembeli",
-        element: (
-          <div>
-            <NavbarGudang />
-            <CRUDPengirimanPembeli />
-            <Footer />
-          </div>
-        ),
+        element: <CRUDPengirimanPembeli />
       },
 
       {
         path: "/gudang/pengiriman/penitip",
-        element: (
-          <div>
-            <NavbarGudang />
-            <CRUDPengirimanPenitip />
-            <Footer />
-          </div>
-        ),
+        element: <CRUDPengirimanPenitip />
       },
     ],
   },

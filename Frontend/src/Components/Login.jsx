@@ -32,7 +32,8 @@ const LoginForm = () => {
         if (user.role) {
           switch (user.role) {
             case "Pembeli":
-              navigate("/customer/profile"); // Ensure this route exists
+              // navigate("/customer/profile"); // Ensure this route exists
+              navigate("/"); // Ensure this route exists
               break;
             case "Admin":
               navigate("/admin"); // Ensure this route exists
