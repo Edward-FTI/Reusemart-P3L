@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use App\Models\DetailTransaksiPenjualan;
+use App\Models\TransaksiPenjualan;
 
 class Detail_transaksi_penjualanSeeder extends Seeder
 {

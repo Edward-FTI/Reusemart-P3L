@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class DetailTransaksiPenjualan extends Model
+class Detail_transaksi_penjualan extends Model
 {
     use HasFactory;
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\api\OwnerController;
 use App\Http\Controllers\Api\TransaksiPenjualanController;
 use App\Http\Controllers\Api\TransaksiPenitipanController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\PengambilanController;
 // use App\Http\Controllers\Api\RequestDonasiController;
 use App\Http\Controllers\Api\RequestDonasiController;
 
@@ -134,6 +135,14 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transaksi-penjualan/getDetailPengiriman', [TransaksiPenjualanController::class, 'getDetailPengiriman']);
     Route::get('/transaksi-penjualan/searchById/{id}', [TransaksiPenjualanController::class, 'searchById']);
 
+    //Pengambilan
+    // Route::get('/pengambilan', [PengambilanController::class, 'index']);
+    Route::get('/pengambilan/{id}', [PengambilanController::class, 'show']);
+    Route::put('/pengambilan/{id}', [PengambilanController::class, 'update']);
+    Route::delete('/pengambilan/{id}', [PengambilanController::class, 'destroy']);
+    Route::get('/pengambilan/searchByIdPembeli/{id}', [PengambilanController::class, 'searchByIdPembeli']);
+    Route::get('/pengambilan/searchByIdTransaksi/{id}', [PengambilanController::class, 'searchByIdTransaksi']);
+
     //Transaksi Donasi
     Route::get('/transaksi-donasi', [TransaksiDonasiController::class, 'index']);
     Route::post('/transaksi-donasi', [TransaksiDonasiController::class, 'store']);
@@ -146,7 +155,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/owner', [OwnerController::class, 'indexOwner']);
     // Route::get('/penjualan-bulanan', [OwnerController::class, 'PenjualanBulanan']);
 
-
     //Cart
     Route::get('/cart', [CartController::class, 'index']);
     Route::post('/cart', [CartController::class, 'store']);
@@ -155,6 +163,8 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/cart/{id}/update-transaksi', [CartController::class, 'updateTransaksi']);
 
 });
+
+Route::get('/pengambilan', [PengambilanController::class, 'index']);
 
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 // Route::post('/barang', [BarangController::class, 'store']);
