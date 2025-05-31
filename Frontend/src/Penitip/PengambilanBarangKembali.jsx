@@ -137,7 +137,7 @@ const Transaksi_penitip = () => {
       await UpdatetTransaksi_Penitipan(selectedPengambilanBarang.id, {
         ...selectedPengambilanBarang,
         tgl_pengambilan: tglPengambilan,
-        status_barang: "Ditunggu",
+        status_barang: "Diambil",
       });
 
       toast.success("Barang berhasil diambil.");

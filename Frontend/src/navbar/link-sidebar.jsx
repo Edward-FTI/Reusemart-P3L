@@ -39,7 +39,7 @@ const LinkSidebar = () => {
                     Kelola Penitip
                 </Link>
             )} */}
-
+    
             {/* Pegawai Gudang */}
             {role === "Pegawai Gudang" && (
                 <>
@@ -49,7 +49,7 @@ const LinkSidebar = () => {
                         Barang Titipan
                     </Link>
 
-                    <Link to="pengiriman" className="d-flex align-items-center gap-2 text-white link-side">
+                    <Link to="pengiriman/pembeli" className="d-flex align-items-center gap-2 text-white link-side">
                         <img src="https://img.icons8.com/?size=100&id=11910&format=png&color=000000" alt="" width="30"
                             className="d-inline-block" />
                         Pengiriman
