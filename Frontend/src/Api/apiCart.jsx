@@ -10,8 +10,10 @@ export const GetAllCart = async () => {
             },
         });
         return response.data.data;
+        
     } catch (error) {
         throw error.response.data;
+        
     }
 };
 

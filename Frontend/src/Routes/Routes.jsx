@@ -59,6 +59,12 @@ import DetailBarang from "../Components/DetailBarang";
 import CRUDAlamat from "../pembeli/CrudAlamat";
 import CRUDPegawai from "../admin/CRUDPegawai";
 
+//Checkout
+// import PaymentMethods from "../pembeli/CheckOut";
+import OrderPage from "../pembeli/CheckOut";
+import OrderForm from "../pembeli/CheckOut";
+
+
 const router = createBrowserRouter([
   {
     path: "*",
@@ -95,6 +101,10 @@ const router = createBrowserRouter([
   {
     path: "/alamat",
     element: <CRUDAlamat />
+  },
+  {
+    path: "/pembayaran",
+    element: <OrderForm />
   },
 
   // ADMIN
