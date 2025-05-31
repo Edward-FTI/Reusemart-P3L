@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { GetAllCart } from "../Api/apiCart";
 import { GetAllAlamat } from "../Api/apiAlamat";
-import { GetpembeliById, GetAllpembeli } from "../Api/apiPembeli";
+import { GetpembeliById, GetAllpembeli } from "../Api/apiPembeli"; // Pastikan GetpembeliById diimpor
+// import { GetAlltransaksi_penjualan, Gettransaksi_penjualanById, Createtransaksi_penjualan } from "../Api/apitransaksi_penjualans";
 import axios from "axios";
 
 const OrderForm = () => {
@@ -16,7 +17,7 @@ const OrderForm = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [proof, setProof] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pembeli, setPembeli] = useState([]);
+  // const [pembeli, setPembeli] = useState([]); // Tidak perlu state pembeli jika hanya mengambil poin
 
   const token = sessionStorage.getItem("token");
   const userId = sessionStorage.getItem("id");
@@ -24,8 +25,6 @@ const OrderForm = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  
 
   const fetchData = async () => {
     try {
@@ -37,11 +36,19 @@ const OrderForm = () => {
       const alamatPembeli = allAlamat.filter((a) => a.id_pembeli == userId);
       setAvailableAddresses(alamatPembeli.map((a) => a.alamat)); // simpan hanya string alamat
 
-      const buyerPoin = cart.length > 0 ? cart[0].poin || 0 : 0;
-      setBuyerPoints(buyerPoin);
+      // --- Perubahan dimulai di sini ---
+      // Ambil data pembeli berdasarkan ID untuk mendapatkan poin terbaru
+      const currentPembeli = await GetpembeliById(userId);
+      if (currentPembeli && currentPembeli.point !== undefined) {
+        setBuyerPoints(currentPembeli.point);
+      } else {
+        setBuyerPoints(0); // Set 0 jika tidak ada poin atau pembeli tidak ditemukan
+      }
+      // --- Perubahan berakhir di sini ---
+
     } catch (err) {
-      console.error(err);
-      alert("Gagal mengambil data");
+      console.error("Failed to fetch data:", err); // Pesan error lebih deskriptif
+      alert("Gagal mengambil data. Silakan coba lagi.");
     }
   };
 
@@ -78,6 +85,7 @@ const OrderForm = () => {
       alert("Transaksi berhasil!");
       setShowUpload(false);
       setProof(null);
+      // Optional: Refresh cart or redirect after successful transaction
     } catch (err) {
       alert(err.response?.data?.message || "Gagal melakukan transaksi.");
     } finally {

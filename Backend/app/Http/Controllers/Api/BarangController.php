@@ -163,6 +163,68 @@ class BarangController extends Controller
         ], 400);
     }
 
+    public function updatePublic(Request $request, string $id)
+{
+    $barang = Barang::find($id);
+    if (is_null($barang)) {
+        return response(['message' => 'Data tidak ditemukan', 'data' => null], 404);
+    }
+
+    $request->validate([
+        'id_penitip' => 'required',
+        'id_kategori' => 'required',
+        'tgl_penitipan' => 'required|date',
+        'nama_barang' => 'required',
+        'harga_barang' => 'required',
+        'berat_barang' => 'required',
+        'penambahan_durasi' => 'nullable|integer',
+        'deskripsi' => 'required',
+        'status_garansi' => 'nullable|date',
+        'status_barang' => 'required',
+        'tgl_pengambilan' => 'nullable|date',
+        'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'gambar_dua' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+    ]);
+
+    $path_gambar = $barang->gambar;
+    $path_gambar2 = $barang->gambar_dua;
+
+    if ($request->hasFile('gambar')) {
+        if (file_exists(public_path($path_gambar))) unlink(public_path($path_gambar));
+        $imageName = time() . '_' . uniqid() . '.' . $request->file('gambar')->extension();
+        $path_gambar = 'images/barang/' . $imageName;
+        $request->file('gambar')->move(public_path('images/barang'), $imageName);
+    }
+
+    if ($request->hasFile('gambar_dua')) {
+        if (file_exists(public_path($path_gambar2))) unlink(public_path($path_gambar2));
+        $imageName2 = time() . '_' . uniqid() . '.' . $request->file('gambar_dua')->extension();
+        $path_gambar2 = 'images/barang/' . $imageName2;
+        $request->file('gambar_dua')->move(public_path('images/barang'), $imageName2);
+    }
+
+    $barang->update([
+        'id_penitip' => $request->id_penitip,
+        'id_kategori' => $request->id_kategori,
+        'tgl_penitipan' => Carbon::parse($request->tgl_penitipan)->setTimeFromTimeString(now()->format('H:i:s')),
+        'nama_barang' => $request->nama_barang,
+        'harga_barang' => $request->harga_barang,
+        'berat_barang' => $request->berat_barang,
+        'penambahan_durasi' => $request->penambahan_durasi,
+        'deskripsi' => $request->deskripsi,
+        'status_garansi' => $request->status_garansi,
+        'status_barang' => $request->status_barang,
+        'tgl_pengambilan' => $request->tgl_pengambilan,
+        'gambar' => $path_gambar,
+        'gambar_dua' => $path_gambar2,
+    ]);
+
+    return response([
+        'message' => 'Berhasil update barang',
+        'data' => $barang
+    ], 200);
+}
+
 
 
     public function update(Request $request, string $id)

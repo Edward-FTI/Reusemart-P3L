@@ -31,6 +31,26 @@ const LinkSidebar = () => {
                 </>
             )}
 
+            {role === "Penitip" && (
+                <>
+                    <Link to="/" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=iPqKoSmxmAyJ&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Dashboard
+                    </Link>
+                    <Link to="Profile/" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=13547&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Profile
+                    </Link>
+                    <Link to="/penitip/pengambilan/" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Data Barang
+                    </Link>
+                </>
+            )}
+
             {/* Customer Service */}
             {/* {role === "Customer Service" && (
                 <Link to="/customer-service/penitip" className="d-flex align-items-center gap-2 text-white link-side">

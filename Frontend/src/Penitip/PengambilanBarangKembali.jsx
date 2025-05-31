@@ -291,7 +291,7 @@ const Transaksi_penitip = () => {
                       className="btn btn-sm btn-warning mt-2"
                       onClick={() => handlePengambilan(b)}
                     >
-                      Pengambilan
+                      Penjadwalan
                     </button>
                   )}
 

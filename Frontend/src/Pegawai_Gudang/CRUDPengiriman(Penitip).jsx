@@ -6,21 +6,19 @@ import Select from "react-select";
 import jsPDF from "jspdf";
 import { Link } from "react-router-dom";
 
-
-
 import {
     GetAllBarang,
     CreateBarang,
     UpdateBarang,
     DeleteBarang
-} from "../Api/apiBarangQC";
+} from "../Api/apiBarang";
 import { GetAllKategori } from "../Api/apiKategori";
-// import { GetAllPenitip } from "../Api/apiPenitip";
+import { GetAllPenitip } from "../Api/apiPenitip";
 import { GetAllpembeli } from "../Api/apiPembeli";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-const CRUDBarangTitipan = () => {
+const CRUDPengirimanPenitip = () => {
     const [barangList, setBarangList] = useState([]);
 
     const [kategoriList, setKategoriList] = useState([]);
@@ -55,26 +53,39 @@ const CRUDBarangTitipan = () => {
     })
 
     const fetchBarang = async () => {
-        try {
-            const data = await GetAllBarang();
-            setBarangList(data);
-            setFilteredBarangList(data); // Awalnya tampilkan semua
-        } catch (error) {
-            toast.error("Gagal mengambil data barang");
-        }
-    };
+    try {
+        const data = await GetAllBarang();
+        const filtered = data.filter(b => b.status_barang == "Diambil");
+        setBarangList(filtered);
+        setFilteredBarangList(filtered);
+    } catch (error) {
+        toast.error("Gagal mengambil data barang");
+    }
+};
+
 
     const handleSearch = () => {
-        const filtered = barangList.filter(b =>
-            b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.penitip?.nama_penitip?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.kategori_barang?.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.status_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.tgl_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase())
+    const search = searchTerm.toLowerCase();
+
+    const filtered = barangList.filter((b) => {
+        return (
+            b.nama_barang?.toLowerCase().includes(search) ||
+            b.penitip?.nama_penitip?.toLowerCase().includes(search) ||
+            b.kategori_barang?.nama_kategori?.toLowerCase().includes(search) ||
+            b.status_barang?.toLowerCase().includes(search) ||
+            b.status_garansi?.toLowerCase().includes(search) ||
+            b.deskripsi?.toLowerCase().includes(search) ||
+            b.tgl_penitipan?.toLowerCase().includes(search) ||
+            b.masa_penitipan?.toLowerCase().includes(search) ||
+            b.harga_barang?.toString().toLowerCase().includes(search) ||
+            b.berat_barang?.toString().toLowerCase().includes(search) ||
+            b.pegawai?.nama?.toLowerCase().includes(search)
         );
-        setFilteredBarangList(filtered);
-    };
+    });
+
+    setFilteredBarangList(filtered);
+};
+
 
     const fetchKategori = async () => {
         try {
@@ -108,48 +119,27 @@ const CRUDBarangTitipan = () => {
             ...form,
             [name]: files ? files[0] : value
         });
-    };
+    };  
+
+    const handelKonfirmasi = async (e, barang) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    // Kunci harus 'status_barang' sesuai field yang ada di backend
+    formData.append('status_barang', "diambil kembali");
+
+    try {
+        await UpdateBarang(barang.id, formData);
+        toast.success(`Status barang '${barang.nama_barang}' berhasil diubah jadi 'diambil kembali'`);
+        fetchBarang();
+    } catch (error) {
+        console.error("Gagal mengubah status barang:", error);
+        toast.error("Gagal mengubah status barang");
+    }
+};
 
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            const formData = new FormData();
-            formData.append('id', form.id);
-            formData.append('id_penitip', form.id_penitip);
-            formData.append('id_kategori', form.id_kategori);
-            formData.append('tgl_penitipan', form.tgl_penitipan);
-            formData.append('nama_barang', form.nama_barang);
-            formData.append('harga_barang', form.harga_barang);
-            formData.append('berat_barang', form.berat_barang);
-            formData.append('deskripsi', form.deskripsi);
-            formData.append('status_garansi', form.status_garansi);
-            formData.append('status_barang', form.status_barang);
-
-            if (form.gambar) {
-                formData.append('gambar', form.gambar);
-            }
-            if (form.gambar_dua) {
-                formData.append('gambar_dua', form.gambar_dua);
-            }
-
-            if (isEdit) {
-                // await UpdateBarang(formData);
-                await UpdateBarang(form); // Kirim objek, bukan FormData
-                toast.success('Berhasil update data barang');
-            } else {
-                await CreateBarang(form);
-                toast.success('Berhasil menambahkan data barang');
-            }
-
-            resetForm();
-            fetchBarang();
-        } catch (error) {
-            toast.error('Gagal menyimpan data barang');
-            console.error(error);
-        }
-    };
+ 
 
 
     const handleEdit = (barang) => {
@@ -190,73 +180,7 @@ const CRUDBarangTitipan = () => {
         setIsEdit(false);
     }
 
-    const handleDownloadNota = (barangList) => {
-        const doc = new jsPDF();
 
-        // Header
-        doc.setFont("times", "bold");
-        doc.setFontSize(14);
-        doc.text("Nota Penitipan Barang", 10, 15);
-
-        doc.setFontSize(12);
-        doc.setFont("times", "bold");
-        doc.text("ReUse Mart", 20, 25);
-
-        doc.setFont("times", "normal");
-        doc.text("Jl. Green Eco Park No. 456 Yogyakarta", 20, 30);
-
-        // Ambil barang pertama untuk informasi umum (karena penitip sama)
-        const barangPertama = barangList[0];
-
-        // Info Nota
-        doc.setFontSize(11);
-        doc.text(`No Nota                       : ${barangPertama.nomor_nota || '24.02.101'}`, 20, 40);
-
-        const [tanggal, waktu] = barangPertama.tgl_penitipan.split(' ');
-        const [tahun, bulan, hari] = tanggal.split('-');
-        const formattedDate = `${hari}/${bulan}/${tahun} ${waktu}`;
-
-        doc.text(`Tanggal penitipan        : ${formattedDate}`, 20, 45);
-        doc.text(`Masa penitipan sampai: ${new Date(barangPertama.masa_penitipan).toLocaleDateString('id-ID')}`, 20, 50);
-
-        // Penitip
-        const penitip = `T${barangPertama.penitip.id} / ${barangPertama.penitip?.nama_penitip}`;
-        const alamat_penitip = barangPertama.penitip?.alamat;
-
-        doc.setFont("times", "bold");
-        doc.text("Penitip :", 20, 60);
-
-        doc.setFont("times", "normal");
-        doc.text(penitip, 35, 60);
-        doc.text(alamat_penitip, 20, 65);
-        doc.text(`Delivery : Kurir ReUseMart (Cahyono)`, 20, 70);
-
-        // Tampilkan daftar semua barang
-        let y = 80;
-        barangList.forEach((barang, index) => {
-            doc.setFont("times", "normal");
-            doc.text(`${barang.nama_barang}`, 20, y);
-            doc.text(`${barang.harga_barang?.toLocaleString()}`, 90, y, { align: "right" });
-            y += 5;
-
-            if (barang.status_garansi != null) {
-                doc.text(`Garansi ON ${barang.status_garansi}`, 20, y);
-                y += 5;
-            }
-            doc.text(`Berat barang: ${barang.berat_barang} kg`, 20, y);
-            y += 5;
-        });
-
-        // Footer
-        y += 10;
-        doc.text("Diterima dan QC oleh:", 50, y);
-        doc.text(`P${barangPertama.pegawai?.id} - ${barangPertama.pegawai.nama}`, 50, y + 10);
-
-        doc.setLineWidth(0.5);
-        doc.rect(8, 10, 190, y + 10); // kotak sekitar seluruh isi
-
-        doc.save(`Nota_${barangPertama.penitip.nama_penitip}.pdf`);
-    };
 
 
     return (
@@ -343,17 +267,13 @@ const CRUDBarangTitipan = () => {
                   <button className="btn btn-sm btn-primary mb-1" onClick={() => handleShowDetail(b)}>
                     Detail
                   </button>
-                  <button
-                    className="btn btn-sm btn-success"
-                    onClick={() => {
-                      const barangPenitipTerkait = barangList.filter(
-                        (barangItem) => barangItem.penitip.id === b.penitip.id
-                      );
-                      handleDownloadNota(barangPenitipTerkait);
-                    }}
-                  >
-                    Unduh Nota
-                  </button>
+                 <button
+  className="btn btn-sm btn-success mb-1"
+  onClick={(e) => handelKonfirmasi(e, b)}
+>
+  Konfirmasi
+</button>
+
                 </div>
               </td>
             </tr>
@@ -431,4 +351,4 @@ const CRUDBarangTitipan = () => {
     );
 };
 
-export default CRUDBarangTitipan;
+export default CRUDPengirimanPenitip;
