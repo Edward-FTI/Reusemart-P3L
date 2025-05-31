@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\DetailPengiriman;
+use App\Models\Detail_transaksi_penjualan;
+// use App\Models\DetailTransaksiPenjualan;
 use App\Models\Pembeli;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -31,7 +33,7 @@ class TransaksiPenjualan extends Model
     }
     public function detail()
     {
-        return $this->hasMany(DetailTransaksiPenjualan::class, 'id_transaksi_penjualan');
+        return $this->hasMany(Detail_transaksi_penjualan::class, 'id_transaksi_penjualan');
     }
 
 }

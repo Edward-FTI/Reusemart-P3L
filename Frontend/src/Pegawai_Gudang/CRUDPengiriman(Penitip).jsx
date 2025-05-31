@@ -340,19 +340,6 @@ const CRUDBarangTitipan = () => {
               <td>{b.status_barang}</td>
               <td>
                 <div className="d-flex flex-column">
-                  <button className="btn btn-sm btn-warning mb-1" onClick={() => handleEdit(b)}>
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-sm btn-danger mb-1"
-                    onClick={() => {
-                      if (window.confirm("Yakin ingin menghapus data ini?")) {
-                        DeleteBarang(b.id).then(fetchBarang);
-                      }
-                    }}
-                  >
-                    Hapus
-                  </button>
                   <button className="btn btn-sm btn-primary mb-1" onClick={() => handleShowDetail(b)}>
                     Detail
                   </button>
