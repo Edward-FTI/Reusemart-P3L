@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-// import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "sonner";
 import Select from "react-select";
 import jsPDF from "jspdf";
-
-
 import {
     GetAllBarang,
     CreateBarang,
@@ -14,6 +11,9 @@ import {
 } from "../Api/apiBarangQC";
 import { GetAllKategori } from "../Api/apiKategori";
 import { GetAllPenitip } from "../Api/apiPenitip";
+
+import { GetAllPegawai, GetPegawaiByJabatan } from "../Api/apiPegawai";
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
@@ -22,6 +22,7 @@ const CRUDBarangTitipan = () => {
 
     const [kategoriList, setKategoriList] = useState([]);
     const [penitipList, setPenitipList] = useState([]);
+    const [roleList, setRoleList] = useState([]);
 
     const [isEdit, setIsEdit] = useState(false);
 
@@ -40,13 +41,14 @@ const CRUDBarangTitipan = () => {
         id: '',
         id_penitip: '',
         id_kategori: '',
+        id_hunter: '',
         tgl_penitipan: '',
         nama_barang: '',
         harga_barang: '',
         berat_barang: '',
         deskripsi: '',
         status_garansi: '',
-        status_barang: '',
+        // status_barang: '',
         gambar: '',
         gambar_dua: ''
     })
@@ -66,6 +68,7 @@ const CRUDBarangTitipan = () => {
             b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
             b.penitip?.nama_penitip?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             b.kategori_barang?.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.hunter?.id?.toLowerCase().includes(searchTerm.toLowerCase) ||
             b.status_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
             b.tgl_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
             b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase())
@@ -93,10 +96,22 @@ const CRUDBarangTitipan = () => {
         }
     }
 
+    const fetchRole = async () => {
+        try {
+            const data = await GetAllPegawai();
+            // console.log("Data pegawai:", data); // ← Tambahkan ini
+            setRoleList(data);
+        }
+        catch (error) {
+            toast.error('Gagal mengambil data hunter')
+        }
+    }
+
     useEffect(() => {
         fetchBarang();
         fetchKategori();
         fetchPenitip();
+        fetchRole();
     }, []);
 
     const handleChange = (e) => {
@@ -116,13 +131,14 @@ const CRUDBarangTitipan = () => {
             formData.append('id', form.id);
             formData.append('id_penitip', form.id_penitip);
             formData.append('id_kategori', form.id_kategori);
+            formData.append('id_hunter', form.id_hunter);
             formData.append('tgl_penitipan', form.tgl_penitipan);
             formData.append('nama_barang', form.nama_barang);
             formData.append('harga_barang', form.harga_barang);
             formData.append('berat_barang', form.berat_barang);
             formData.append('deskripsi', form.deskripsi);
             formData.append('status_garansi', form.status_garansi);
-            formData.append('status_barang', form.status_barang);
+            // formData.append('status_barang', form.status_barang);
 
             if (form.gambar) {
                 formData.append('gambar', form.gambar);
@@ -174,13 +190,14 @@ const CRUDBarangTitipan = () => {
             id: '',
             id_penitip: '',
             id_kategori: '',
+            id_hunter: '',
             tgl_penitipan: '',
             nama_barang: '',
             harga_barang: '',
             berat_barang: '',
             deskripsi: '',
             status_garansi: '',
-            status_barang: '',
+            // status_barang: '',
             gambar: '',
             gambar_dua: ''
         });
@@ -204,6 +221,7 @@ const CRUDBarangTitipan = () => {
 
         // Ambil barang pertama untuk informasi umum (karena penitip sama)
         const barangPertama = barangList[0];
+        const kurir = barangPertama.hunter?.nama || "-"
 
         // Info Nota
         const today = new Date();
@@ -228,14 +246,17 @@ const CRUDBarangTitipan = () => {
         doc.setFont("times", "bold");
         doc.text("Penitip :", 20, 60);
 
+
+
         doc.setFont("times", "normal");
         doc.text(penitip, 35, 60);
         doc.text(alamat_penitip, 20, 65);
-        doc.text(`Delivery : Kurir ReUseMart (Cahyono)`, 20, 70);
+        doc.text(`Delivery : ${kurir}`, 20, 70);
 
         // Tampilkan daftar semua barang
         let y = 80;
         barangList.forEach((barang, index) => {
+            console.log(`Barang: ${barang.nama_barang}, Hunter: ${barang.hunter?.nama || '-'}`);
             doc.setFont("times", "normal");
             doc.text(`${barang.nama_barang}`, 20, y);
             doc.text(`${barang.harga_barang?.toLocaleString()}`, 90, y, { align: "right" });
@@ -308,6 +329,7 @@ const CRUDBarangTitipan = () => {
                         <th>No</th>
                         <th>Nama Penitip</th>
                         <th>Kategori Barang</th>
+                        <th>Hunter</th>
                         <th>Tanggal Penitipan</th>
                         <th>Masa Penitipan</th>
                         <th>Nama Barang</th>
@@ -327,6 +349,7 @@ const CRUDBarangTitipan = () => {
                                 <td>{index + 1}</td>
                                 <td>{b.penitip.nama_penitip}</td>
                                 <td>{b.kategori_barang.nama_kategori || "Kategori tidak ditemukan"}</td>
+                                <td>{b.hunter?.nama || "-"}</td>
                                 <td>{b.tgl_penitipan}</td>
                                 <td>{b.masa_penitipan}</td>
                                 <td>{b.nama_barang}</td>
@@ -445,6 +468,41 @@ const CRUDBarangTitipan = () => {
                                     </select>
                                 </div>
 
+
+
+                                <label htmlFor="penitip" className="form-label">Hunter</label>
+                                <div className="mb-3">
+                                    <Select
+                                        name="id_hunter"
+                                        options={roleList
+                                            .filter(r => r.jabatan?.role?.toLowerCase() === "hunter")
+                                            .map(r => ({
+                                                value: r.id,
+                                                label: r.nama
+                                            }))}
+                                        value={roleList
+                                            .filter(r => r.jabatan?.role?.toLowerCase() === "hunter")
+                                            .map(r => ({
+                                                value: r.id,
+                                                label: r.nama
+                                            }))
+                                            .find(option => option.value === form.id_hunter)}
+                                        onChange={(selectedOption) =>
+                                            setForm({ ...form, id_hunter: selectedOption?.value || '' })
+                                        }
+                                        placeholder="Cari Hunter..."
+                                        isClearable
+                                    />
+
+                                </div>
+
+
+
+
+
+
+
+
                                 <label htmlFor="tgl_penitipan" className="form-label">Tanggal Penitipan</label>
                                 <div className="mb-3">
                                     <input
@@ -522,7 +580,7 @@ const CRUDBarangTitipan = () => {
                                     />
                                 </div>
 
-                                <label htmlFor="status_barang" className="form-label">Status Barang</label>
+                                {/* <label htmlFor="status_barang" className="form-label">Status Barang</label>
                                 <div className="mb-3">
                                     <input
                                         type='text'
@@ -533,7 +591,7 @@ const CRUDBarangTitipan = () => {
                                         onChange={handleChange}
                                         required
                                     />
-                                </div>
+                                </div> */}
 
                                 {/* Gambar section, now also shown in edit mode */}
                                 <label htmlFor="gambar" className="form-label">Gambar</label>

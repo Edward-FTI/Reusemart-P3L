@@ -71,7 +71,7 @@ class BarangController extends Controller
                 'message' => 'Pegawai tidak ditemukan untuk user yang login'
             ], 404);
         }
-        $barang = Barang::with(['penitip', 'kategori_barang', 'pegawai'])
+        $barang = Barang::with(['penitip', 'kategori_barang', 'pegawai', 'hunter'])
             ->where('id_pegawai', $pegawaiId)
             ->get();
 
@@ -116,6 +116,7 @@ class BarangController extends Controller
         $validate = Validator::make($storeData, [
             'id_penitip' => 'required',
             'id_kategori' => 'required',
+            'id_hunter' => 'nullable|integer',
             'tgl_penitipan' => 'required',
             'nama_barang' => 'required',
             'harga_barang' => 'required',
@@ -123,7 +124,7 @@ class BarangController extends Controller
             'penambahan_durasi' => 'nullable|integer',
             'deskripsi' => 'required',
             'status_garansi' => 'nullable|date',
-            'status_barang' => 'required',
+            // 'status_barang' => 'required',
             'tgl_pengambilan' => 'nullable|date',
             'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'gambar_dua' => 'required|image|mimes:jpeg,png,jpg|max:2048',
@@ -146,6 +147,7 @@ class BarangController extends Controller
             $storeData['gambar_dua'] = $path_gambar2;
         }
         $storeData['id_pegawai'] = $pegawaiId;
+        $storeData['status_barang'] = 'Dijual';
         $storeData['tgl_penitipan'] = Carbon::parse($storeData['tgl_penitipan'])->setTimeFromTimeString(now()->format('H:i:s'));
 
         $tglPenitipan = Carbon::parse($storeData['tgl_penitipan'])->copy()->addDays(30);
@@ -199,28 +201,13 @@ class BarangController extends Controller
         ], 400);
     }
 
-    public function updatePublic(Request $request, string $id)
+
+public function updatePublic(Request $request, string $id)
     {
         $barang = Barang::find($id);
         if (!$barang) {
             return response(['message' => 'Data tidak ditemukan', 'data' => null], 404);
         }
-
-        // $request->validate([
-        //     'id_penitip' => 'required',
-        //     'id_kategori' => 'required',
-        //     'tgl_penitipan' => 'required|date',
-        //     'nama_barang' => 'required',
-        //     'harga_barang' => 'required',
-        //     'berat_barang' => 'required',
-        //     'penambahan_durasi' => 'nullable|integer',
-        //     'deskripsi' => 'required',
-        //     'status_garansi' => 'nullable|date',
-        //     'status_barang' => 'required',
-        //     'tgl_pengambilan' => 'nullable|date',
-        //     'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        //     'gambar_dua' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        // ]);
 
         $request->validate([
             'id_penitip' => 'required',
@@ -280,7 +267,7 @@ class BarangController extends Controller
             'data' => $barang
         ], 200);
     }
-
+ 
 
 
 
@@ -288,7 +275,6 @@ class BarangController extends Controller
     {
         $pegawaiId = $this->getPegawaiId();
         $barang = Barang::find($id);
-
         if (is_null($barang)) {
             return response(['message' => 'Data tidak ditemukan', 'data' => null], 404);
         }
@@ -300,6 +286,7 @@ class BarangController extends Controller
         $request->validate([
             'id_penitip' => 'required',
             'id_kategori' => 'required',
+            'id_hunter' => 'nullable|integer',
             'tgl_penitipan' => 'required',
             'nama_barang' => 'required',
             'harga_barang' => 'required',
@@ -307,7 +294,7 @@ class BarangController extends Controller
             'penambahan_durasi' => 'nullable|integer',
             'deskripsi' => 'required',
             'status_garansi' => 'nullable|date',
-            'status_barang' => 'required',
+            // 'status_barang' => 'required',
             'tgl_pengambilan' => 'nullable|date',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'gambar_dua' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -332,6 +319,7 @@ class BarangController extends Controller
         $barang->update([
             'id_penitip' => $request->id_penitip,
             'id_kategori' => $request->id_kategori,
+            'id_hunter' => $request->id_hunter,
             'tgl_penitipan' => $request->tgl_penitipan,
             'nama_barang' => $request->nama_barang,
             'harga_barang' => $request->harga_barang,
@@ -339,7 +327,7 @@ class BarangController extends Controller
             'penambahan_durasi' => $request->penambahan_durasi,
             'deskripsi' => $request->deskripsi,
             'status_garansi' => $request->status_garansi,
-            'status_barang' => $request->status_barang,
+            // 'status_barang' => $request->status_barang,
             'tgl_pengambilan' => $request->tgl_pengambilan,
             'gambar' => $path_gambar,
             'gambar_dua' => $path_gambar2,

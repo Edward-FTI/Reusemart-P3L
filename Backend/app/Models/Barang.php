@@ -15,6 +15,7 @@ class Barang extends Model
         'id_penitip',
         'id_kategori',
         'id_pegawai',
+        'id_hunter',
         'tgl_penitipan',
         'masa_penitipan',
         'penambahan_durasi',
@@ -37,5 +38,8 @@ class Barang extends Model
     }
     public function pegawai(): BelongsTo {
         return $this->belongsTo(Pegawai::class, 'id_pegawai');
+    }
+    public function hunter(): BelongsTo {
+        return $this->belongsTo(Pegawai::class, 'id_hunter');
     }
 }
