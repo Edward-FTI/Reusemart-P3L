@@ -57,6 +57,9 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/barang-qc/{id}', [BarangController::class, 'update']);
     Route::delete('/barang-qc/{id}', [BarangController::class, 'destroy']);
 
+    Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
+    Route::patch('/barang/{id}/status', [BarangController::class, 'updateStatus']);
+
 
     // ======================= Kategori Barang =======================
     Route::get('/kategori', [KategoriBarangController::class, 'index']);
@@ -172,7 +175,7 @@ Route::middleware('auth:api')->group(function () {
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 // Route::post('/barang', [BarangController::class, 'store']);
 Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
-Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
+// Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
 // Route::put('/barang/{id}', [BarangController::class, 'update']);
 // Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 

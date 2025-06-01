@@ -7,58 +7,80 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-// use App\Models\DetailTransaksiPenjualan;
-// use App\Models\Detail_transaksi_penjualan;
 use App\Models\Barang;
-use App\Models\TransaksiPenjualan;
+use App\Models\TransaksiPengiriman; // Menggunakan model TransaksiPengiriman
 use App\Models\Pegawai;
 use App\Models\Pembeli;
+use App\Models\TransaksiPenjualan; // Menggunakan model TransaksiPenjualan
+use App\Models\Detail_transaksi_penjualan; // Menggunakan model Detail_transaksi_penjualan
 
 class PengambilanController extends Controller
 {
+    /**
+     * Mengambil ID Pegawai Gudang yang sedang login.
+     *
+     * @return int|null ID Pegawai jika ditemukan dan memiliki peran 'Pegawai Gudang', jika tidak null.
+     */
     private function getPegawaiId()
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
 
-    if (!$user || $user->role !== 'Pegawai Gudang') {
-        return null;
+        // Memastikan pengguna login dan memiliki peran 'Pegawai Gudang'
+        if (!$user || $user->role !== 'Pegawai Gudang') {
+            return null;
+        }
+
+        // Mencari data pegawai berdasarkan email pengguna yang login
+        $pegawai = Pegawai::where('email', $user->email)->first();
+
+        // Mengembalikan ID pegawai jika ditemukan
+        return $pegawai?->id;
     }
 
-    $pegawai = Pegawai::where('email', $user->email)->first();
 
-    return $pegawai?->id;
-}
-
-
+    /**
+     * Menampilkan daftar transaksi pengambilan (pengiriman) dengan status "proses".
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
-        // Ambil semua transaksi penjualan dengan status "proses"
-        // Menggunakan 'with' untuk memuat relasi 'detail' dan 'pembeli'
-        // 'detail.barang' akan memuat barang yang terkait dengan setiap detail transaksi
-        $pengambilan = TransaksiPenjualan::with(['detail.barang', 'pembeli'])
-            ->where('status_pengiriman', 'proses')
+        // Mengambil semua transaksi pengiriman dengan status "proses"
+        // Memuat relasi 'transaksiPenjualan' dengan 'pembeli' dan 'detail' bersarang,
+        // dan 'detail' juga memuat 'barang' bersarang.
+        $pengambilan = TransaksiPengiriman::with(['transaksiPenjualan.pembeli', 'transaksiPenjualan.detail.barang'])
+            ->where('status_pengiriman', 'proses') // Filter berdasarkan status pengiriman
             ->get();
 
-
+        // Memeriksa apakah ada data transaksi pengiriman
         if ($pengambilan->isNotEmpty()) {
             return response()->json([
                 'message' => 'Berhasil mengambil data pengambilan',
-                'data' => $pengambilan // Data ini akan mencakup relasi yang dimuat
+                'data' => $pengambilan // Data akan mencakup relasi yang dimuat
             ], 200);
         }
 
+        // Jika tidak ada data transaksi pengiriman
         return response()->json([
             'message' => 'Data pengambilan kosong',
             'data' => []
         ], 200);
     }
 
+    /**
+     * Menyimpan transaksi pengambilan baru atau memperbarui status transaksi yang ada.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
+        // Validasi input request
         $validator = Validator::make($request->all(), [
-            'id_transaksi' => 'required|exists:transaksi_penjualans,id',
+            'id_transaksi' => 'required|exists:transaksi_pengirimans,id', // Validasi ID transaksi pengiriman
         ]);
 
+        // Jika validasi gagal
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validasi gagal',
@@ -66,7 +88,17 @@ class PengambilanController extends Controller
             ], 422);
         }
 
-        $transaksi = TransaksiPenjualan::find($request->id_transaksi);
+        // Mencari transaksi pengiriman berdasarkan ID
+        $transaksi = TransaksiPengiriman::find($request->id_transaksi);
+
+        // Jika transaksi tidak ditemukan
+        if (!$transaksi) {
+            return response()->json([
+                'message' => 'Transaksi Pengiriman tidak ditemukan'
+            ], 404);
+        }
+
+        // Memperbarui status pengiriman menjadi 'diambil'
         $transaksi->status_pengiriman = 'diambil';
         $transaksi->save();
 
@@ -76,12 +108,19 @@ class PengambilanController extends Controller
         ], 200);
     }
 
+    /**
+     * Menampilkan detail transaksi pengambilan berdasarkan ID.
+     *
+     * @param  string  $id ID transaksi pengiriman
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id)
     {
-        // Menggunakan 'with' untuk memuat relasi 'detail' dan 'pembeli' untuk transaksi tunggal
-        // 'detail.barang' akan memuat barang yang terkait dengan setiap detail transaksi
-        $transaksi = TransaksiPenjualan::with(['detail.barang', 'pembeli'])->find($id);
+        // Mencari transaksi pengiriman berdasarkan ID dan memuat relasi 'transaksiPenjualan'
+        // dengan 'pembeli' dan 'detail' bersarang, dan 'detail' juga memuat 'barang' bersarang.
+        $transaksi = TransaksiPengiriman::with(['transaksiPenjualan.pembeli', 'transaksiPenjualan.detail.barang'])->find($id);
 
+        // Jika transaksi tidak ditemukan
         if (!$transaksi) {
             return response()->json([
                 'message' => 'Data pengambilan tidak ditemukan'
@@ -90,20 +129,30 @@ class PengambilanController extends Controller
 
         return response()->json([
             'message' => "Detail pengambilan ID: $id",
-            'data' => $transaksi // Data ini akan mencakup relasi yang dimuat
+            'data' => $transaksi // Data akan mencakup relasi yang dimuat
         ], 200);
     }
 
+    /**
+     * Memperbarui status transaksi pengambilan berdasarkan ID.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $id ID transaksi pengiriman
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $id)
     {
-        $transaksi = TransaksiPenjualan::find($id);
+        // Mencari transaksi pengiriman berdasarkan ID
+        $transaksi = TransaksiPengiriman::find($id);
 
+        // Jika transaksi tidak ditemukan
         if (!$transaksi) {
             return response()->json([
                 'message' => 'Data pengambilan tidak ditemukan'
             ], 404);
         }
 
+        // Memperbarui status pengiriman (jika ada di request, jika tidak gunakan status lama)
         $transaksi->status_pengiriman = $request->input('status_pengiriman', $transaksi->status_pengiriman);
         $transaksi->save();
 
@@ -113,16 +162,25 @@ class PengambilanController extends Controller
         ], 200);
     }
 
+    /**
+     * Menghapus transaksi pengambilan berdasarkan ID.
+     *
+     * @param  string  $id ID transaksi pengiriman
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id)
     {
-        $transaksi = TransaksiPenjualan::find($id);
+        // Mencari transaksi pengiriman berdasarkan ID
+        $transaksi = TransaksiPengiriman::find($id);
 
+        // Jika transaksi tidak ditemukan
         if (!$transaksi) {
             return response()->json([
                 'message' => 'Data pengambilan tidak ditemukan'
             ], 404);
         }
 
+        // Menghapus transaksi
         $transaksi->delete();
 
         return response()->json([
