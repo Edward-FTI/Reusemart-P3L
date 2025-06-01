@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { GetAllCart } from "../Api/apiCart";
 import { GetAllAlamat } from "../Api/apiAlamat";
-import { GetpembeliById, GetAllpembeli } from "../Api/apiPembeli"; // Pastikan GetpembeliById diimpor
-// import { GetAlltransaksi_penjualan, Gettransaksi_penjualanById, Createtransaksi_penjualan } from "../Api/apitransaksi_penjualans";
 import { GetPembeliInfo } from "../Api/apiPembeli";
 import { Createtransaksi_penjualan } from "../Api/apitransaksi_penjualans";
 
@@ -13,12 +11,12 @@ const OrderForm = () => {
   const [pointsToRedeem, setPointsToRedeem] = useState(0);
   const [availableAddresses, setAvailableAddresses] = useState([]);
   const [buyerPoints, setBuyerPoints] = useState(0);
+  const [buyerSaldo, setBuyerSaldo] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [selectedCartIds, setSelectedCartIds] = useState([]);
   const [showUpload, setShowUpload] = useState(false);
   const [proof, setProof] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
   useEffect(() => {
     fetchData();
@@ -33,23 +31,12 @@ const OrderForm = () => {
       const alamatList = await GetAllAlamat();
       setAvailableAddresses(alamatList.map((a) => a.alamat));
 
-      // --- Perubahan dimulai di sini ---
-      // Ambil data pembeli berdasarkan ID untuk mendapatkan poin terbaru
-//       const currentPembeli = await GetpembeliById(userId);
-//       if (currentPembeli && currentPembeli.point !== undefined) {
-//         setBuyerPoints(currentPembeli.point);
-//       } else {
-//         setBuyerPoints(0); // Set 0 jika tidak ada poin atau pembeli tidak ditemukan
-//       }
-//       // --- Perubahan berakhir di sini ---
-
-//     } catch (err) {
-//       console.error("Failed to fetch data:", err); // Pesan error lebih deskriptif
-//       const pembeli = await GetPembeliInfo();
-//       setBuyerPoints(pembeli.point || 0);
-//     } catch (err) {
-//       console.error("Gagal mengambil data:", err);
-//       alert("Gagal mengambil data. Silakan coba lagi.");
+      const pembeli = await GetPembeliInfo();
+      setBuyerPoints(pembeli.point || 0);
+      setBuyerSaldo(pembeli.saldo || 0);
+    } catch (err) {
+      console.error("Gagal mengambil data:", err);
+      alert("Gagal mengambil data. Silakan coba lagi.");
     }
   };
 
@@ -66,14 +53,10 @@ const OrderForm = () => {
     const metode_pengiriman =
       deliveryMethod === "pickup" ? "diambil" : "diantar";
     formData.append("metode_pengiriman", metode_pengiriman);
-
-    if (metode_pengiriman === "diantar") {
-      formData.append("alamat_pengiriman", address);
-    } else {
-      formData.append("alamat_pengiriman", "");
-    }
-
-    console.log("Selected Image:", proof);
+    formData.append(
+      "alamat_pengiriman",
+      metode_pengiriman === "diantar" ? address : ""
+    );
 
     formData.append("poin_digunakan", pointsToRedeem);
     formData.append("bukti_pembayaran", proof);
@@ -85,14 +68,10 @@ const OrderForm = () => {
       formData.append(`selected_cart_ids[${i}]`, id)
     );
 
-    // selectedCartIds.forEach((id) => formData.append("selected_cart_ids[]", id));
-
     try {
       await Createtransaksi_penjualan(formData);
       alert("Transaksi berhasil!");
-      setShowUpload(false);
-      setProof(null);
-      // Optional: Refresh cart or redirect after successful transaction
+      navigate("/transaksi");
     } catch (err) {
       alert(err.response?.data?.message || "Gagal melakukan transaksi.");
       console.error(err);
@@ -168,10 +147,19 @@ const OrderForm = () => {
             )}
 
             <div className="mb-3">
-              <label className="form-label">
-                Poin Tersedia:{" "}
-                <span className="badge bg-info text-dark">{buyerPoints}</span>
-              </label>
+              <h5>Informasi Pembeli</h5>
+              <p>
+                💰 <strong>Saldo: </strong>
+                Rp{buyerSaldo.toLocaleString("id-ID")}
+              </p>
+              <p>
+                ⭐ <strong>Poin: </strong>
+                {buyerPoints} poin
+              </p>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Gunakan Poin:</label>
               <input
                 type="number"
                 className="form-control"
@@ -185,6 +173,9 @@ const OrderForm = () => {
                   );
                 }}
               />
+              <div className="form-text">
+                1 poin = Rp10.000 | Maksimal: {buyerPoints} poin
+              </div>
             </div>
 
             <div className="mb-4">
@@ -218,9 +209,21 @@ const OrderForm = () => {
             </div>
 
             <div className="d-grid">
-              <button type="submit" className="btn btn-success btn-lg">
-                Bayar Sekarang
-              </button>
+              <div className="d-grid">
+                <button
+                  type="submit"
+                  className={`btn btn-lg ${
+                    buyerSaldo < totalPembayaran
+                      ? "btn-secondary"
+                      : "btn-success"
+                  }`}
+                  disabled={buyerSaldo < totalPembayaran}
+                >
+                  {buyerSaldo < totalPembayaran
+                    ? "Saldo Tidak Cukup"
+                    : "Bayar Sekarang"}
+                </button>
+              </div>
             </div>
           </form>
         ) : (

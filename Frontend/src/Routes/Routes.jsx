@@ -61,8 +61,9 @@ import CRUDPegawai from "../admin/CRUDPegawai";
 
 //Checkout
 // import PaymentMethods from "../pembeli/CheckOut";
-import OrderPage from "../pembeli/CheckOut";
+// import OrderPage from "../pembeli/CheckOut";
 import OrderForm from "../pembeli/CheckOut";
+import TransaksiPembeli from "../pembeli/TransaksiPembeli";
 
 
 const router = createBrowserRouter([
@@ -104,6 +105,15 @@ const router = createBrowserRouter([
       <>
         <NavbarCustomer />
         <CRUDAlamat />
+      </>
+    ),
+  },
+  {
+    path: "/transaksi",
+    element: (
+      <>
+        <NavbarCustomer />
+        <TransaksiPembeli />
       </>
     ),
   },
