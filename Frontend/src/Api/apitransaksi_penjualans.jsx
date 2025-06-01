@@ -44,3 +44,22 @@ export const GetAlltransaksi_penjualanPembeli = async () => {
     throw error.response.data;
   }
 };
+
+export const verifikasi_pembayaran = async (id) => {
+  try {
+    const response = await useAxios.put(
+      `/verifikasi/${id}`,
+      {}, // Body kosong, karena verifikasi hanya butuh ID
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("Gagal verifikasi:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
