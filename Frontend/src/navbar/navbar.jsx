@@ -9,7 +9,7 @@ const Navbar = () => {
         <Sidebar />
 
         <Link
-          to="/login"
+          to="/"
           className="d-flex n-items-center gap-1 text-white text-decoration-none"
         >
           <img

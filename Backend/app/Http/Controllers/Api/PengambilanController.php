@@ -17,24 +17,25 @@ use App\Models\Pembeli;
 class PengambilanController extends Controller
 {
     private function getPegawaiId()
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        if (!$user || !$user->email) {
-            return null;
-        }
-
-        $pegawai = Pegawai::where('email', $user->email)->first();
-
-        return $pegawai?->id;
+    if (!$user || $user->role !== 'Pegawai Gudang') {
+        return null;
     }
+
+    $pegawai = Pegawai::where('email', $user->email)->first();
+
+    return $pegawai?->id;
+}
+
 
     public function index()
     {
         // Ambil semua transaksi penjualan dengan status "proses"
         // Menggunakan 'with' untuk memuat relasi 'detail' dan 'pembeli'
         // 'detail.barang' akan memuat barang yang terkait dengan setiap detail transaksi
-        $pengambilan = TransaksiPenjualan::with(['detail', 'pembeli'])
+        $pengambilan = TransaksiPenjualan::with(['detail.barang', 'pembeli'])
             ->where('status_pengiriman', 'proses')
             ->get();
 
@@ -50,18 +51,6 @@ class PengambilanController extends Controller
             'message' => 'Data pengambilan kosong',
             'data' => []
         ], 200);
-
-        // $pengambilan = TransaksiPenjualan::with('detail')->get();
-        // if ($pengambilan->isEmpty()) {
-        //     return response()->json([
-        //         'message' => 'Data pengambilan kosong',
-        //         'data' => []
-        //     ], 200);
-        // }
-        // return response()->json([
-        //     'message' => 'Berhasil mengambil data pengambilan',
-        //     'data' => $pengambilan
-        // ], 200);
     }
 
     public function store(Request $request)

@@ -224,45 +224,20 @@ const router = createBrowserRouter([
   },
 
   // PENITIP
+
   {
-    path: "/penitip/profile",
-    element: (
-      <div>
-        <NavbarPage />
-        <ShowProfilePenitip />
-        <Footer />
-      </div>
-    ),
-  },
-  {
-    path: "/penitip/history",
-    element: (
-      <div>
-        <NavbarPage />
-        <ShowHistoryPenitip />
-        <Footer />
-      </div>
-    ),
-  },
-  {
-    path: "/penitip/penitipan",
-    element: (
-      <div>
-        <NavbarPage />
-        <CRUDPenitipan />
-        <Footer />
-      </div>
-    ),
-  },
-  {
-    path: "/penitip/pengambilan",
-    element: (
-      <div>
-        {/* <NavbarPage /> */}
-        <PengambilanBarangKembali />
-        {/* <Footer /> */}
-      </div>
-    ),
+    path: "/penitip",
+    element: <Layout />,
+    children: [
+      {
+        path: "pengambilan",
+        element: <PengambilanBarangKembali />,
+      },
+      {
+        path: "Profile",
+        element: <ShowProfilePenitip />,
+      },
+    ],
   },
 
   // ORGANISASI
