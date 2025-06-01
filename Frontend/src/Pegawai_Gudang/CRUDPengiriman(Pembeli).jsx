@@ -58,6 +58,15 @@ const CRUDPengirimanPembeli = () => {
         id_pegawai: '' // To store the selected courier's ID
     });
 
+    // New state for pengambilan input form
+    const [pengambilanForm, setPengambilanForm] = useState({
+        id: '',
+        tgl_pengambilan: '', // Tanggal pengambilan
+        status_pengiriman: '', // Status pengiriman (e.g., 'diambil')
+        catatan: '' // Catatan pengambilan
+    });
+
+
     const fetchPengambilan = async () => {
         try {
             const data = await GetPengambilan();
@@ -151,6 +160,15 @@ const CRUDPengirimanPembeli = () => {
         }));
     };
 
+    // Handler for pengambilan form changes
+    const handlePengambilanChange = (e) => {
+        const { name, value } = e.target;
+        setPengambilanForm(prevForm => ({
+            ...prevForm,
+            [name]: value
+        }));
+    };
+
     const resetForm = () => {
         setForm({
             id: '',
@@ -189,6 +207,18 @@ const CRUDPengirimanPembeli = () => {
         modal.show();
     };
 
+    // Function to open the pengambilan input modal
+    const handleOpenPengambilanModal = (transaksi) => {
+        setSelectedTransaksi(transaksi);
+        setPengambilanForm({
+            id: transaksi.id,
+            tgl_pengambilan: transaksi.tgl_pengambilan ? new Date(transaksi.tgl_pengambilan).toISOString().slice(0, 16) : '',
+            status_pengiriman: transaksi.status_pengiriman || 'diambil', // Default to 'diambil' for pickup
+            catatan: transaksi.catatan || ''
+        });
+        const modal = new window.bootstrap.Modal(document.getElementById('pengambilanInputModal'));
+        modal.show();
+    };
 
     // Function to submit delivery input
     const handleSubmitDelivery = async (e) => {
@@ -209,6 +239,26 @@ const CRUDPengirimanPembeli = () => {
         } catch (error) {
             console.error("Error updating delivery data:", error);
             toast.error("Gagal memperbarui data pengiriman.");
+        }
+    };
+
+    // Function to submit pengambilan input
+    const handleSubmitPengambilan = async (e) => {
+        e.preventDefault();
+        try {
+            const dataToUpdate = {
+                ...selectedTransaksi,
+                tgl_pengambilan: pengambilanForm.tgl_pengambilan,
+                status_pengiriman: 'diambil', // Force status to 'diambil' for pickup confirmation
+                catatan: pengambilanForm.catatan
+            };
+            await UpdatePengambilan(dataToUpdate.id, dataToUpdate);
+            toast.success("Data pengambilan berhasil diperbarui.");
+            fetchPengambilan(); // Refresh the list
+            window.bootstrap.Modal.getInstance(document.getElementById('pengambilanInputModal')).hide(); // Hide modal
+        } catch (error) {
+            console.error("Error updating pengambilan data:", error);
+            toast.error("Gagal memperbarui data pengambilan.");
         }
     };
 
@@ -244,9 +294,37 @@ const CRUDPengirimanPembeli = () => {
 
         // Calculate points gained: total_belanja / 10000. If total belanja > 500.000, bonus 20%
         let poinDidapat = Math.floor(totalAkhir / 10000);
-        if (totalAkhir > 500000) {
-            poinDidapat += Math.floor(totalAkhir * 0.20 / 10000); // 20% bonus from the total
+        // Implement bonus 20% if total exceeds 500,000 (as per image note, "Karena belanja > 500.000, bonus 20%: 49 poin")
+        // The image shows 2.500.000 total, 248 pts + 49 pts = 297 pts.
+        // 2.500.000 / 10000 = 250.
+        // It seems the bonus is calculated *on the points*, not on the total.
+        // Let's re-evaluate based on the image's example:
+        // Total belanja 2.500.000 (ongkir tidak termasuk), total point 248
+        // Poin dari pesanan ini: 297. Total poin customer: 300.
+        // 2.500.000 / 10.000 = 250 poin.
+        // Bonus 20%: 250 * 0.20 = 50 poin.
+        // Total Poin Didapat = 250 + 50 = 300 poin.
+        // Ah, the image says "Sehingga mendapat 248 poin. Karena belanja > 500.000, bonus 20%: 49 poin. Total : 297 poin."
+        // This implies: Base points = 248. Bonus points = 49. Total = 297.
+        // The rule seems to be: points = floor(total_barang_harga / 10000). If total_barang_harga > 500000, add bonus of 20% of base points.
+        let basePoin = Math.floor(totalBarangHarga / 10000);
+        let bonusPoin = 0;
+        if (totalBarangHarga > 500000) {
+            bonusPoin = Math.floor(basePoin * 0.20);
         }
+        poinDidapat = basePoin + bonusPoin;
+
+
+        const potonganPoinValue = transaksiPenjualan.pembeli?.point_digunakan ? (transaksiPenjualan.pembeli.point_digunakan * 100) : 0; // As per image 200 poin = 20.000, so 1 point = 100 IDR
+        const finalPaymentTotal = totalAkhir - potonganPoinValue;
+
+        // Get courier name based on orderData.id_pegawai (assuming this is the QC person for the note)
+        const qcPegawai = kurirList.find(p => p.id === orderData.id_pegawai); // Assuming id_pegawai in orderData is the QC person's ID
+
+        // Get courier name for delivery (if it exists on the transaction)
+        const deliveryCourierName = kurirList.find(k => k.id === orderData.id_pegawai)?.nama_pegawai || 'N/A';
+        const deliveryCourierId = orderData.id_pegawai ? `(P${orderData.id_pegawai})` : '';
+
 
         // --- Header ---
         doc.setFontSize(14);
@@ -260,10 +338,16 @@ const CRUDPengirimanPembeli = () => {
 
         // Generate nomor_nota based on the new rule: YY.MM.SequentialNumber
         const orderDateObj = new Date(transaksiPenjualan.created_at);
-        const year = orderDateObj.getFullYear().toString().slice(-2);
-        const month = (orderDateObj.getMonth() + 1).toString().padStart(2, '0');
-        const sequentialNumber = transaksiPenjualan.id.toString().padStart(3, '0'); // Assuming ID is the sequential number and padding to 3 digits
-        const nomorNota = `${year}.${month}.${sequentialNumber}`;
+        const yearFormatted = orderDateObj.getFullYear().toString().slice(-2);
+        const monthFormatted = (orderDateObj.getMonth() + 1).toString().padStart(2, '0');
+        const sequentialNumberFormatted = transaksiPenjualan.id.toString().padStart(3, '0');
+        const nomorNota = `${yearFormatted}.${monthFormatted}.${sequentialNumberFormatted}`;
+        const today = new Date();
+const formattedDate = today.toLocaleDateString('id-ID', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric'
+});
 
         // --- Transaction Details ---
         doc.setFontSize(10);
@@ -282,29 +366,36 @@ const CRUDPengirimanPembeli = () => {
         doc.text(`Pembeli : ${transaksiPenjualan.pembeli?.email || 'N/A'} / ${transaksiPenjualan.pembeli?.nama_pembeli || 'N/A'}`, startX, y);
         y += 5;
         doc.setFont("times", "normal");
-        // Split address if it's too long, or try to extract city/district
-        let addressLines = doc.splitTextToSize(transaksiPenjualan.alamat_pengiriman || 'N/A', contentWidth / 2); // Adjust width as needed
-        addressLines.forEach(line => {
+        const alamatLines = doc.splitTextToSize(transaksiPenjualan.alamat_pengiriman || 'N/A', contentWidth - 50); // Adjust width for address
+        alamatLines.forEach(line => {
             doc.text(line, startX, y);
             y += 5;
         });
+        // Assuming city/district is part of alamat_pengiriman or can be extracted
+        // const cityMatch = transaksiPenjualan.alamat_pengiriman?.match(/([^,]+)$/);
+        // const city = cityMatch ? cityMatch[1].trim() : 'N/A';
+        // doc.text(`${city}`, startX, y); // If city is separate
+        // y += 5;
 
-        // Get courier name based on orderData.id_pegawai
-        const kurirName = kurirList.find(k => k.id === orderData.id_pegawai)?.nama_pegawai || 'N/A';
-        doc.text(`Delivery: Kurir ReUseMart (${kurirName})`, startX, y);
+        // Delivery Method based on selected method and courier
+        if (transaksiPenjualan.metode_pengiriman === 'dikirim') {
+            doc.text(`Delivery: Kurir ReUseMart (${deliveryCourierName})`, startX, y);
+        } else {
+            doc.text(`Delivery: - (${transaksiPenjualan.metode_pengiriman || 'N/A'})`, startX, y);
+        }
         y += 10;
 
         // --- Item List ---
         doc.setFontSize(10);
         transaksiPenjualan.detail.forEach(item => {
             doc.text(`${item.barang.nama_barang}`, startX, y);
-            doc.text(`${item.harga_saat_transaksi?.toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' }); // Align price to right
+            doc.text(`${item.harga_saat_transaksi?.toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' });
             y += 5;
         });
         y += 5;
 
         // --- Summary ---
-        doc.line(startX, y, startX + contentWidth, y); // Line across
+        doc.line(startX, y, startX + contentWidth, y);
         y += 5;
         doc.setFont("times", "normal");
         doc.text(`Total Harga Barang`, startX, y);
@@ -313,16 +404,13 @@ const CRUDPengirimanPembeli = () => {
         doc.text(`Ongkos Kirim`, startX, y);
         doc.text(`${transaksiPenjualan.ongkir?.toLocaleString('id-ID') || 0}`, startX + contentWidth, y, { align: 'right' });
         y += 5;
-        doc.setFont("times", "normal"); // As per image, 'Potongan' is normal font
-        // Assuming 'Potongan 200 poin' means 200 points were used for a discount
-        const potonganPoinValue = 20000; // As per image: 20.000 for 200 poin
-        doc.text(`Potongan ${transaksiPenjualan.pembeli?.point_digunakan || 0} poin`, startX, y); // Assuming point_digunakan exists
+        doc.text(`Potongan ${transaksiPenjualan.pembeli?.point_digunakan || 0} poin`, startX, y);
         doc.text(`- ${potonganPoinValue.toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' });
         y += 5;
         doc.setFontSize(12);
         doc.setFont("times", "bold");
-        doc.text(`Total`, startX, y); // Total in bold as per image
-        doc.text(`${(totalAkhir - potonganPoinValue).toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' });
+        doc.text(`Total`, startX, y); // "Total" in bold as per image
+        doc.text(`${finalPaymentTotal.toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' });
         y += 10;
 
         // --- Points Information ---
@@ -330,22 +418,23 @@ const CRUDPengirimanPembeli = () => {
         doc.setFont("times", "normal");
         doc.text(`Poin dari pesanan ini: ${poinDidapat}`, startX, y);
         y += 5;
-        const totalPoinCustomerSaatIni = (transaksiPenjualan.pembeli?.point || 0) - (transaksiPenjualan.pembeli?.point_digunakan || 0) + poinDidapat; // Adjusted calculation based on image
-        doc.text(`Total poin customer: ${totalPoinCustomerSaatIni}`, startX, y); // Adjusted text for clarity
+        // Total poin customer: current_point_balance - points_used + points_gained
+        const currentCustomerTotalPoints = (transaksiPenjualan.pembeli?.point || 0) - (transaksiPenjualan.pembeli?.point_digunakan || 0) + poinDidapat;
+        doc.text(`Total poin customer: ${currentCustomerTotalPoints}`, startX, y);
         y += 10;
 
         // --- Signatures ---
-        const qcPegawai = kurirList.find(p => p.id === orderData.id_pegawai); // Assuming id_pegawai in orderData is the QC person's ID
-        doc.text(`QC oleh: ${qcPegawai?.nama_pegawai || 'N/A'} (P${orderData.id_pegawai || 'N/A'})`, startX, y); // Format P(ID)
+        doc.text(`QC oleh: ${qcPegawai?.nama_pegawai || 'N/A'} ${qcPegawai ? `(P${qcPegawai.id})` : ''}`, startX, y);
         y += 10;
         doc.text(`Diterima oleh:`, startX, y);
         y += 15;
         doc.text(`(...................................)`, startX, y);
         y += 5;
-        doc.text(`Tanggal: ...................................`, startX, y);
+        doc.text(`Tanggal: ${formattedDate}`, startX, y);
 
         doc.save(`Nota_Penjualan_${nomorNota}.pdf`);
     };
+
 
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
@@ -429,12 +518,21 @@ const CRUDPengirimanPembeli = () => {
                                             Detail
                                         </button>
 
-                                        {item.transaksi_penjualan?.metode_pengiriman === 'dikirim' && (
+                                        {item.transaksi_penjualan?.metode_pengiriman === 'dikirim' && item.transaksi_penjualan?.status_pembelian === 'selesai' && (
                                             <button
                                                 className="btn btn-sm btn-info mb-1 text-white"
                                                 onClick={() => handleOpenDeliveryModal(item)}
                                             >
                                                 Input Pengiriman
+                                            </button>
+                                        )}
+
+                                        {item.transaksi_penjualan?.metode_pengiriman === 'diambil' && item.transaksi_penjualan?.status_pembelian === 'selesai' && (
+                                            <button
+                                                className="btn btn-sm btn-warning mb-1 text-white"
+                                                onClick={() => handleOpenPengambilanModal(item)}
+                                            >
+                                                Input Pengambilan
                                             </button>
                                         )}
 
@@ -633,6 +731,59 @@ const CRUDPengirimanPembeli = () => {
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                                 <button type="submit" className="btn btn-primary">Simpan Pengiriman</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {/* Modal for Input Pengambilan */}
+            <div className="modal fade" id="pengambilanInputModal" tabIndex="-1" aria-labelledby="pengambilanInputModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="pengambilanInputModalLabel">Input Data Pengambilan</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form onSubmit={handleSubmitPengambilan}>
+                            <div className="modal-body">
+                                {selectedTransaksi && (
+                                    <>
+                                        <p><strong>ID Pengambilan:</strong> {selectedTransaksi.id}</p>
+                                        <p><strong>Nama Pembeli:</strong> {selectedTransaksi.transaksi_penjualan?.pembeli?.nama_pembeli || 'N/A'}</p>
+                                        <p><strong>Alamat Pengambilan:</strong> {selectedTransaksi.transaksi_penjualan?.alamat_pengiriman || 'N/A'}</p>
+                                        <p><strong>Metode Pengiriman:</strong> {selectedTransaksi.transaksi_penjualan?.metode_pengiriman || 'N/A'}</p>
+
+                                        <div className="mb-3">
+                                            <label htmlFor="tgl_pengambilan" className="form-label">Tanggal Pengambilan</label>
+                                            <input
+                                                type="datetime-local"
+                                                className="form-control"
+                                                id="tgl_pengambilan"
+                                                name="tgl_pengambilan"
+                                                value={pengambilanForm.tgl_pengambilan}
+                                                onChange={handlePengambilanChange}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label htmlFor="pengambilan_catatan" className="form-label">Catatan (Opsional)</label>
+                                            <textarea
+                                                className="form-control"
+                                                id="pengambilan_catatan"
+                                                name="catatan"
+                                                rows="3"
+                                                value={pengambilanForm.catatan}
+                                                onChange={handlePengambilanChange}
+                                            ></textarea>
+                                        </div>
+                                        {/* Status pengiriman will be set to 'diambil' automatically */}
+                                    </>
+                                )}
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <button type="submit" className="btn btn-primary">Konfirmasi Pengambilan</button>
                             </div>
                         </form>
                     </div>

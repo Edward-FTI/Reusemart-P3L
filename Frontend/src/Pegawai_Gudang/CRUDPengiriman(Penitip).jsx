@@ -46,7 +46,7 @@ const CRUDPengirimanPenitip = () => {
     berat_barang: "",
     deskripsi: "",
     status_garansi: "",
-    status_barang: "diambil_kembali",
+    status_barang: "diambil kembali",
     gambar: "",
     gambar_dua: "",
   });
