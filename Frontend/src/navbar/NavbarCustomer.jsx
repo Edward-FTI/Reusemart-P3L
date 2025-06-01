@@ -80,11 +80,6 @@ const LinkSidebar = ({ navigate }) => {
         onClick={() => navigate("/")}
       />
       <DrawerItem
-        label="Transaksi"
-        icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
-        onClick={() => navigate("/customer/transaksi")}
-      />
-      <DrawerItem
         label="Diskusi"
         icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
         onClick={() => navigate("/customer/diskusi")}
@@ -93,6 +88,11 @@ const LinkSidebar = ({ navigate }) => {
         label="Alamat"
         icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
         onClick={() => navigate("/alamat")}
+      />
+      <DrawerItem
+        label="Transaksi Pembelian"
+        icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
+        onClick={() => navigate("/transaksi")}
       />
     </div>
   );

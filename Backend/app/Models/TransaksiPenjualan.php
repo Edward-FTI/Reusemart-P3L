@@ -31,9 +31,8 @@ class TransaksiPenjualan extends Model
     {
         return $this->belongsTo(Pembeli::class, 'id_pembeli');
     }
-    public function detail()
+    public function detailTransaksi()
     {
         return $this->hasMany(Detail_transaksi_penjualan::class, 'id_transaksi_penjualan');
     }
-
 }

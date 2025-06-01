@@ -35,15 +35,11 @@ class TransaksiPenjualanController extends Controller
         }
     }
 
-
-
     public function store(Request $request)
     {
         try {
-            // Ambil semua input
             $storeData = $request->all();
 
-            // Validasi input
             $validator = Validator::make($storeData, [
                 'metode_pengiriman' => 'required|string|in:diantar,diambil',
                 'alamat_pengiriman' => 'nullable|string',
@@ -60,10 +56,8 @@ class TransaksiPenjualanController extends Controller
                 ], 422);
             }
 
-            // Ambil data yang sudah tervalidasi
             $validated = $validator->validated();
 
-            // Handle upload gambar jika ada
             if ($request->hasFile('bukti_pembayaran')) {
                 $imageName = time() . '_' . uniqid() . '.' . $request->file('bukti_pembayaran')->extension();
                 $pathGambar = 'images/pembayaran/' . $imageName;
@@ -77,7 +71,6 @@ class TransaksiPenjualanController extends Controller
         DB::beginTransaction();
 
         try {
-            // Ambil ID pembeli
             $pembeliId = $this->getPembeliId();
             if ($pembeliId instanceof \Illuminate\Http\JsonResponse) {
                 return $pembeliId;
@@ -88,13 +81,11 @@ class TransaksiPenjualanController extends Controller
                 return response()->json(['message' => 'Data pembeli tidak ditemukan'], 404);
             }
 
-            // Ambil cart pembeli
             $carts = Cart::where('id_pembeli', $pembeliId)->with('barang')->get();
             if ($carts->isEmpty()) {
                 return response()->json(['message' => 'Cart kosong'], 400);
             }
 
-            // Hitung total harga barang
             $totalHarga = 0;
             foreach ($carts as $cart) {
                 if (!$cart->barang || $cart->barang->harga_barang === null) {
@@ -103,7 +94,6 @@ class TransaksiPenjualanController extends Controller
                 $totalHarga += $cart->barang->harga_barang;
             }
 
-            // Hitung ongkir
             $ongkir = 0;
             if ($validated['metode_pengiriman'] === 'diantar') {
                 $ongkir = $totalHarga >= 1500000 ? 0 : 100000;
@@ -112,16 +102,22 @@ class TransaksiPenjualanController extends Controller
                 }
             }
 
-            // Hitung poin
             $poin_awal = floor($totalHarga / 10000);
             $bonus = $totalHarga > 500000 ? floor($poin_awal * 0.2) : 0;
             $poin_total = $poin_awal + $bonus;
 
-            // Hitung poin yang dipakai
             $poin_digunakan = min($validated['poin_digunakan'] ?? 0, $pembeli->point);
+
             $totalSetelahPoin = max(0, ($totalHarga + $ongkir) - $poin_digunakan);
 
-            // Simpan transaksi
+            if ($pembeli->saldo < $totalSetelahPoin) {
+                return response()->json([
+                    'message' => 'Saldo tidak cukup untuk melakukan transaksi',
+                    'saldo_tersedia' => $pembeli->saldo,
+                    'total_yang_dibutuhkan' => $totalSetelahPoin
+                ], 400);
+            }
+
             $transaksi = TransaksiPenjualan::create([
                 'id_pembeli' => $pembeliId,
                 'total_harga_pembelian' => $totalSetelahPoin,
@@ -135,20 +131,21 @@ class TransaksiPenjualanController extends Controller
                 'id_pegawai' => 1,
             ]);
 
-            // Simpan detail transaksi
             foreach ($carts as $cart) {
                 Detail_transaksi_penjualan::create([
                     'id_transaksi_penjualan' => $transaksi->id,
                     'id_barang' => $cart->barang->id,
                     'harga_saat_transaksi' => $cart->barang->harga_barang,
                 ]);
+
+                $cart->barang->status_barang = 'Sold Out';
+                $cart->barang->save();
             }
 
-            // Update poin pembeli
+            $pembeli->saldo -= $totalSetelahPoin;
             $pembeli->point = $pembeli->point - $poin_digunakan + $poin_total;
             $pembeli->save();
 
-            // Hapus cart
             Cart::where('id_pembeli', $pembeliId)->delete();
 
             DB::commit();
@@ -160,6 +157,7 @@ class TransaksiPenjualanController extends Controller
                     'poin_didapat' => $poin_total,
                     'poin_terpakai' => $poin_digunakan,
                     'poin_sisa' => $pembeli->point,
+                    'saldo_sisa' => $pembeli->saldo
                 ]
             ], 201);
         } catch (Exception $e) {
@@ -167,6 +165,67 @@ class TransaksiPenjualanController extends Controller
             Log::error('Transaksi Gagal: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Gagal menyimpan transaksi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function indexPembeli()
+    {
+        try {
+            $pembeliId = $this->getPembeliId();
+            if ($pembeliId instanceof \Illuminate\Http\JsonResponse) {
+                return $pembeliId;
+            }
+
+            $transaksi = TransaksiPenjualan::with(['detailTransaksi.barang'])
+                ->where('id_pembeli', $pembeliId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            if ($transaksi->isEmpty()) {
+                return response()->json([
+                    'message' => 'Belum ada transaksi untuk pembeli ini',
+                    'data' => []
+                ], 200);
+            }
+
+            return response()->json([
+                'message' => 'Daftar transaksi pembeli',
+                'data' => $transaksi
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal mengambil transaksi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function indexAdmin()
+    {
+        try {
+            $transaksi = TransaksiPenjualan::with([
+                'pembeli:id,nama_pembeli,email',
+                'detailTransaksi.barang'
+            ])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            if ($transaksi->isEmpty()) {
+                return response()->json([
+                    'message' => 'Belum ada transaksi',
+                    'data' => []
+                ], 200);
+            }
+
+            return response()->json([
+                'message' => 'Daftar seluruh transaksi',
+                'data' => $transaksi
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal mengambil transaksi',
                 'error' => $e->getMessage()
             ], 500);
         }

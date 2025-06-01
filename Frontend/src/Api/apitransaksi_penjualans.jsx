@@ -17,10 +17,9 @@ export const Createtransaksi_penjualan = async (value) => {
   }
 };
 
-// ambil seluruh data transaksi_penjualan
-export const GetAlltransaksi_penjualan = async () => {
+export const GetAlltransaksi_penjualanAdmin = async () => {
   try {
-    const response = await useAxios.get("/transaksi-penjualan", {
+    const response = await useAxios.get("/transaksi-penjualanA", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -32,95 +31,15 @@ export const GetAlltransaksi_penjualan = async () => {
   }
 };
 
-export const Gettransaksi_penjualanByNama = async (nama) => {
+export const GetAlltransaksi_penjualanPembeli = async () => {
   try {
-    const response = await useAxios.get(`/transaksi-penjualan/search/${nama}`, {
+    const response = await useAxios.get("/transaksi-penjualanP", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
     return response.data.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const Gettransaksi_penjualanByJabatan = async (jabatan) => {
-  try {
-    const response = await useAxios.get(`/transaksi-penjualan/${jabatan}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-    });
-    return response.data.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const Gettransaksi_penjualanById = async (id) => {
-  try {
-    const response = await useAxios.get(`/transaksi-penjualan/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-    });
-    return response.data.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const Updatetransaksi_penjualan = async (values) => {
-  try {
-    const response = await useAxios.put(
-      `/transaksi_penjualan/${values.id}`,
-      values,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const Deletetransaksi_penjualan = async (id) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  try {
-    const response = await useAxios.delete(`transaksi_penjualan/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    return error.response.data;
-  }
-};
-
-export const ResetPasswordtransaksi_penjualan = async (id) => {
-  try {
-    const response = await useAxios.put(
-      `/transaksi_penjualan/reset-password/${id}`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      }
-    );
-    return response.data;
   } catch (error) {
     throw error.response.data;
   }
