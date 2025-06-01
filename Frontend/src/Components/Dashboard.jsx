@@ -191,6 +191,7 @@ const Dashboard = () => {
                 <button
                   className="btn d-flex justify-content-center ms-2 p-0"
                   style={{ width: "40px", height: "40px" }}
+                  onClick={() => navigate("/customer/profile")}
                 >
                   <img
                     src="https://img.icons8.com/?size=100&id=108294&format=png&color=000000"
