@@ -196,6 +196,10 @@ class UserSeeder extends Seeder
                 'email'         => 'hendra.prabowo@example.com',
             ],
             [
+                'nama_penitip' => 'Citra Wijaya JR',
+                'email'         => 'citra.wijayajr@example.com',
+            ],
+            [
                 'nama_penitip' => 'Irma Widya',
                 'email'         => 'irma.widya@example.com',
             ],

@@ -113,8 +113,8 @@ class PegawaiSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-          
-          [
+
+            [
                 'id_jabatan' => 4,
                 'nama' => 'Kiki Ramadhan',
                 'tgl_lahir' => '1994-05-12',
@@ -142,7 +142,9 @@ class PegawaiSeeder extends Seeder
                 'email' => 'susanto@example.com',
                 'password' => bcrypt('password123'),
                 'gaji' => 5100000,
-              ],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
