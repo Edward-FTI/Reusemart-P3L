@@ -74,9 +74,26 @@ const NavbarCustomer_Service = () => {
 const LinkSidebar = ({ navigate }) => {
   return (
     <div className="d-flex flex-column gap-3">
-      <DrawerItem label="Dashboard" icon="https://img.icons8.com/?size=100&id=iPqKoSmxmAyJ&format=png&color=000000" onClick={() => navigate('/dashboard')} />
-      <DrawerItem label="Transaksi" icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" onClick={() => navigate('/customer/transaksi')} />
-      <DrawerItem label="Diskusi" icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" onClick={() => navigate('/customer/diskusi')}/>
+      <DrawerItem
+        label="Dashboard"
+        icon="https://img.icons8.com/?size=100&id=iPqKoSmxmAyJ&format=png&color=000000"
+        onClick={() => navigate("/")}
+      />
+      <DrawerItem
+        label="Transaksi"
+        icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
+        onClick={() => navigate("/customer/transaksi")}
+      />
+      <DrawerItem
+        label="Diskusi"
+        icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
+        onClick={() => navigate("/customer/diskusi")}
+      />
+      <DrawerItem
+        label="Alamat"
+        icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
+        onClick={() => navigate("/alamat")}
+      />
     </div>
   );
 };

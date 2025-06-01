@@ -100,11 +100,16 @@ const router = createBrowserRouter([
   },
   {
     path: "/alamat",
-    element: <CRUDAlamat />
+    element: (
+      <>
+        <NavbarCustomer />
+        <CRUDAlamat />
+      </>
+    ),
   },
   {
     path: "/pembayaran",
-    element: <OrderForm />
+    element: <OrderForm />,
   },
 
   // ADMIN
@@ -114,7 +119,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/admin",
-        element: <Admin />// atau komponen dashboard admin Anda
+        element: <Admin />, // atau komponen dashboard admin Anda
       },
       {
         path: "pegawai",
@@ -134,7 +139,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-
 
   // CUSTOMER SERVICE
   {
@@ -168,12 +172,12 @@ const router = createBrowserRouter([
 
       {
         path: "/gudang/pengiriman/pembeli",
-        element: <CRUDPengirimanPembeli />
+        element: <CRUDPengirimanPembeli />,
       },
 
       {
         path: "/gudang/pengiriman/penitip",
-        element: <CRUDPengirimanPenitip />
+        element: <CRUDPengirimanPenitip />,
       },
     ],
   },
@@ -293,28 +297,26 @@ const router = createBrowserRouter([
 
       {
         path: "penjualan-bulanan",
-        element: <PenjualanBulanan />
+        element: <PenjualanBulanan />,
       },
 
       {
         path: "komisi-bulanan",
-        element: <KomisiBulanan />
+        element: <KomisiBulanan />,
       },
 
       {
         path: "stok-gudang",
-        element: <StokGudang />
-      }
-    ]
+        element: <StokGudang />,
+      },
+    ],
   },
 
   //Detail Barang
   {
     path: "/detail/:id",
-    element: (
-      <DetailBarang />
-    )
-  }
+    element: <DetailBarang />,
+  },
 ]);
 
 const AppRouter = () => {

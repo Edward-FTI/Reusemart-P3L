@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import logo from "../assets/Logo/logo.png";
 import "./DashboardCss.css";
 import { toast } from "sonner";
@@ -192,6 +191,7 @@ const Dashboard = () => {
                 <button
                   className="btn d-flex justify-content-center ms-2 p-0"
                   style={{ width: "40px", height: "40px" }}
+                  onClick={() => navigate("/customer/profile")}
                 >
                   <img
                     src="https://img.icons8.com/?size=100&id=108294&format=png&color=000000"
@@ -394,7 +394,12 @@ const Dashboard = () => {
           )}
           {cartItems.length > 0 && (
             <div className="mt-3">
-              <button className="btn btn-success w-100">Checkout</button>
+              <button
+                className="btn btn-success w-100"
+                onClick={() => navigate("/pembayaran")}
+              >
+                Checkout
+              </button>
             </div>
           )}
         </div>
@@ -404,4 +409,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class TransaksiPenjualanController extends Controller
 {
@@ -39,15 +40,36 @@ class TransaksiPenjualanController extends Controller
     public function store(Request $request)
     {
         try {
-            $validated = $request->validate([
+            // Ambil semua input
+            $storeData = $request->all();
+
+            // Validasi input
+            $validator = Validator::make($storeData, [
                 'metode_pengiriman' => 'required|string|in:diantar,diambil',
                 'alamat_pengiriman' => 'nullable|string',
-                'bukti_pembayaran' => 'nullable|string',
-                'status_pengiriman' => 'required|string|in:di antar,tiba di tujuan',
+                'bukti_pembayaran' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'status_pengiriman' => 'required|string|in:diantar,tiba di tujuan',
                 'status_pembelian' => 'required|string',
-                'verifikasi_pembayaran' => 'required|boolean',
                 'poin_digunakan' => 'nullable|integer|min:0',
             ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validasi gagal',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Ambil data yang sudah tervalidasi
+            $validated = $validator->validated();
+
+            // Handle upload gambar jika ada
+            if ($request->hasFile('bukti_pembayaran')) {
+                $imageName = time() . '_' . uniqid() . '.' . $request->file('bukti_pembayaran')->extension();
+                $pathGambar = 'images/pembayaran/' . $imageName;
+                $request->file('bukti_pembayaran')->move(public_path('images/pembayaran'), $imageName);
+                $validated['bukti_pembayaran'] = $pathGambar;
+            }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['message' => 'Validasi gagal', 'errors' => $e->errors()], 422);
         }
@@ -55,6 +77,7 @@ class TransaksiPenjualanController extends Controller
         DB::beginTransaction();
 
         try {
+            // Ambil ID pembeli
             $pembeliId = $this->getPembeliId();
             if ($pembeliId instanceof \Illuminate\Http\JsonResponse) {
                 return $pembeliId;
@@ -62,40 +85,43 @@ class TransaksiPenjualanController extends Controller
 
             $pembeli = Pembeli::find($pembeliId);
             if (!$pembeli) {
-                return response()->json(['message' => 'Data pembeli tidak ditemukan di database'], 404);
+                return response()->json(['message' => 'Data pembeli tidak ditemukan'], 404);
             }
 
+            // Ambil cart pembeli
             $carts = Cart::where('id_pembeli', $pembeliId)->with('barang')->get();
             if ($carts->isEmpty()) {
                 return response()->json(['message' => 'Cart kosong'], 400);
             }
 
+            // Hitung total harga barang
             $totalHarga = 0;
             foreach ($carts as $cart) {
-                if (!$cart->barang) {
-                    return response()->json(['message' => "Barang pada cart ID {$cart->id} tidak ditemukan"], 404);
-                }
-                if ($cart->barang->harga_barang === null) {
-                    return response()->json(['message' => "Harga barang dengan ID {$cart->id_barang} tidak tersedia"], 400);
+                if (!$cart->barang || $cart->barang->harga_barang === null) {
+                    return response()->json(['message' => "Barang atau harga tidak tersedia di cart ID {$cart->id}"], 400);
                 }
                 $totalHarga += $cart->barang->harga_barang;
             }
 
+            // Hitung ongkir
             $ongkir = 0;
             if ($validated['metode_pengiriman'] === 'diantar') {
                 $ongkir = $totalHarga >= 1500000 ? 0 : 100000;
                 if (empty($validated['alamat_pengiriman'])) {
-                    return response()->json(['message' => 'Alamat pengiriman wajib diisi untuk pengiriman diantar'], 400);
+                    return response()->json(['message' => 'Alamat pengiriman wajib diisi'], 400);
                 }
             }
 
+            // Hitung poin
             $poin_awal = floor($totalHarga / 10000);
             $bonus = $totalHarga > 500000 ? floor($poin_awal * 0.2) : 0;
             $poin_total = $poin_awal + $bonus;
 
+            // Hitung poin yang dipakai
             $poin_digunakan = min($validated['poin_digunakan'] ?? 0, $pembeli->point);
             $totalSetelahPoin = max(0, ($totalHarga + $ongkir) - $poin_digunakan);
 
+            // Simpan transaksi
             $transaksi = TransaksiPenjualan::create([
                 'id_pembeli' => $pembeliId,
                 'total_harga_pembelian' => $totalSetelahPoin,
@@ -105,42 +131,30 @@ class TransaksiPenjualanController extends Controller
                 'bukti_pembayaran' => $validated['bukti_pembayaran'] ?? '',
                 'status_pengiriman' => $validated['status_pengiriman'],
                 'status_pembelian' => $validated['status_pembelian'],
-                'verifikasi_pembayaran' => $validated['verifikasi_pembayaran'],
+                'verifikasi_pembayaran' => false,
                 'id_pegawai' => 1,
             ]);
 
-            $totalHarga = 0;
+            // Simpan detail transaksi
             foreach ($carts as $cart) {
-                if (!$cart->barang) {
-                    return response()->json(['message' => "Barang pada cart ID {$cart->id} tidak ditemukan"], 404);
-                }
-
-                $barang = $cart->barang; // Assign objek barang
-
-                if ($barang->harga_barang === null) {
-                    return response()->json(['message' => "Harga barang dengan ID {$cart->id_barang} tidak tersedia"], 400);
-                }
-
-                $totalHarga += $barang->harga_barang;
-
                 Detail_transaksi_penjualan::create([
                     'id_transaksi_penjualan' => $transaksi->id,
-                    'id_barang' => $barang->id,
-                    'harga_saat_transaksi' => $barang->harga_barang,
+                    'id_barang' => $cart->barang->id,
+                    'harga_saat_transaksi' => $cart->barang->harga_barang,
                 ]);
             }
 
-
-
+            // Update poin pembeli
             $pembeli->point = $pembeli->point - $poin_digunakan + $poin_total;
             $pembeli->save();
 
+            // Hapus cart
             Cart::where('id_pembeli', $pembeliId)->delete();
 
             DB::commit();
 
             return response()->json([
-                'message' => 'Transaksi berhasil disimpan',
+                'message' => 'Transaksi berhasil',
                 'data' => [
                     'transaksi' => $transaksi,
                     'poin_didapat' => $poin_total,
@@ -151,7 +165,6 @@ class TransaksiPenjualanController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Transaksi Gagal: ' . $e->getMessage());
-
             return response()->json([
                 'message' => 'Gagal menyimpan transaksi',
                 'error' => $e->getMessage()

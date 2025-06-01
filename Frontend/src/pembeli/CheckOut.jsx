@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { GetAllCart } from "../Api/apiCart";
 import { GetAllAlamat } from "../Api/apiAlamat";
 import { GetPembeliInfo } from "../Api/apiPembeli";
-import axios from "axios";
+import { Createtransaksi_penjualan } from "../Api/apitransaksi_penjualans";
 
 const OrderForm = () => {
   const [deliveryMethod, setDeliveryMethod] = useState("shipped");
@@ -16,8 +16,6 @@ const OrderForm = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [proof, setProof] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const token = sessionStorage.getItem("token");
 
   useEffect(() => {
     fetchData();
@@ -60,9 +58,11 @@ const OrderForm = () => {
       formData.append("alamat_pengiriman", "");
     }
 
+    console.log("Selected Image:", proof);
+
     formData.append("poin_digunakan", pointsToRedeem);
     formData.append("bukti_pembayaran", proof);
-    formData.append("status_pengiriman", "di antar");
+    formData.append("status_pengiriman", "diantar");
     formData.append("status_pembelian", "pending");
     formData.append("verifikasi_pembayaran", false);
 
@@ -70,18 +70,16 @@ const OrderForm = () => {
       formData.append(`selected_cart_ids[${i}]`, id)
     );
 
+    // selectedCartIds.forEach((id) => formData.append("selected_cart_ids[]", id));
+
     try {
-      await axios.post("/api/transaksi-penjualan", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await Createtransaksi_penjualan(formData);
       alert("Transaksi berhasil!");
       setShowUpload(false);
       setProof(null);
     } catch (err) {
       alert(err.response?.data?.message || "Gagal melakukan transaksi.");
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -217,6 +215,7 @@ const OrderForm = () => {
               </label>
               <input
                 type="file"
+                accept="image/*"
                 className="form-control"
                 id="proof"
                 required
