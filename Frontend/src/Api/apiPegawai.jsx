@@ -33,9 +33,10 @@ export const GetPegawaiByNama = async (nama) => {
 }
 
 
+
 export const GetPegawaiByJabatan = async (jabatan) => {
     try {
-        const response = await useAxios.get(`/pegawai/${jabatan}`, {
+        const response = await useAxios.get(`/pegawai/jabatan/${jabatan}`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -47,6 +48,7 @@ export const GetPegawaiByJabatan = async (jabatan) => {
         throw error.response.data
     }
 }
+
 
 
 export const GetPegawaiById = async (id) => {

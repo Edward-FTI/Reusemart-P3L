@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 
 
 use Symfony\Component\CssSelector\Node\FunctionNode;
+
 class PegawaiController extends Controller
 {
     public function index()
@@ -55,8 +56,8 @@ class PegawaiController extends Controller
         $jabatan = Jabatan::find($storeData['id_jabatan']);
 
         if (!$jabatan) {
-        return response(['message' => 'Jabatan tidak ditemukan'], 404);
-    }
+            return response(['message' => 'Jabatan tidak ditemukan'], 404);
+        }
 
         $user = new User();
         $user->name = $storeData['nama'];
@@ -185,11 +186,14 @@ class PegawaiController extends Controller
     public function searchByJabatan($jabatan)
     {
         try {
-            $pegawai = Pegawai::where('id_jabatan', $jabatan)->get();
+            $pegawai = Pegawai::with('jabatan')->whereHas('jabatan', function ($query) use ($jabatan) {
+                $query->where('role', 'LIKE', '%' . $jabatan . '%');
+            })->get();
 
             if ($pegawai->isEmpty()) {
-                throw new \Exception('pegawai dengan jabatan ' . $jabatan . ' tidak ditemukan');
+                throw new \Exception('Pegawai dengan jabatan "' . $jabatan . '" tidak ditemukan');
             }
+
             return response()->json([
                 'status' => true,
                 'message' => 'Berhasil mengambil data pegawai',
@@ -203,6 +207,9 @@ class PegawaiController extends Controller
             ], 400);
         }
     }
+
+
+
 
 
     public function searchById($id)
@@ -254,5 +261,4 @@ class PegawaiController extends Controller
             'data' => $pegawai
         ], 200);
     }
-
 }

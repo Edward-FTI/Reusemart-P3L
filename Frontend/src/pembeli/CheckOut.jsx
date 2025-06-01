@@ -19,7 +19,6 @@ const OrderForm = () => {
   const [proof, setProof] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -35,21 +34,22 @@ const OrderForm = () => {
 
       // --- Perubahan dimulai di sini ---
       // Ambil data pembeli berdasarkan ID untuk mendapatkan poin terbaru
-//       const currentPembeli = await GetpembeliById(userId);
-//       if (currentPembeli && currentPembeli.point !== undefined) {
-//         setBuyerPoints(currentPembeli.point);
-//       } else {
-//         setBuyerPoints(0); // Set 0 jika tidak ada poin atau pembeli tidak ditemukan
-//       }
-//       // --- Perubahan berakhir di sini ---
-
-//     } catch (err) {
-//       console.error("Failed to fetch data:", err); // Pesan error lebih deskriptif
-//       const pembeli = await GetPembeliInfo();
-//       setBuyerPoints(pembeli.point || 0);
-//     } catch (err) {
-//       console.error("Gagal mengambil data:", err);
-//       alert("Gagal mengambil data. Silakan coba lagi.");
+      const currentPembeli = await GetpembeliById(userId);
+      if (currentPembeli && currentPembeli.point !== undefined) {
+        setBuyerPoints(currentPembeli.point);
+      } else {
+        setBuyerPoints(0); // Set 0 jika tidak ada poin atau pembeli tidak ditemukan
+      }
+      // --- Perubahan berakhir di sini ---
+    } catch (err) {
+      console.error("Failed to fetch data:", err); // Pesan error lebih deskriptif
+      try {
+        const pembeli = await GetPembeliInfo();
+        setBuyerPoints(pembeli.point || 0);
+      } catch (err2) {
+        console.error("Gagal mengambil data:", err2);
+        alert("Gagal mengambil data. Silakan coba lagi.");
+      }
     }
   };
 
@@ -255,3 +255,6 @@ const OrderForm = () => {
 };
 
 export default OrderForm;
+
+
+

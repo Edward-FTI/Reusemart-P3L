@@ -40,10 +40,12 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/pegawai/{id}', [PegawaiController::class, 'update']);
     Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy']);
     Route::get('/pegawai/search/{name}', [PegawaiController::class, 'searchByName']);
-    Route::get('/searchByJabatan/{jabatan}', [PegawaiController::class, 'searchBysearchByJabatanyName']);
+    Route::get('/pegawai/jabatan/{jabatan}', [PegawaiController::class, 'searchByJabatan']);
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
     Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
+    
+
 
     // ======================= Jabatan =======================
     Route::get('/jabatan', [JabatanController::class, 'index']);
@@ -162,7 +164,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/cart/{id}', [CartController::class, 'show']);
     Route::delete('/cart/{id}', [CartController::class, 'destroy']);
     Route::patch('/cart/{id}/update-transaksi', [CartController::class, 'updateTransaksi']);
-
 });
 
 // Route::get('/pengambilan', [PengambilanController::class, 'index']);
@@ -177,5 +178,3 @@ Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
 // donasi
 // Route::get('/donasi', [TransaksiDonasiController::class, 'index']);
 // Route::put('/donasi/{id}', [TransaksiDonasiController::class, 'update']);
-
-

@@ -34,6 +34,11 @@ class JabatanSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'role' => 'Hunter', // Ganti dengan role yang sesuai
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
             // Tambahkan jabatan lainnya sesuai kebutuhan
         ]);
     }
