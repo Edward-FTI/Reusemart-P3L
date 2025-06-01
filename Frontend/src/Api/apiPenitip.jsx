@@ -14,6 +14,18 @@ export const GetAllPenitip = async () => {
     }
 };
 
+export const GetPenitipData = async () => {
+  try {
+    const response = await useAxios.get("/penitipD", {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
 // GET penitip berdasarkan nama
 export const GetPenitipByNama = async (nama) => {
     try {

@@ -7,12 +7,15 @@ use App\Models\Cart;
 use App\Models\Pembeli;
 use App\Models\TransaksiPenjualan;
 use App\Models\Detail_transaksi_penjualan;
+use App\Models\Penitip;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use App\Services\NotificationService;
 
 class TransaksiPenjualanController extends Controller
 {
@@ -245,7 +248,10 @@ class TransaksiPenjualanController extends Controller
     public function verifikasiPembayaran($id)
     {
         try {
-            $transaksi = TransaksiPenjualan::find($id);
+            $transaksi = TransaksiPenjualan::select('id', 'verifikasi_pembayaran')
+                // with detail transaksi
+                ->with(['detailTransaksi.barang'])
+                ->find($id);
 
             if (!$transaksi) {
                 return response()->json([
@@ -255,6 +261,27 @@ class TransaksiPenjualanController extends Controller
 
             $transaksi->verifikasi_pembayaran = true;
             $transaksi->save();
+            // all barang yang ada di detail transaksi
+            $detailTransaksi = $transaksi->detailTransaksi;
+            if ($detailTransaksi->isEmpty()) {
+                return response()->json([
+                    'message' => 'Tidak ada barang dalam transaksi ini'
+                ], 404);
+            }
+            $barangs = $detailTransaksi->pluck('barang');
+            if ($barangs->isEmpty()) {
+                return response()->json([
+                    'message' => 'Tidak ada barang dalam transaksi ini'
+                ], 404);
+            }
+
+            foreach ($barangs as $barang) {
+                $penitip = Penitip::where('id', $barang->id_penitip)->first();
+                $user = User::where('email', $penitip->email)->first();
+                Log::info('Notifikasi untuk user: ' . $user->email . ' dengan FCM Token: ' . $user->fcm_token . ' untuk barang: ' . $barang->nama_barang);
+                $notificationService = app(NotificationService::class);
+                $notificationService->sendNotification($user->id, 'Barang Laku!!', 'Barang ' . $barang->nama_barang . ' telah diverifikasi.');
+            }
 
             return response()->json([
                 'message' => 'Pembayaran berhasil diverifikasi',
