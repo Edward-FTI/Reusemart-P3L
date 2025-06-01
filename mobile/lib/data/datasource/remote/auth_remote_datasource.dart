@@ -21,7 +21,7 @@ class AuthRemoteDatasource {
     log("Status Code: ${response.statusCode}");
     log("Body: ${response.body}");
     if (response.statusCode == 200) {
-      return AuthResponModel.fromJson(jsonDecode(response.body));
+      return AuthResponModel.fromMap(jsonDecode(response.body));
     } else {
       return null;
     }

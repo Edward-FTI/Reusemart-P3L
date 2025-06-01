@@ -98,4 +98,39 @@ class AuthController extends Controller
             'message' => 'Logged out successfully',
         ]);
     }
+
+    public function updateFcmToken(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'fcm_token' => 'required',
+            ]);
+
+            $user = User::findOrFail($id);
+
+            if ($user) {
+                $user->fcm_token = $request->input('fcm_token');
+                $user->save();
+                return response()->json([
+                    'success' => true,
+                    'status_code' => 200,
+                    'message' => 'FCM ID Agent updated successfully',
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'status_code' => 404,
+                    'error' => 'User not found',
+                    'message' => 'User not found'
+                ], 404);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'status_code' => 500,
+                'message' => 'Failed to update fcm token ',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
 }
