@@ -4,6 +4,7 @@ import { GetAllCart } from "../Api/apiCart";
 import { GetAllAlamat } from "../Api/apiAlamat";
 import { GetpembeliById, GetAllpembeli } from "../Api/apiPembeli"; // Pastikan GetpembeliById diimpor
 // import { GetAlltransaksi_penjualan, Gettransaksi_penjualanById, Createtransaksi_penjualan } from "../Api/apitransaksi_penjualans";
+import { GetPembeliInfo } from "../Api/apiPembeli";
 import axios from "axios";
 
 const OrderForm = () => {
@@ -17,10 +18,7 @@ const OrderForm = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [proof, setProof] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [pembeli, setPembeli] = useState([]); // Tidak perlu state pembeli jika hanya mengambil poin
-
   const token = sessionStorage.getItem("token");
-  const userId = sessionStorage.getItem("id");
 
   useEffect(() => {
     fetchData();
@@ -32,23 +30,26 @@ const OrderForm = () => {
       setCartItems(cart);
       setSelectedCartIds(cart.map((item) => item.id));
 
-      const allAlamat = await GetAllAlamat();
-      const alamatPembeli = allAlamat.filter((a) => a.id_pembeli == userId);
-      setAvailableAddresses(alamatPembeli.map((a) => a.alamat)); // simpan hanya string alamat
+      const alamatList = await GetAllAlamat();
+      setAvailableAddresses(alamatList.map((a) => a.alamat));
 
       // --- Perubahan dimulai di sini ---
       // Ambil data pembeli berdasarkan ID untuk mendapatkan poin terbaru
-      const currentPembeli = await GetpembeliById(userId);
-      if (currentPembeli && currentPembeli.point !== undefined) {
-        setBuyerPoints(currentPembeli.point);
-      } else {
-        setBuyerPoints(0); // Set 0 jika tidak ada poin atau pembeli tidak ditemukan
-      }
-      // --- Perubahan berakhir di sini ---
+//       const currentPembeli = await GetpembeliById(userId);
+//       if (currentPembeli && currentPembeli.point !== undefined) {
+//         setBuyerPoints(currentPembeli.point);
+//       } else {
+//         setBuyerPoints(0); // Set 0 jika tidak ada poin atau pembeli tidak ditemukan
+//       }
+//       // --- Perubahan berakhir di sini ---
 
-    } catch (err) {
-      console.error("Failed to fetch data:", err); // Pesan error lebih deskriptif
-      alert("Gagal mengambil data. Silakan coba lagi.");
+//     } catch (err) {
+//       console.error("Failed to fetch data:", err); // Pesan error lebih deskriptif
+//       const pembeli = await GetPembeliInfo();
+//       setBuyerPoints(pembeli.point || 0);
+//     } catch (err) {
+//       console.error("Gagal mengambil data:", err);
+//       alert("Gagal mengambil data. Silakan coba lagi.");
     }
   };
 
@@ -62,21 +63,28 @@ const OrderForm = () => {
     setIsSubmitting(true);
 
     const formData = new FormData();
-    formData.append(
-      "metode_pengiriman",
-      deliveryMethod === "pickup" ? "ambil sendiri" : "kurir"
-    );
-    if (deliveryMethod === "shipped") {
+    const metode_pengiriman =
+      deliveryMethod === "pickup" ? "diambil" : "diantar";
+    formData.append("metode_pengiriman", metode_pengiriman);
+
+    if (metode_pengiriman === "diantar") {
       formData.append("alamat_pengiriman", address);
+    } else {
+      formData.append("alamat_pengiriman", "");
     }
-    formData.append("poin_ditukar", pointsToRedeem);
+
+    formData.append("poin_digunakan", pointsToRedeem);
     formData.append("bukti_pembayaran", proof);
+    formData.append("status_pengiriman", "di antar");
+    formData.append("status_pembelian", "pending");
+    formData.append("verifikasi_pembayaran", false);
+
     selectedCartIds.forEach((id, i) =>
       formData.append(`selected_cart_ids[${i}]`, id)
     );
 
     try {
-      const res = await axios.post("/api/transaksi-penjualan", formData, {
+      await axios.post("/api/transaksi-penjualan", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -94,7 +102,7 @@ const OrderForm = () => {
   };
 
   const totalHarga = cartItems.reduce(
-    (acc, item) => acc + (item.barang?.harga || 0),
+    (acc, item) => acc + (item.barang?.harga_barang || 0),
     0
   );
   const diskon = pointsToRedeem * 10000;
@@ -109,7 +117,6 @@ const OrderForm = () => {
           <form onSubmit={handleInitialSubmit}>
             <div className="mb-3">
               <label className="form-label fw-bold">Metode Pengiriman:</label>
-              <br />
               <div className="form-check form-check-inline">
                 <input
                   type="radio"
@@ -189,7 +196,9 @@ const OrderForm = () => {
                     className="list-group-item d-flex justify-content-between"
                   >
                     <span>{item.barang?.nama_barang}</span>
-                    <span>Rp{item.barang?.harga_barang}</span>
+                    <span>
+                      Rp{item.barang?.harga_barang?.toLocaleString("id-ID")}
+                    </span>
                   </li>
                 ))}
               </ul>

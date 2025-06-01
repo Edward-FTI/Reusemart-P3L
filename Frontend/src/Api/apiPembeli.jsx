@@ -133,4 +133,12 @@ export const ResetPasswordByEmail = async (email) => {
 };
 
 
+export const GetPembeliInfo = async () => {
+  const response = await useAxios.get("/pembelid", {
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+    },
+  });
+  return response.data;
+};
 

@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('metode_pengiriman');
             $table->string('alamat_pengiriman');
             $table->double('ongkir');
-            $table->string('bukti_pembayaran');
+            $table->text('bukti_pembayaran')->nullable();
             $table->string('status_pengiriman');
-            $table->foreignId('id_pegawai')->constrained('pegawais');
+            $table->unsignedBigInteger('id_pegawai')->nullable();
             $table->string('status_pembelian');
             $table->string('verifikasi_pembayaran');
             $table->timestamps();

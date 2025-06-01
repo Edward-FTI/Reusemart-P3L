@@ -5,140 +5,157 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Pembeli;
-use App\Models\Barang;
 use App\Models\TransaksiPenjualan;
-use App\Models\DetailTransaksiPenjualan;
+use App\Models\Detail_transaksi_penjualan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class TransaksiPenjualanController extends Controller
 {
     private function getPembeliId()
     {
-        $userEmail = Auth::user()->email;
-        $pembeli = Pembeli::where('email', $userEmail)->first();
-        return $pembeli ? $pembeli->id : null;
+        try {
+            $user = Auth::user();
+            if (!$user || !isset($user->email)) {
+                return response()->json(['message' => 'User belum login atau tidak memiliki email'], 401);
+            }
+
+            $pembeli = Pembeli::where('email', $user->email)->first();
+            if (!$pembeli) {
+                return response()->json(['message' => 'Pembeli tidak ditemukan untuk email tersebut'], 404);
+            }
+
+            return $pembeli->id;
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Gagal mengambil ID pembeli', 'error' => $e->getMessage()], 500);
+        }
     }
+
+
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'selected_cart_ids' => 'required|array',
-        'selected_cart_ids.*' => 'exists:carts,id',
-        'metode_pengiriman' => 'required|in:ambil sendiri,kurir',
-        'alamat_pengiriman' => 'nullable|string',
-        'bukti_pembayaran' => 'required|image|max:2048',
-        'poin_ditukar' => 'nullable|integer|min:0',
-    ]);
-
-    $pembeliId = $this->getPembeliId();
-    if (!$pembeliId) {
-        return response()->json(['message' => 'Pembeli tidak ditemukan'], 404);
-    }
-
-    $pembeli = Pembeli::find($pembeliId);
-    $carts = Cart::whereIn('id', $validated['selected_cart_ids'])
-                ->where('id_pembeli', $pembeliId)
-                ->with('barang')
-                ->get();
-
-    if ($carts->isEmpty()) {
-        return response()->json(['message' => 'Cart tidak valid atau kosong'], 422);
-    }
-
-    // Validasi pengiriman kurir hanya untuk Yogyakarta
-    if ($validated['metode_pengiriman'] === 'kurir') {
-        if (!$validated['alamat_pengiriman']) {
-            return response()->json(['message' => 'Alamat wajib diisi jika memilih kurir'], 422);
+    {
+        try {
+            $validated = $request->validate([
+                'metode_pengiriman' => 'required|string|in:diantar,diambil',
+                'alamat_pengiriman' => 'nullable|string',
+                'bukti_pembayaran' => 'nullable|string',
+                'status_pengiriman' => 'required|string|in:di antar,tiba di tujuan',
+                'status_pembelian' => 'required|string',
+                'verifikasi_pembayaran' => 'required|boolean',
+                'poin_digunakan' => 'nullable|integer|min:0',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'Validasi gagal', 'errors' => $e->errors()], 422);
         }
-        if (stripos($validated['alamat_pengiriman'], 'yogyakarta') === false) {
-            return response()->json(['message' => 'Pengiriman dengan kurir hanya untuk area Yogyakarta'], 422);
-        }
-    }
 
-    // Hitung total harga
-    $totalHarga = $carts->sum(fn($cart) => $cart->barang->harga);
+        DB::beginTransaction();
 
-    // Hitung ongkir
-    $ongkir = ($validated['metode_pengiriman'] === 'kurir' && $totalHarga < 1500000) ? 100000 : 0;
+        try {
+            $pembeliId = $this->getPembeliId();
+            if ($pembeliId instanceof \Illuminate\Http\JsonResponse) {
+                return $pembeliId;
+            }
 
-    // Hitung total bayar (termasuk ongkir)
-    $totalBayar = $totalHarga + $ongkir;
+            $pembeli = Pembeli::find($pembeliId);
+            if (!$pembeli) {
+                return response()->json(['message' => 'Data pembeli tidak ditemukan di database'], 404);
+            }
 
-    // Validasi poin ditukar
-    $poinDimiliki = $pembeli->poin;
-    $poinDitukar = $validated['poin_ditukar'] ?? 0;
-    if ($poinDitukar > $poinDimiliki) {
-        return response()->json(['message' => 'Poin yang ditukar melebihi jumlah yang dimiliki'], 422);
-    }
+            $carts = Cart::where('id_pembeli', $pembeliId)->with('barang')->get();
+            if ($carts->isEmpty()) {
+                return response()->json(['message' => 'Cart kosong'], 400);
+            }
 
-    // Potong harga dengan penukaran poin (1 poin = 10.000)
-    $potonganPoin = $poinDitukar * 10000;
-    $totalBayar -= $potonganPoin;
-    $totalBayar = max(0, $totalBayar); // Hindari nilai negatif
+            $totalHarga = 0;
+            foreach ($carts as $cart) {
+                if (!$cart->barang) {
+                    return response()->json(['message' => "Barang pada cart ID {$cart->id} tidak ditemukan"], 404);
+                }
+                if ($cart->barang->harga_barang === null) {
+                    return response()->json(['message' => "Harga barang dengan ID {$cart->id_barang} tidak tersedia"], 400);
+                }
+                $totalHarga += $cart->barang->harga_barang;
+            }
 
-    // Simpan bukti pembayaran
-    $buktiPath = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
+            $ongkir = 0;
+            if ($validated['metode_pengiriman'] === 'diantar') {
+                $ongkir = $totalHarga >= 1500000 ? 0 : 100000;
+                if (empty($validated['alamat_pengiriman'])) {
+                    return response()->json(['message' => 'Alamat pengiriman wajib diisi untuk pengiriman diantar'], 400);
+                }
+            }
 
-    // Generate nomor transaksi: tahun.bulan.nomor_urut
-    $prefix = now()->format('Y.m');
-    $lastTrans = TransaksiPenjualan::where('no_transaksi', 'like', "$prefix.%")->count() + 1;
-    $noTransaksi = "$prefix.$lastTrans";
+            $poin_awal = floor($totalHarga / 10000);
+            $bonus = $totalHarga > 500000 ? floor($poin_awal * 0.2) : 0;
+            $poin_total = $poin_awal + $bonus;
 
-    // Hitung bonus poin jika total harga > 500rb
-    $bonusPoin = ($totalHarga > 500000) ? floor(($totalHarga / 10000) * 0.2) : 0;
+            $poin_digunakan = min($validated['poin_digunakan'] ?? 0, $pembeli->point);
+            $totalSetelahPoin = max(0, ($totalHarga + $ongkir) - $poin_digunakan);
 
-    DB::beginTransaction();
-    try {
-        // Simpan transaksi
-        $transaksi = TransaksiPenjualan::create([
-            'no_transaksi' => $noTransaksi,
-            'id_pembeli' => $pembeliId,
-            'total_harga_pembelian' => $totalHarga,
-            'ongkir' => $ongkir,
-            'total_bayar' => $totalBayar,
-            'alamat_pengiriman' => $validated['alamat_pengiriman'],
-            'metode_pengiriman' => $validated['metode_pengiriman'],
-            'bukti_pembayaran' => $buktiPath,
-            'status_pengiriman' => 'menunggu',
-            'status_pembelian' => 'menunggu',
-            'verifikasi_pembayaran' => 'belum diverifikasi',
-        ]);
-
-        // Detail transaksi & tandai barang sold out
-        foreach ($carts as $cart) {
-            DetailTransaksiPenjualan::create([
-                'transaksi_penjualan_id' => $transaksi->id,
-                'id_barang' => $cart->id_barang,
-                'harga_saat_transaksi' => $cart->barang->harga
+            $transaksi = TransaksiPenjualan::create([
+                'id_pembeli' => $pembeliId,
+                'total_harga_pembelian' => $totalSetelahPoin,
+                'metode_pengiriman' => $validated['metode_pengiriman'],
+                'alamat_pengiriman' => $validated['metode_pengiriman'] === 'diantar' ? $validated['alamat_pengiriman'] : null,
+                'ongkir' => $ongkir,
+                'bukti_pembayaran' => $validated['bukti_pembayaran'] ?? '',
+                'status_pengiriman' => $validated['status_pengiriman'],
+                'status_pembelian' => $validated['status_pembelian'],
+                'verifikasi_pembayaran' => $validated['verifikasi_pembayaran'],
+                'id_pegawai' => 1,
             ]);
 
-            $cart->barang->update(['status_barang' => 'sold out']);
+            $totalHarga = 0;
+            foreach ($carts as $cart) {
+                if (!$cart->barang) {
+                    return response()->json(['message' => "Barang pada cart ID {$cart->id} tidak ditemukan"], 404);
+                }
+
+                $barang = $cart->barang; // Assign objek barang
+
+                if ($barang->harga_barang === null) {
+                    return response()->json(['message' => "Harga barang dengan ID {$cart->id_barang} tidak tersedia"], 400);
+                }
+
+                $totalHarga += $barang->harga_barang;
+
+                Detail_transaksi_penjualan::create([
+                    'id_transaksi_penjualan' => $transaksi->id,
+                    'id_barang' => $barang->id,
+                    'harga_saat_transaksi' => $barang->harga_barang,
+                ]);
+            }
+
+
+
+            $pembeli->point = $pembeli->point - $poin_digunakan + $poin_total;
+            $pembeli->save();
+
+            Cart::where('id_pembeli', $pembeliId)->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Transaksi berhasil disimpan',
+                'data' => [
+                    'transaksi' => $transaksi,
+                    'poin_didapat' => $poin_total,
+                    'poin_terpakai' => $poin_digunakan,
+                    'poin_sisa' => $pembeli->point,
+                ]
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Transaksi Gagal: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Gagal menyimpan transaksi',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Hapus cart
-        Cart::whereIn('id', $validated['selected_cart_ids'])->delete();
-
-        // Update poin pembeli
-        $pembeli->poin = $poinDimiliki - $poinDitukar + $bonusPoin;
-        $pembeli->save();
-
-        DB::commit();
-
-        return response()->json([
-            'message' => 'Transaksi berhasil',
-            'transaksi' => $transaksi->load('detail.barang'),
-            'sisa_poin' => $pembeli->poin
-        ], 201);
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json(['message' => 'Gagal menyimpan transaksi', 'error' => $e->getMessage()], 500);
     }
-}
-
 }

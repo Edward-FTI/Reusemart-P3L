@@ -103,10 +103,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pembeli/{id}', [PembeliController::class, 'show']);
     Route::put('/pembeli/{id}', [PembeliController::class, 'update']);
     Route::delete('/pembeli/{id}', [PembeliController::class, 'destroy']);
+    Route::get('/pembelid', [PembeliController::class, 'getPembeliData']);
     Route::get('/pembeli/search/{name}', [PembeliController::class, 'searchByName']);
     Route::get('/pembeli/searchByEmail/{email}', [PembeliController::class, 'searchByEmail']);
     // Ganti route-nya menjadi tanpa parameter ID
     Route::post('/pembeli/reset-password', [PembeliController::class, 'resetPassword']);
+
 
 
     //Detail Pengiriman
