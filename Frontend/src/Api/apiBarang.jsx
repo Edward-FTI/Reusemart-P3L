@@ -39,22 +39,28 @@ export const CreateBarang = async (value) => {
     }
 };
 
-
-
-export const UpdateBarang = async (values) => {
+export const UpdateBarang = async (id, value) => {
     try {
-        const response = await useAxios.put(`/barang/${values.id}`, values, {
+        const formData = new FormData();
+
+        for (const key in value) {
+            formData.append(key, value[key]);
+        }
+
+        const response = await useAxios.put(`/barang/${id}`, formData, {
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
-        return response.data;
+        return response.data.data;
     }
     catch (error) {
-        throw error.response.data;
+        console.error(error);
+        throw error.response?.data || error;
     }
 }
+
 
 
 export const DeleteBarang = async (id) => {

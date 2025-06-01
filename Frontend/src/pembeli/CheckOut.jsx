@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { GetAllCart } from "../Api/apiCart";
 import { GetAllAlamat } from "../Api/apiAlamat";
+import { GetpembeliById, GetAllpembeli } from "../Api/apiPembeli"; // Pastikan GetpembeliById diimpor
+// import { GetAlltransaksi_penjualan, Gettransaksi_penjualanById, Createtransaksi_penjualan } from "../Api/apitransaksi_penjualans";
 import { GetPembeliInfo } from "../Api/apiPembeli";
 import axios from "axios";
 
@@ -16,7 +18,6 @@ const OrderForm = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [proof, setProof] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const token = sessionStorage.getItem("token");
 
   useEffect(() => {
@@ -32,11 +33,23 @@ const OrderForm = () => {
       const alamatList = await GetAllAlamat();
       setAvailableAddresses(alamatList.map((a) => a.alamat));
 
-      const pembeli = await GetPembeliInfo();
-      setBuyerPoints(pembeli.point || 0);
-    } catch (err) {
-      console.error("Gagal mengambil data:", err);
-      alert("Gagal mengambil data. Silakan coba lagi.");
+      // --- Perubahan dimulai di sini ---
+      // Ambil data pembeli berdasarkan ID untuk mendapatkan poin terbaru
+//       const currentPembeli = await GetpembeliById(userId);
+//       if (currentPembeli && currentPembeli.point !== undefined) {
+//         setBuyerPoints(currentPembeli.point);
+//       } else {
+//         setBuyerPoints(0); // Set 0 jika tidak ada poin atau pembeli tidak ditemukan
+//       }
+//       // --- Perubahan berakhir di sini ---
+
+//     } catch (err) {
+//       console.error("Failed to fetch data:", err); // Pesan error lebih deskriptif
+//       const pembeli = await GetPembeliInfo();
+//       setBuyerPoints(pembeli.point || 0);
+//     } catch (err) {
+//       console.error("Gagal mengambil data:", err);
+//       alert("Gagal mengambil data. Silakan coba lagi.");
     }
   };
 
@@ -80,6 +93,7 @@ const OrderForm = () => {
       alert("Transaksi berhasil!");
       setShowUpload(false);
       setProof(null);
+      // Optional: Refresh cart or redirect after successful transaction
     } catch (err) {
       alert(err.response?.data?.message || "Gagal melakukan transaksi.");
     } finally {

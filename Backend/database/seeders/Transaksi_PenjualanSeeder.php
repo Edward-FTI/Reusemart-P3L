@@ -60,7 +60,7 @@ class Transaksi_PenjualanSeeder extends Seeder
                 'ongkir' => 25000,
                 'bukti_pembayaran' => 'bukti4.jpg',
                 'status_pengiriman' => 'proses',
-                'metode_pengiriman' => 'dikirim',
+                'metode_pengiriman' => 'diambil',
                 'id_pegawai' => 2,
                 'status_pembelian' => 'diproses',
                 'verifikasi_pembayaran' => 'terverifikasi',

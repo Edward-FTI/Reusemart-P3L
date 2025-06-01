@@ -10,9 +10,6 @@ import Login from './Components/Login.jsx';
 // import CRUDPegawai from "./admin/CRUDPegawai.jsx";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Dashboard from "./Components/Dashboard.jsx";
-import 'mdb-react-ui-kit/dist/css/mdb.min.css'; // <-- Wajib!
-import '@fortawesome/fontawesome-free/css/all.min.css'; // <-- Untuk ikon dari MDBIcon
-
 
 // import Layout from './navbar/layout.jsx'
 

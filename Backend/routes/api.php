@@ -137,7 +137,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transaksi-penjualan/searchById/{id}', [TransaksiPenjualanController::class, 'searchById']);
 
     //Pengambilan
-    // Route::get('/pengambilan', [PengambilanController::class, 'index']);
+    Route::get('/pengambilan', [PengambilanController::class, 'index']);
     Route::get('/pengambilan/{id}', [PengambilanController::class, 'show']);
     Route::put('/pengambilan/{id}', [PengambilanController::class, 'update']);
     Route::delete('/pengambilan/{id}', [PengambilanController::class, 'destroy']);
@@ -165,14 +165,17 @@ Route::middleware('auth:api')->group(function () {
 
 });
 
-Route::get('/pengambilan', [PengambilanController::class, 'index']);
+// Route::get('/pengambilan', [PengambilanController::class, 'index']);
 
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 // Route::post('/barang', [BarangController::class, 'store']);
 Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
+Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
 // Route::put('/barang/{id}', [BarangController::class, 'update']);
 // Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 
 // donasi
 // Route::get('/donasi', [TransaksiDonasiController::class, 'index']);
 // Route::put('/donasi/{id}', [TransaksiDonasiController::class, 'update']);
+
+

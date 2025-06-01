@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Str;
 use App\Models\Pembeli;
+use App\Models\AlamatPembeli;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +15,39 @@ use App\Models\User;
 
 class PembeliController extends Controller
 {
+
+    private function getPembeliId()
+    {
+        $user = Auth::user();
+        if (!$user || !$user->email) {
+            return null;
+        }
+        $pembeli = Pembeli::where('email', $user->email)->first();
+        return $pembeli ? $pembeli->id : null;
+    }
     // GET semua pembeli
     public function index()
     {
-        return response()->json(Pembeli::all(), 200);
+        // return response()->json(Pembeli::all(), 200);
+        $pembelis = Pembeli::all();
+
+        $user = User::where('role', 'Pembeli')->get();
+        if ($user->isEmpty()) {
+            return response([
+                'message' => 'Data pembeli kosong',
+                'data' => []
+            ], 404);
+        }
+        if ($pembelis->isEmpty()) {
+            return response([
+                'message' => 'Data pembeli kosong',
+                'data' => []
+            ], 404);
+        }
+        return response([
+            'message' => 'Berhasil mengambil data pembeli',
+            'data' => $pembelis
+        ], 200);
     }
 
     // Endpoint kalau tidak terautentikasi

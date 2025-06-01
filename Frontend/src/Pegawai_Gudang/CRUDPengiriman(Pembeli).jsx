@@ -1,105 +1,105 @@
 import React, { useEffect, useState } from "react";
-// import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "sonner";
 import Select from "react-select";
 import jsPDF from "jspdf";
 import { Link } from "react-router-dom";
 import {
-  CreatePengambilan,
-  GetPengambilan,
-  UpdatePengambilan,
-  DeletePengambilan,
-  GetPengambilanById
-} from "../Api/ApiPengambilan"
-import {
-    GetAllBarang,
-} from "../Api/apiBarang";
+    CreatePengambilan,
+    GetPengambilan,
+    UpdatePengambilan,
+    DeletePengambilan,
+    GetPengambilanById,
+    GetPengambilanByNama
+} from "../Api/apiPengambilan"
+
 import { GetAllKategori } from "../Api/apiKategori";
 import { GetAllPenitip } from "../Api/apiPenitip";
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-const CRUDBarangTitipan = () => {
-    const [barangList, setBarangList] = useState([]);
-    const [transaksiPenjualanList, setTransaksiPenjualanList] = useState([]);
+const CRUDPengirimanPembeli = () => {
+    const [pengambilanList, setPengambilanList] = useState([]);
+    const [filteredPengambilanList, setFilteredPengambilanList] = useState([]);
     const [selectedTransaksi, setSelectedTransaksi] = useState(null);
 
     const [kategoriList, setKategoriList] = useState([]);
     const [penitipList, setPenitipList] = useState([]);
 
     const [isEdit, setIsEdit] = useState(false);
-
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredBarangList, setFilteredBarangList] = useState([]);
-    const [selectedBarang, setSelectedBarang] = useState(null);
-
-    const handleShowDetail = (barang) => {
-        setSelectedBarang(barang);
-        const modal = new window.bootstrap.Modal(document.getElementById('detailModal'));
-        modal.show();
-    };
-
 
     const [form, setForm] = useState({
         id: '',
-        id_penitip: '',
-        id_kategori: '',
-        tgl_penitipan: '',
-        nama_barang: '',
-        harga_barang: '',
-        berat_barang: '',
-        deskripsi: '',
-        status_garansi: '',
-        status_barang: '',
-        gambar: '',
-        gambar_dua: ''
-    })
+        id_pembeli: '',
+        total_harga_pembelian: '',
+        metode_pengiriman: '',
+        alamat_pengiriman: '',
+        ongkir: '',
+        bukti_pembayaran: '',
+        status_pengiriman: '',
+        id_pegawai: '',
+        status_pembelian: '',
+        verifikasi_pembayaran: ''
+    });
 
-    const fetchBarang = async () => {
+    const fetchPengambilan = async () => {
         try {
-            const data = await GetAllBarang();
-            setBarangList(data);
-            setFilteredBarangList(data); // Awalnya tampilkan semua
+            const data = await GetPengambilan();
+            setPengambilanList(data);
+            setFilteredPengambilanList(data);
         } catch (error) {
-            toast.error("Gagal mengambil data barang");
+            console.error("Error fetching pengambilan data:", error);
+            toast.error("Gagal mengambil data pengambilan. Pastikan Anda sudah login.");
         }
     };
 
-    const handleSearch = () => {
-        const filtered = barangList.filter(b =>
-            b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.penitip?.nama_penitip?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.kategori_barang?.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.status_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.tgl_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredBarangList(filtered);
+    const handleSearch = async () => {
+      const search = searchTerm.toLowerCase()
+
+      const filteredData = pengambilanList.filter((p) => {
+          return (
+              p.pembeli.nama_pembeli.toLowerCase().includes(search) ||
+              p.total_harga_pembelian.toString().includes(search) ||
+              p.metode_pengiriman.toLowerCase().includes(search) ||
+              p.alamat_pengiriman.toLowerCase().includes(search) ||
+              p.ongkir.toString().includes(search) ||
+              p.status_pengiriman.toLowerCase().includes(search) ||
+              p.status_pembelian.toLowerCase().includes(search) ||
+              p.verifikasi_pembayaran.toLowerCase().includes(search) ||
+              p.id.toString().includes(search)
+          );
+      });
+      setFilteredPengambilanList(filteredData);
     };
 
     const fetchKategori = async () => {
         try {
-            const data = await GetAllKategori();
+            // const data = await GetAllKategori();
+            const data = []; // Dummy data
             setKategoriList(data);
         }
         catch (error) {
-            toast.error('Gagal mengambil data kategori')
+            console.error('Error fetching kategori data:', error);
+            toast.error('Gagal mengambil data kategori');
         }
     }
 
     const fetchPenitip = async () => {
         try {
-            const data = await GetAllPenitip();
+            // const data = await GetAllPenitip();
+            const data = []; // Dummy data
             setPenitipList(data);
         }
         catch (error) {
+            console.error('Error fetching penitip data:', error);
             toast.error('Gagal mengambil data penitip');
         }
     }
 
     useEffect(() => {
-        fetchBarang();
+        fetchPengambilan();
         fetchKategori();
         fetchPenitip();
     }, []);
@@ -115,341 +115,305 @@ const CRUDBarangTitipan = () => {
     const resetForm = () => {
         setForm({
             id: '',
-            id_penitip: '',
-            id_kategori: '',
-            tgl_penitipan: '',
-            nama_barang: '',
-            harga_barang: '',
-            berat_barang: '',
-            deskripsi: '',
-            status_garansi: '',
-            status_barang: '',
-            gambar: '',
-            gambar_dua: ''
+            id_pembeli: '',
+            total_harga_pembelian: '',
+            metode_pengiriman: '',
+            alamat_pengiriman: '',
+            ongkir: '',
+            bukti_pembayaran: '',
+            status_pengiriman: '',
+            id_pegawai: '',
+            status_pembelian: '',
+            verifikasi_pembayaran: ''
         });
         setIsEdit(false);
     }
 
+    const handleShowDetail = (transaksi) => {
+        setSelectedTransaksi(transaksi);
+        const modal = new window.bootstrap.Modal(document.getElementById('detailModal'));
+        modal.show();
+    };
+
     const handleDownloadNota = (orderData) => {
-    const doc = new jsPDF();
+        const doc = new jsPDF();
 
-    // Set font for the entire document if needed, or per text call
-    doc.setFont("times", "normal"); // Default font
+        doc.setFont("times", "normal");
 
-    let y = 15; // Starting Y position
+        let y = 15;
 
-    // ReUse Mart Header
-    doc.setFontSize(14);
-    doc.setFont("times", "bold");
-    doc.text("ReUse Mart", 10, y);
-    y += 5;
-    doc.setFontSize(10);
-    doc.setFont("times", "normal");
-    doc.text("Jl. Green Eco Park No. 456 Yogyakarta", 10, y);
-    y += 10;
-
-    // Nota Info (aligning content as seen in the image)
-    doc.setFontSize(10);
-    doc.text(`No Nota           : ${orderData.nomor_nota || '24.02.101'}`, 10, y);
-    y += 5;
-    doc.text(`Tanggal pesan     : ${orderData.tanggal_pesan || '15/2/2025'} ${orderData.jam_pesan || '18:50'}`, 10, y);
-    y += 5;
-    doc.text(`Lunas pada        : ${orderData.tanggal_lunas || '15/2/2024'} ${orderData.jam_lunas || '19:01'}`, 10, y);
-    y += 5;
-    doc.text(`Tanggal ambil     : ${orderData.tanggal_ambil || '16/2/2024'}`, 10, y);
-    y += 10;
-
-    // Pembeli Info
-    doc.setFontSize(10);
-    doc.setFont("times", "bold");
-    doc.text(`Pembeli : ${orderData.pembeli.email || 'cath123@gmail.com'} / ${orderData.pembeli.nama || 'Catherine'}`, 10, y);
-    y += 5;
-    doc.setFont("times", "normal");
-    doc.text(`${orderData.pembeli.alamat || 'Perumahan Griya Persada XII/20'}`, 10, y);
-    y += 5;
-    doc.text(`${orderData.pembeli.kota || 'Caturtunggal, Depok, Sleman'}`, 10, y);
-    y += 5;
-    doc.text(`Delivery: - (${orderData.delivery_method || 'diambil sendiri'})`, 10, y);
-    y += 10;
-
-    // Items List
-    doc.setFontSize(10);
-    orderData.items.forEach(item => {
-        doc.text(`${item.nama_barang}`, 10, y);
-        doc.text(`${item.harga?.toLocaleString('id-ID')}`, 100, y, { align: 'right' }); // Align price to the right
+        doc.setFontSize(14);
+        doc.setFont("times", "bold");
+        doc.text("ReUse Mart", 10, y);
         y += 5;
-    });
-    y += 5; // Extra spacing after items
+        doc.setFontSize(10);
+        doc.setFont("times", "normal");
+        doc.text("Jl. Green Eco Park No. 456 Yogyakarta", 10, y);
+        y += 10;
 
-    // Summary
-    doc.line(10, y, 10 + 100, y); // Line separator for total
-    y += 5;
-    doc.setFont("times", "normal");
-    doc.text(`Total`, 10, y);
-    doc.text(`${orderData.total_items_price?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
-    y += 5;
-    doc.text(`Ongkos Kirim`, 10, y);
-    doc.text(`${orderData.ongkos_kirim?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
-    y += 5;
-    doc.setFont("times", "bold"); // Total is bold
-    doc.text(`Total`, 10, y);
-    doc.text(`${orderData.total_before_discount?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
-    y += 5;
-    doc.setFont("times", "normal");
-    doc.text(`Potongan ${orderData.potongan_poin_value} poin`, 10, y);
-    doc.text(`- ${orderData.potongan_poin_amount?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
-    y += 5;
-    doc.setFontSize(12); // Final total slightly larger
-    doc.setFont("times", "bold");
-    doc.text(`Total`, 10, y);
-    doc.text(`${orderData.final_total?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
-    y += 10;
+        // Generate nomor_nota based on the new rule
+        const orderDate = new Date(orderData.created_at); // Assuming created_at exists and is a valid date string/object
+        const year = orderDate.getFullYear().toString().slice(-2); // Get last two digits of the year
+        const month = (orderDate.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+        const sequentialNumber = orderData.id; 
+        const nomorNota = `${year}.${month}.${sequentialNumber}`;
 
-    // Points Info
-    doc.setFontSize(10);
-    doc.setFont("times", "normal");
-    doc.text(`Poin dari pesanan ini: ${orderData.poin_didapat}`, 10, y);
-    y += 5;
-    doc.text(`Total poin customer: ${orderData.total_poin_customer}`, 10, y);
-    y += 10;
 
-    // Signatures
-    doc.text(`QC oleh: ${orderData.qc_oleh || 'Farida (P18)'}`, 10, y);
-    y += 10; // Space for signature
-    doc.text(`Diambil oleh:`, 10, y);
-    y += 15; // Space for signature
+        doc.setFontSize(10);
+        doc.text(`No Nota           : ${nomorNota || 'N/A'}`, 10, y);
+        y += 5;
+        doc.text(`Tanggal pesan     : ${orderData.tanggal_pesan || 'N/A'} ${orderData.jam_pesan || ''}`, 10, y);
+        y += 5;
+        doc.text(`Lunas pada        : ${orderData.tanggal_lunas || 'N/A'} ${orderData.jam_lunas || ''}`, 10, y);
+        y += 5;
+        doc.text(`Tanggal ambil     : ${orderData.metode_pengiriman === 'diambil' ? new Date().toLocaleDateString('id-ID') : 'Akan diatur'}`, 10, y);
+        y += 10;
 
-    doc.text(`(...................................)`, 10, y);
-    y += 5;
-    doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 10, y);
+        doc.setFontSize(10);
+        doc.setFont("times", "bold");
+        doc.text(`Pembeli : ${orderData.pembeli.email || 'N/A'} / ${orderData.pembeli.nama_pembeli || 'N/A'}`, 10, y);
+        y += 5;
+        doc.setFont("times", "normal");
+        doc.text(`${orderData.alamat_pengiriman || 'N/A'}`, 10, y);
+        y += 5;
+        const cityMatch = orderData.alamat_pengiriman.match(/([^,]+)$/);
+        const city = cityMatch ? cityMatch[1].trim() : 'N/A';
+        doc.text(`${city}`, 10, y);
+        y += 5;
+        doc.text(`Delivery: - (${orderData.metode_pengiriman || 'N/A'})`, 10, y);
+        y += 10;
 
-    // No outer rectangle in the new image, so removed doc.rect.
+        doc.setFontSize(10);
+        orderData.detail.forEach(item => { 
+            doc.text(`${item.barang.nama_barang}`, 10, y);
+            doc.text(`${item.harga_saat_transaksi?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
+            y += 5;
+        });
+        y += 5;
 
-    doc.save(`Nota_Penjualan_${orderData.nomor_nota || '24.02.101'}.pdf`);
-};
+        doc.line(10, y, 10 + 100, y);
+        y += 5;
+        doc.setFont("times", "normal");
+        doc.text(`Total Harga Barang`, 10, y);
+        doc.text(`${orderData.detail.reduce((sum, d) => sum + d.harga_saat_transaksi, 0).toLocaleString('id-ID')}`, 100, y, { align: 'right' });
+        y += 5;
+        doc.text(`Ongkos Kirim`, 10, y);
+        doc.text(`${orderData.ongkir?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
+        y += 5;
+        doc.setFont("times", "bold");
+        doc.text(`Total Pembelian`, 10, y);
+        doc.text(`${(orderData.total_harga_pembelian + orderData.ongkir)?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
+        y += 5;
+        doc.setFont("times", "normal");
+        doc.text(`Potongan 0 poin`, 10, y); 
+        doc.text(`- ${0?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
+        y += 5;
+        doc.setFontSize(12);
+        doc.setFont("times", "bold");
+        doc.text(`Total Akhir`, 10, y);
+        doc.text(`${(orderData.total_harga_pembelian + orderData.ongkir)?.toLocaleString('id-ID')}`, 100, y, { align: 'right' });
+        y += 10;
 
-// --- Dummy Data Example (to simulate what you would pass to the function) ---
-// You would replace this with actual order data from your API or state
-const dummyOrderData = {
-    nomor_nota: '24.02.101',
-    tanggal_pesan: '15/2/2025',
-    jam_pesan: '18:50',
-    tanggal_lunas: '15/2/2024', // Note the year discrepancy in image, kept as is
-    jam_lunas: '19:01',
-    tanggal_ambil: '16/2/2024',
-    pembeli: {
-        email: 'cath123@gmail.com',
-        nama: 'Catherine',
-        alamat: 'Perumahan Griya Persada XII/20',
-        kota: 'Caturtunggal, Depok, Sleman',
-    },
-    delivery_method: 'diambil sendiri',
-    items: [
-        { nama_barang: 'Kompor tanam 3 tungku', harga: 2000000 },
-        { nama_barang: 'Hair Dryer Ion', harga: 500000 },
-    ],
-    total_items_price: 2500000,
-    ongkos_kirim: 0,
-    total_before_discount: 2500000,
-    potongan_poin_value: 200,
-    potongan_poin_amount: 20000,
-    final_total: 2480000,
-    poin_didapat: 297,
-    total_poin_customer: 300,
-    qc_oleh: 'Farida (P18)',
-    // 'diambil_oleh' is typically filled manually, so left blank
-};
+        doc.setFontSize(10);
+        doc.setFont("times", "normal");
+        const poinDidapat = Math.floor((orderData.total_harga_pembelian + orderData.ongkir) / 10000);
+        doc.text(`Poin dari pesanan ini: ${poinDidapat}`, 10, y);
+        y += 5;
+        doc.text(`Total poin customer: ${orderData.pembeli.point || 0}`, 10, y);
+        y += 10;
 
+        doc.text(`QC oleh: Pegawai ID ${orderData.id_pegawai || 'N/A'}`, 10, y);
+        y += 10;
+        doc.text(`Diambil oleh:`, 10, y);
+        y += 15;
+
+        doc.text(`(...................................)`, 10, y);
+        y += 5;
+        doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 10, y);
+
+        doc.save(`Nota_Pengambilan_${nomorNota}.pdf`);
+    };
 
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
-    {/* Header: Judul & Tombol Tambah */}
-    <div className="d-flex justify-content-between align-items-center mb-4">
-      <h2 className="mb-0">Data Pengiriman Pembeli</h2>
-      <button
-        className="btn btn-success"
-        onClick={() => {
-          resetForm();
-          const modal = new window.bootstrap.Modal(document.getElementById("formModal"));
-          modal.show();
-        }}
-      >
-        Tambah Data
-      </button>
-    </div>
-
-    {/* Navigasi Penitip & Pembeli + Pencarian */}
-    <div className="row mb-4">
-      <div className="col-md-6 d-flex gap-2">
-        <Link to="/gudang/pengiriman/penitip" className="btn btn-outline-primary">
-          Halaman Penitip
-        </Link>
-        <Link to="/gudang/pengiriman/pembeli" className="btn btn-outline-secondary">
-          Halaman Pembeli
-        </Link>
-      </div>
-      <div className="col-md-6">
-        <form
-          className="d-flex"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSearch();
-          }}
-        >
-          <input
-            type="search"
-            name="cari"
-            className="form-control me-2"
-            placeholder="Cari barang..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button className="btn btn-outline-primary" type="submit">
-            Cari
-          </button>
-        </form>
-      </div>
-    </div>
-
-    {/* Tabel Barang */}
-    <table className="table table-bordered table-hover">
-      <thead className="table-light">
-        <tr>
-          <th>No</th>
-          <th>Nama Penitip</th>
-          <th>Kategori Barang</th>
-          <th>Tanggal Penitipan</th>
-          <th>Masa Penitipan</th>
-          <th>Nama Barang</th>
-          <th>Harga Barang</th>
-          <th>Deskripsi</th>
-          <th>Status Barang</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        {filteredBarangList.length > 0 ? (
-          filteredBarangList.map((b, index) => (
-            <tr key={b.id}>
-              <td>{index + 1}</td>
-              <td>{b.penitip.nama_penitip}</td>
-              <td>{b.kategori_barang.nama_kategori || "Kategori tidak ditemukan"}</td>
-              <td>{b.tgl_penitipan}</td>
-              <td>{b.masa_penitipan}</td>
-              <td>{b.nama_barang}</td>
-              <td>{b.harga_barang}</td>
-              <td>{b.deskripsi}</td>
-              <td>{b.status_barang}</td>
-              <td>
-                <div className="d-flex flex-column">
-                  <button className="btn btn-sm btn-primary mb-1" onClick={() => handleShowDetail(b)}>
-                    Detail
-                  </button>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2 className="mb-0">Data Pengiriman Pembeli</h2>
                 <button
-  className="btn btn-sm btn-success"
-  onClick={() => {
-      const orderData = {
-        nomor_nota: `INV-${b.id}`,
-        tanggal_pesan: b.tgl_penitipan,
-        jam_pesan: '09:00',
-        tanggal_lunas: b.tgl_penitipan,
-        jam_lunas: '10:00',
-        tanggal_ambil: b.tgl_penitipan,
-        pembeli: {
-            email: 'unknown@email.com',
-            nama: b.penitip.nama_penitip,
-            alamat: 'Alamat belum tersedia',
-            kota: 'Kota belum tersedia',
-        },
-        delivery_method: 'diambil sendiri',
-        items: [
-            {
-                nama_barang: b.nama_barang,
-                harga: parseInt(b.harga_barang),
-            },
-        ],
-        total_items_price: parseInt(b.harga_barang),
-        ongkos_kirim: 0,
-        total_before_discount: parseInt(b.harga_barang),
-        potongan_poin_value: 0,
-        potongan_poin_amount: 0,
-        final_total: parseInt(b.harga_barang),
-        poin_didapat: Math.floor(parseInt(b.harga_barang) / 10000),
-        total_poin_customer: 0,
-        qc_oleh: 'Farida (P18)',
-      };
-      handleDownloadNota(orderData);
-  }}
->
-  Unduh Nota Item
-</button>
+                    className="btn btn-success"
+                    onClick={() => {
+                        resetForm();
+                        toast.info("Fitur tambah data belum diimplementasikan untuk Pengambilan.");
+                    }}
+                >
+                    Tambah Data
+                </button>
+            </div>
 
+            <div className="row mb-4">
+                <div className="col-md-6 d-flex gap-2">
+                    <Link to="/gudang/pengiriman/penitip" className="btn btn-outline-primary">
+                        Halaman Penitip
+                    </Link>
+                    <Link to="/gudang/pengiriman/pembeli" className="btn btn-outline-secondary">
+                        Halaman Pembeli
+                    </Link>
                 </div>
-              </td>
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan="10" className="text-center fs-5">
-              Belum ada data barang
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
+                <div className="col-md-6">
+                    <form
+                        className="d-flex"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSearch();
+                        }}
+                    >
+                        <input
+                            type="search"
+                            name="cari"
+                            className="form-control me-2"
+                            placeholder="Cari transaksi..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button className="btn btn-outline-primary" type="submit">
+                            Cari
+                        </button>
+                    </form>
+                </div>
+            </div>
 
+            <table className="table table-bordered table-hover">
+                <thead className="table-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Pembeli</th>
+                        <th>Total Harga Pembelian</th>
+                        <th>Metode Pengiriman</th>
+                        <th>Alamat Pengiriman</th>
+                        <th>Ongkir</th>
+                        <th>Status Pengiriman</th>
+                        <th>Status Pembelian</th>
+                        <th>Verifikasi Pembayaran</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredPengambilanList.length > 0 ? (
+                        filteredPengambilanList.map((item, index) => (
+                            <tr key={item.id}>
+                                <td>{index + 1}</td>
+                                <td>{item.pembeli.nama_pembeli}</td>
+                                <td>{item.total_harga_pembelian.toLocaleString('id-ID')}</td>
+                                <td>{item.metode_pengiriman}</td>
+                                <td>{item.alamat_pengiriman}</td>
+                                <td>{item.ongkir.toLocaleString('id-ID')}</td>
+                                <td>{item.status_pengiriman}</td>
+                                <td>{item.status_pembelian}</td>
+                                <td>{item.verifikasi_pembayaran}</td>
+                                <td>
+                                    <div className="d-flex flex-column">
+                                        <button className="btn btn-sm btn-primary mb-1" onClick={() => handleShowDetail(item)}>
+                                            Detail
+                                        </button>
+                                        
+                                        <button
+                                            className="btn btn-sm btn-success"
+                                            onClick={() => {
+                                                handleDownloadNota(item);
+                                            }}
+                                        >
+                                            Unduh Nota
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="10" className="text-center fs-5">
+                                Belum ada data pengambilan
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
 
-            {/* Modal untuk detail barang */}
+            {/* Modal for transaction details */}
             <div className="modal fade" id="detailModal" tabIndex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="detailModalLabel">Detail Barang</h5>
+                            <h5 className="modal-title" id="detailModalLabel">Detail Transaksi Pengambilan</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            {selectedBarang && (
+                            {selectedTransaksi && (
                                 <div className="row">
                                     <div className="col-md-6">
-                                        <div id="carouselGambar" className="carousel slide" data-bs-ride="carousel">
-                                            <div className="carousel-inner">
-                                                <div className="carousel-item active">
-                                                    <img
-                                                        src={`http://localhost:8000/${selectedBarang.gambar}`}
-                                                        className="d-block w-100 rounded"
-                                                        alt="Gambar 1"
-                                                        style={{ maxHeight: "300px", objectFit: "contain" }}
-                                                    />
-                                                </div>
-                                                {selectedBarang.gambar_dua && (
-                                                    <div className="carousel-item">
-                                                        <img
-                                                            src={`http://localhost:8000/${selectedBarang.gambar_dua}`}
-                                                            className="d-block w-100 rounded"
-                                                            alt="Gambar 2"
-                                                            style={{ maxHeight: "300px", objectFit: "contain" }}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <button className="carousel-control-prev" type="button" data-bs-target="#carouselGambar" data-bs-slide="prev">
-                                                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                <span className="visually-hidden">Previous</span>
-                                            </button>
-                                            <button className="carousel-control-next" type="button" data-bs-target="#carouselGambar" data-bs-slide="next">
-                                                <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                                                <span className="visually-hidden">Next</span>
-                                            </button>
-                                        </div>
+                                        <h6>Informasi Pembelian:</h6>
+                                        <p><strong>ID Transaksi:</strong> {selectedTransaksi.id}</p>
+                                        <p><strong>Nama Pembeli:</strong> {selectedTransaksi.pembeli.nama_pembeli}</p>
+                                        <p><strong>Email Pembeli:</strong> {selectedTransaksi.pembeli.email}</p>
+                                        <p><strong>Total Harga Pembelian:</strong> {selectedTransaksi.total_harga_pembelian.toLocaleString('id-ID')}</p>
+                                        <p><strong>Metode Pengiriman:</strong> {selectedTransaksi.metode_pengiriman}</p>
+                                        <p><strong>Alamat Pengiriman:</strong> {selectedTransaksi.alamat_pengiriman}</p>
+                                        <p><strong>Ongkir:</strong> {selectedTransaksi.ongkir.toLocaleString('id-ID')}</p>
+                                        <p><strong>Status Pengiriman:</strong> {selectedTransaksi.status_pengiriman}</p>
+                                        <p><strong>Status Pembelian:</strong> {selectedTransaksi.status_pembelian}</p>
+                                        <p><strong>Verifikasi Pembayaran:</strong> {selectedTransaksi.verifikasi_pembayaran}</p>
+                                        <p><strong>Tanggal Transaksi:</strong> {new Date(selectedTransaksi.created_at).toLocaleString('id-ID')}</p>
                                     </div>
-
                                     <div className="col-md-6">
-                                        <h5>{selectedBarang.nama_barang}</h5>
-                                        {/* <p><strong>Status Barang:</strong> {selectedBarang.status_barang}</p> */}
-                                        <p><strong>Status Garansi:</strong> {selectedBarang.status_garansi}</p>
-                                        <p><strong>Penitip:</strong> {selectedBarang.penitip.nama_penitip}</p>
-                                        <p><strong>Kategori:</strong> {selectedBarang.kategori_barang.nama_kategori}</p>
-                                        <p><strong>Berat Barang:</strong> {selectedBarang.berat_barang} kg</p>
+                                        <h6>Detail Barang:</h6>
+                                        {selectedTransaksi.detail.length > 0 ? (
+                                            selectedTransaksi.detail.map((detailItem, idx) => (
+                                                <div key={idx} className="mb-3 p-2 border rounded">
+                                                    <p><strong>Nama Barang:</strong> {detailItem.barang.nama_barang}</p>
+                                                    <p><strong>Harga Saat Transaksi:</strong> {detailItem.harga_saat_transaksi.toLocaleString('id-ID')}</p>
+                                                    <p><strong>Deskripsi:</strong> {detailItem.barang.deskripsi}</p>
+                                                    <p><strong>Status Barang:</strong> {detailItem.barang.status_barang}</p>
+
+                                                    {/* Carousel for images within each detail item */}
+                                                    <div id={`carouselGambar-${detailItem.id}`} className="carousel slide" data-bs-ride="carousel">
+                                                        <div className="carousel-inner">
+                                                            {detailItem.barang.gambar && (
+                                                                <div className="carousel-item active">
+                                                                    <img
+                                                                        src={`http://localhost:8000/${detailItem.barang.gambar}`}
+                                                                        className="d-block w-100 rounded"
+                                                                        alt="Gambar 1"
+                                                                        style={{ maxHeight: "300px", objectFit: "contain" }}
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                            {detailItem.barang.gambar_dua && (
+                                                                <div className="carousel-item">
+                                                                    <img
+                                                                        src={`http://localhost:8000/${detailItem.barang.gambar_dua}`}
+                                                                        className="d-block w-100 rounded"
+                                                                        alt="Gambar 2"
+                                                                        style={{ maxHeight: "300px", objectFit: "contain" }}
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {(detailItem.barang.gambar && detailItem.barang.gambar_dua) && ( 
+                                                            <>
+                                                                <button className="carousel-control-prev" type="button" data-bs-target={`#carouselGambar-${detailItem.id}`} data-bs-slide="prev">
+                                                                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                                    <span className="visually-hidden">Previous</span>
+                                                                </button>
+                                                                <button className="carousel-control-next" type="button" data-bs-target={`#carouselGambar-${detailItem.id}`} data-bs-slide="next">
+                                                                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                                                    <span className="visually-hidden">Next</span>
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>Tidak ada detail barang untuk transaksi ini.</p>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -461,4 +425,4 @@ const dummyOrderData = {
     );
 };
 
-export default CRUDBarangTitipan;
+export default CRUDPengirimanPembeli;
