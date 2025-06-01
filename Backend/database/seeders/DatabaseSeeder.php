@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             CartSeeder ::class,
             Transaksi_PenjualanSeeder::class,
             Detail_transaksi_penjualanSeeder ::class,
+            TransaksiPengirimanSeeder::class,
         ]);
     }
 }
