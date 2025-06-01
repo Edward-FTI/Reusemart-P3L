@@ -16,6 +16,7 @@ import AmbilBarang from "../Components/AmbilBarang";
 import NavbarCustomer_Service from "../navbar/NavbarCustomer_Service";
 import CRUDPenitip from "../Customer_Service/CRUDPenitip";
 import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
+import VerifikasiPembayaran from "../Customer_Service/VerifikasiPembayaran";
 
 // ADMIN
 import Admin from "../Admin/Admin";
@@ -48,7 +49,7 @@ import Layout from "../navbar/layout";
 
 // OWNER
 import Owner from "../Owner/Owner";
-import PenjualanBulanan from "../Owner/PenjualanBulanan"
+import PenjualanBulanan from "../Owner/PenjualanBulanan";
 import KomisiBulanan from "../Owner/KomisiBulanan";
 import StokGudang from "../Owner/StokGudang";
 
@@ -64,7 +65,7 @@ import CRUDPegawai from "../admin/CRUDPegawai";
 // import OrderPage from "../pembeli/CheckOut";
 import OrderForm from "../pembeli/CheckOut";
 import TransaksiPembeli from "../pembeli/TransaksiPembeli";
-
+import TransaksiCS from "../Customer_Service/VerifikasiPembayaran";
 
 const router = createBrowserRouter([
   {
@@ -157,6 +158,15 @@ const router = createBrowserRouter([
       <div>
         <NavbarCustomer_Service />
         <CRUDPenitip />
+      </div>
+    ),
+  },
+  {
+    path: "/customer-service/verifikasi",
+    element: (
+      <div>
+        <NavbarCustomer_Service />
+        <TransaksiCS />
       </div>
     ),
   },

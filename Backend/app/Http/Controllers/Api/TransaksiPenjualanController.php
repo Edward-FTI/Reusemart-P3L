@@ -230,4 +230,30 @@ class TransaksiPenjualanController extends Controller
             ], 500);
         }
     }
+
+    public function verifikasiPembayaran($id)
+    {
+        try {
+            $transaksi = TransaksiPenjualan::find($id);
+
+            if (!$transaksi) {
+                return response()->json([
+                    'message' => 'Transaksi tidak ditemukan'
+                ], 404);
+            }
+
+            $transaksi->verifikasi_pembayaran = true;
+            $transaksi->save();
+
+            return response()->json([
+                'message' => 'Pembayaran berhasil diverifikasi',
+                'data' => $transaksi
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal memverifikasi pembayaran',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

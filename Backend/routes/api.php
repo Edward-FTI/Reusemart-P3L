@@ -130,6 +130,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/transaksi-penjualan', [TransaksiPenjualanController::class, 'store']);
     Route::get('/transaksi-penjualanA', [TransaksiPenjualanController::class, 'indexAdmin']);
     Route::get('/transaksi-penjualanP', [TransaksiPenjualanController::class, 'indexPembeli']);
+    Route::put('/verifikasi/{id}', [TransaksiPenjualanController::class, 'verifikasiPembayaran']);
     // Route::get('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'show']);
     // Route::put('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'update']);
     // Route::delete('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'destroy']);
