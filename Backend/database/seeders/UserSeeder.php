@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB; // Pastikan ini diimpor jika menggunakan DB::table
 
 class UserSeeder extends Seeder
 {
@@ -51,18 +51,6 @@ class UserSeeder extends Seeder
                 'password' => 'penitip123',
             ],
             [
-                'name' => 'Andi Sutrisno',
-                'email' => 'andi.sutrisno@example.com',
-                'role' => 'Penitip',
-                'password' => 'password123',
-            ],
-            [
-                'name' => 'Penitip1',
-                'email' => 'penitip1@example.com',
-                'role' => 'Penitip',
-                'password' => 'password123',
-            ],
-            [
                 'name' => 'Pembeli User',
                 'email' => 'pembeli@example.com',
                 'role' => 'Pembeli',
@@ -98,10 +86,11 @@ class UserSeeder extends Seeder
                 'role' => 'Pembeli',
                 'password' => 'user123',
             ],
+            // Data pegawai gudang yang juga bisa jadi user
             [
-                'name' => 'Citra Wijay',
+                'name' => 'Citra Wijay', // Ini seharusnya Citra Wijaya dari penitip atau ada kesalahpenulisan?
                 'email' => 'citra.wijaya@example.com',
-                'role' => 'Pegawai Gudang',
+                'role' => 'Pegawai Gudang', // Jika Citra Wijaya juga Pegawai Gudang
                 'password' => 'password123',
             ],
             [
@@ -119,32 +108,33 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            User::create([
-                'name' => $user['name'],
-                'email' => $user['email'],
-                'role' => $user['role'],
-                'password' => Hash::make($user['password']),
-                'email_verified_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            User::firstOrCreate(
+                ['email' => $user['email']],
+                [
+                    'name' => $user['name'],
+                    'role' => $user['role'],
+                    'password' => Hash::make($user['password']),
+                    'email_verified_at' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
         }
 
         // Tambahkan user dari tabel organisasis
         $organisasiList = DB::table('organisasis')->get();
         foreach ($organisasiList as $org) {
-            $exists = User::where('email', $org->email)->exists();
-            if (!$exists) {
-                User::create([
+            User::firstOrCreate(
+                ['email' => $org->email],
+                [
                     'name' => $org->nama,
-                    'email' => $org->email,
                     'role' => 'Organisasi',
-                    'password' => Hash::make('password123'),
+                    'password' => Hash::make('password123'), // Asumsi password default
                     'email_verified_at' => now(),
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]);
-            }
+                ]
+            );
         }
 
         // Tambahkan user dari data pembeli manual
@@ -168,6 +158,62 @@ class UserSeeder extends Seeder
                     'name' => $pembeli['nama_pembeli'],
                     'role' => 'Pembeli',
                     'password' => Hash::make($pembeli['password']),
+                    'email_verified_at' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+        }
+
+        // Tambahkan user dari PenitipSeeder
+        $penitips = [
+            [
+                'nama_penitip' => 'Andi Sutrisno',
+                'email'         => 'andi.sutrisno@example.com',
+            ],
+            [
+                'nama_penitip' => 'Penitip1',
+                'email'         => 'penitip1@example.com',
+            ],
+            [
+                'nama_penitip' => 'Dina Pratama',
+                'email'         => 'dina.pratama@example.com',
+            ],
+            [
+                'nama_penitip' => 'Eko Susanto',
+                'email'         => 'eko.susanto@example.com',
+            ],
+            [
+                'nama_penitip' => 'Fani Lestari',
+                'email'         => 'fani.lestari@example.com',
+            ],
+            [
+                'nama_penitip' => 'Gina Hidayati',
+                'email'         => 'gina.hidayati@example.com',
+            ],
+            [
+                'nama_penitip' => 'Hendra Prabowo',
+                'email'         => 'hendra.prabowo@example.com',
+            ],
+            [
+                'nama_penitip' => 'Irma Widya',
+                'email'         => 'irma.widya@example.com',
+            ],
+            [
+                'nama_penitip' => 'Joko Riyadi',
+                'email'         => 'joko.riyadi@example.com',
+            ],
+        ];
+
+        foreach ($penitips as $penitip) {
+            // Menggunakan firstOrCreate untuk menghindari duplikasi jika seeder dijalankan berkali-kali
+            // Jika email sudah ada, tidak akan membuat user baru
+            User::firstOrCreate(
+                ['email' => $penitip['email']],
+                [
+                    'name' => $penitip['nama_penitip'],
+                    'role' => 'Penitip', // Menetapkan peran 'Penitip'
+                    'password' => Hash::make('password123'), // Menggunakan password default 'password123'
                     'email_verified_at' => now(),
                     'created_at' => now(),
                     'updated_at' => now(),

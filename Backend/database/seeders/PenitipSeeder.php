@@ -17,7 +17,6 @@ class PenitipSeeder extends Seeder
             [
                 'nama_penitip' => 'Andi Sutrisno',
                 'no_ktp'       => '7304010101010001',
-
                 'alamat'       => 'Jl. Merdeka No. 12, Makassar',
                 'gambar_ktp'   => 'ktp_andi.jpg',
                 'saldo'        => 2500000,
@@ -33,15 +32,15 @@ class PenitipSeeder extends Seeder
                 'point'        => 200,
                 'email'        => 'penitip1@example.com',
             ],
-            [
-                'nama_penitip' => 'Citra Wijaya',
-                'no_ktp'       => '7304010303030003',
-                'alamat'       => 'Jl. Veteran Selatan No. 8, Makassar',
-                'gambar_ktp'   => 'ktp_citra.jpg',
-                'saldo'        => 2750000,
-                'point'        => 180,
-                'email'        => 'citra.wijaya@example.com',
-            ],
+            // [
+            //     'nama_penitip' => 'Citra Wijaya',
+            //     'no_ktp'       => '7304010303030003',
+            //     'alamat'       => 'Jl. Veteran Selatan No. 8, Makassar',
+            //     'gambar_ktp'   => 'ktp_citra.jpg',
+            //     'saldo'        => 2750000,
+            //     'point'        => 180,
+            //     'email'        => 'citra.wijaya@example.com',
+            // ],
             [
                 'nama_penitip' => 'Dina Pratama',
                 'no_ktp'       => '7304010404040004',
