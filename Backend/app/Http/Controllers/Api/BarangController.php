@@ -26,6 +26,42 @@ class BarangController extends Controller
         return $pegawai->id;
     }
 
+    public function updateStatus(Request $request, string $id)
+    {
+        $barang = Barang::find($id);
+
+        if (!$barang) {
+            return response(['message' => 'Data barang tidak ditemukan', 'data' => null], 404);
+        }
+
+        // Optional: Add authorization check if needed
+        // $pegawaiId = $this->getPegawaiId();
+        // if ($barang->id_pegawai !== $pegawaiId) {
+        //     return response(['message' => 'Tidak diizinkan mengupdate status barang ini'], 403);
+        // }
+
+        // Validate only the 'status_barang' field
+        $request->validate([
+            'status_barang' => 'required|string',
+        ]);
+
+        $updateData = [
+            'status_barang' => $request->status_barang,
+        ];
+
+        // If the status is 'transaksi_selesai', set tgl_pengambilan to current date/time
+        if ($request->status_barang === 'transaksi_selesai') {
+            $updateData['tgl_pengambilan'] = Carbon::now();
+        }
+
+        $barang->update($updateData);
+
+        return response([
+            'message' => 'Status barang berhasil diperbarui',
+            'data' => $barang
+        ], 200);
+    }
+
 
     public function index()
     {
@@ -165,10 +201,11 @@ class BarangController extends Controller
         ], 400);
     }
 
-    public function updatePublic(Request $request, string $id)
+
+public function updatePublic(Request $request, string $id)
     {
         $barang = Barang::find($id);
-        if (is_null($barang)) {
+        if (!$barang) {
             return response(['message' => 'Data tidak ditemukan', 'data' => null], 404);
         }
 
@@ -192,14 +229,18 @@ class BarangController extends Controller
         $path_gambar2 = $barang->gambar_dua;
 
         if ($request->hasFile('gambar')) {
-            if (file_exists(public_path($path_gambar))) unlink(public_path($path_gambar));
+            if ($path_gambar && file_exists(public_path($path_gambar))) {
+                unlink(public_path($path_gambar));
+            }
             $imageName = time() . '_' . uniqid() . '.' . $request->file('gambar')->extension();
             $path_gambar = 'images/barang/' . $imageName;
             $request->file('gambar')->move(public_path('images/barang'), $imageName);
         }
 
         if ($request->hasFile('gambar_dua')) {
-            if (file_exists(public_path($path_gambar2))) unlink(public_path($path_gambar2));
+            if ($path_gambar2 && file_exists(public_path($path_gambar2))) {
+                unlink(public_path($path_gambar2));
+            }
             $imageName2 = time() . '_' . uniqid() . '.' . $request->file('gambar_dua')->extension();
             $path_gambar2 = 'images/barang/' . $imageName2;
             $request->file('gambar_dua')->move(public_path('images/barang'), $imageName2);
@@ -226,6 +267,7 @@ class BarangController extends Controller
             'data' => $barang
         ], 200);
     }
+ 
 
 
 

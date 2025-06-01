@@ -1,10 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/Hunter/hunter.dart';
+import 'package:mobile/Kurir/kurir.dart';
+import 'package:mobile/Pembeli/pembeli.dart';
+import 'package:mobile/Penitip/penitip.dart';
+import 'package:mobile/data/datasource/remote/auth_remote_datasource.dart';
 // import 'package:mobile_design/profile/profile_pembeli.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
-  LoginPage({super.key});
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  void _login(String email, String password) async {
+    // form validation
+    if (_formKey.currentState!.validate()) {
+      final result = await AuthRemoteDatasource().login(email, password);
+      if (result != null) {
+        String role = result.user!.role!;
+        // If login is successful, navigate to the profile page
+        if (role == 'Pembeli') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ProfilePembeliPage()),
+          );
+        } else if (role == 'Penitip') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ProfilePenitipPage()),
+          );
+        } else if (role == 'Hunter') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileHunterPage()),
+          );
+        } else if (role == 'Kurir') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileKurirPage()),
+          );
+        } else {
+          const snackBar = SnackBar(
+            content: Text('Role not recognized, please contact support.'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+        const snackBar = SnackBar(
+          content: Text('Login successful!'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        // If login fails, display a snackbar with an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login failed')),
+        );
+      }
+    } else {
+      // If the form is not valid, display a snackbar with an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +101,7 @@ class LoginPage extends StatelessWidget {
                       children: [
                         TextFormField(
                           decoration: const InputDecoration(
-                            hintText: 'Phone',
+                            hintText: 'Email',
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
@@ -40,8 +112,15 @@ class LoginPage extends StatelessWidget {
                                   BorderRadius.all(Radius.circular(50)),
                             ),
                           ),
-                          keyboardType: TextInputType.phone,
-                          onSaved: (phone) {
+                          controller: emailController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            // Add more validation if needed
+                            return null;
+                          },
+                          onSaved: (email) {
                             // Save it
                           },
                         ),
@@ -61,6 +140,14 @@ class LoginPage extends StatelessWidget {
                                     BorderRadius.all(Radius.circular(50)),
                               ),
                             ),
+                            controller: passwordController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your password';
+                              }
+                              // Add more validation if needed
+                              return null;
+                            },
                             onSaved: (passaword) {
                               // Save it
                             },
@@ -69,24 +156,18 @@ class LoginPage extends StatelessWidget {
                         SizedBox(height: 20),
 
                         // ini button untuk arahkan ke halaman setelah login
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     Navigator.of(context).pushReplacement(
-                        //       MaterialPageRoute(
-                        //         builder: (context) {
-                        //           return ProfileScreens(); // route ke profile
-                        //         },
-                        //       ),
-                        //     );
-                        //   },
-                        //   style: ElevatedButton.styleFrom(
-                        //     backgroundColor: const Color(0xFF00BF6D),
-                        //     foregroundColor: Colors.white,
-                        //     minimumSize: const Size(double.infinity, 48),
-                        //     // shape: const StadiumBorder(),
-                        //   ),
-                        //   child: const Text("Sign in"),
-                        // ),
+                        ElevatedButton(
+                          onPressed: () {
+                            _login(emailController.text, passwordController.text);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF00BF6D),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 48),
+                            // shape: const StadiumBorder(),
+                          ),
+                          child: const Text("Sign in"),
+                        ),
                       ],
                     ),
                   ),

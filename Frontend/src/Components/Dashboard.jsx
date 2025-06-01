@@ -159,19 +159,15 @@ const Dashboard = () => {
             </div>
 
             <div className="d-flex align-items-center">
-              
-                <>
-                  <button
-                    className="btn btn-outline-success me-2"
-                    onClick={handleMasukClick}
-                  >
-                    Masuk
-                  </button>
-                  <button className="btn btn-outline-success me-2">
-                    Daftar
-                  </button>
-                </>
-              
+              <>
+                <button
+                  className="btn btn-outline-success me-2"
+                  onClick={handleMasukClick}
+                >
+                  Masuk
+                </button>
+                <button className="btn btn-outline-success me-2">Daftar</button>
+              </>
 
               <button
                 className="btn btn-outline-success d-flex justify-content-center align-items-center position-relative"
@@ -187,7 +183,7 @@ const Dashboard = () => {
                 )}
               </button>
 
-              {/* {role === "Pembeli" && (
+              {role === "Pembeli" && (
                 <button
                   className="btn d-flex justify-content-center ms-2 p-0"
                   style={{ width: "40px", height: "40px" }}
@@ -199,7 +195,7 @@ const Dashboard = () => {
                     width="40"
                   />
                 </button>
-              )} */}
+              )}
             </div>
           </div>
         </div>

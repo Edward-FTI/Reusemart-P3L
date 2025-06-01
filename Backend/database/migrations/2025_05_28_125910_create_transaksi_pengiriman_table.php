@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('transaksi_pengiriman', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_barang');
+            $table->unsignedBigInteger('id_transaksi_penjualan');
             $table->unsignedBigInteger('id_pegawai');
             $table->dateTime('tgl_pengiriman');
-            $table->string('status_pengiriman')->default('Pending'); // Pending, Proses, Selesai
-            $table->string('alamat_pengiriman');
-            $table->decimal('biaya_pengiriman', 10, 2);
+            $table->string('status_pengiriman')->default('Proses'); // Pending, Proses, Selesai
+            $table->integer('biaya_pengiriman', 0, 100000);
             $table->text('catatan')->nullable();
             $table->timestamps();
 

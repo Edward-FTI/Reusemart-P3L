@@ -59,6 +59,9 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/barang-qc/{id}', [BarangController::class, 'update']);
     Route::delete('/barang-qc/{id}', [BarangController::class, 'destroy']);
 
+    Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
+    Route::patch('/barang/{id}/status', [BarangController::class, 'updateStatus']);
+
 
     // ======================= Kategori Barang =======================
     Route::get('/kategori', [KategoriBarangController::class, 'index']);
@@ -128,15 +131,18 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/transaksi-penitipan/{id}', [TransaksiPenitipanController::class, 'destroy']);
 
     //Transaksi Penjualan
-    Route::get('/transaksi-penjualan', [TransaksiPenjualanController::class, 'index']);
+    // Route::get('/transaksi-penjualan', [TransaksiPenjualanController::class, 'index']);
     Route::post('/transaksi-penjualan', [TransaksiPenjualanController::class, 'store']);
-    Route::get('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'show']);
-    Route::put('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'update']);
-    Route::delete('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'destroy']);
-    Route::get('/transaksi-penjualan/searchByIdPembeli/{id}', [TransaksiPenjualanController::class, 'searchByIdPembeli']);
-    Route::get('/transaksi-penjualan/getPembeli', [TransaksiPenjualanController::class, 'getPembeli']);
-    Route::get('/transaksi-penjualan/getDetailPengiriman', [TransaksiPenjualanController::class, 'getDetailPengiriman']);
-    Route::get('/transaksi-penjualan/searchById/{id}', [TransaksiPenjualanController::class, 'searchById']);
+    Route::get('/transaksi-penjualanA', [TransaksiPenjualanController::class, 'indexAdmin']);
+    Route::get('/transaksi-penjualanP', [TransaksiPenjualanController::class, 'indexPembeli']);
+    Route::put('/verifikasi/{id}', [TransaksiPenjualanController::class, 'verifikasiPembayaran']);
+    // Route::get('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'show']);
+    // Route::put('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'update']);
+    // Route::delete('/transaksi-penjualan/{id}', [TransaksiPenjualanController::class, 'destroy']);
+    // Route::get('/transaksi-penjualan/searchByIdPembeli/{id}', [TransaksiPenjualanController::class, 'searchByIdPembeli']);
+    // Route::get('/transaksi-penjualan/getPembeli', [TransaksiPenjualanController::class, 'getPembeli']);
+    // Route::get('/transaksi-penjualan/getDetailPengiriman', [TransaksiPenjualanController::class, 'getDetailPengiriman']);
+    // Route::get('/transaksi-penjualan/searchById/{id}', [TransaksiPenjualanController::class, 'searchById']);
 
     //Pengambilan
     Route::get('/pengambilan', [PengambilanController::class, 'index']);
@@ -171,7 +177,7 @@ Route::middleware('auth:api')->group(function () {
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 // Route::post('/barang', [BarangController::class, 'store']);
 Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
-Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
+// Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
 // Route::put('/barang/{id}', [BarangController::class, 'update']);
 // Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 
