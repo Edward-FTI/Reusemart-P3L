@@ -3,6 +3,7 @@ import 'package:mobile/Hunter/hunter.dart';
 import 'package:mobile/Kurir/kurir.dart';
 import 'package:mobile/Pembeli/pembeli.dart';
 import 'package:mobile/Penitip/penitip.dart';
+import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 import 'package:mobile/data/datasource/remote/auth_remote_datasource.dart';
 // import 'package:mobile_design/profile/profile_pembeli.dart';
 
@@ -31,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       final result = await AuthRemoteDatasource().login(email, password);
       if (result != null) {
+        await AuthLocalDatasource().saveUserData(result);
         String role = result.user!.role!;
         // If login is successful, navigate to the profile page
         if (role == 'Pembeli') {

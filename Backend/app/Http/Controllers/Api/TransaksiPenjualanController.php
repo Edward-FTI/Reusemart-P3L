@@ -131,6 +131,16 @@ class TransaksiPenjualanController extends Controller
                 'id_pegawai' => 1,
             ]);
 
+            // Tambahan: Insert otomatis ke TransaksiPengiriman
+            DB::table('transaksi_pengiriman')->insert([
+                'id_transaksi_penjualan' => $transaksi->id,
+                'id_pegawai' => 0,
+                'tgl_pengiriman' => now(),
+                'status_pengiriman' => 'diproses',
+                'biaya_pengiriman' => $ongkir,
+                'catatan' => null
+            ]);
+
             foreach ($carts as $cart) {
                 Detail_transaksi_penjualan::create([
                     'id_transaksi_penjualan' => $transaksi->id,
@@ -169,6 +179,7 @@ class TransaksiPenjualanController extends Controller
             ], 500);
         }
     }
+
 
     public function indexPembeli()
     {
