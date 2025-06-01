@@ -190,10 +190,13 @@ class PembeliController extends Controller
 
             return response()->json([
                 'id' => $pembeli->id,
-                'nama' => $pembeli->nama,
+                'nama' => $pembeli->nama_pembeli,
                 'email' => $pembeli->email,
                 'point' => $pembeli->point,
-                // Tambahkan data lain jika diperlukan
+                'saldo' => $pembeli->saldo,
+                'no_hp' => $pembeli->no_hp,
+                'created_at' => $pembeli->created_at,
+                'updated_at' => $pembeli->updated_at,
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Gagal mengambil data pembeli', 'error' => $e->getMessage()], 500);
