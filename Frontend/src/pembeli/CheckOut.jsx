@@ -5,7 +5,7 @@ import { GetAllAlamat } from "../Api/apiAlamat";
 import { GetpembeliById, GetAllpembeli } from "../Api/apiPembeli"; // Pastikan GetpembeliById diimpor
 // import { GetAlltransaksi_penjualan, Gettransaksi_penjualanById, Createtransaksi_penjualan } from "../Api/apitransaksi_penjualans";
 import { GetPembeliInfo } from "../Api/apiPembeli";
-import axios from "axios";
+import { Createtransaksi_penjualan } from "../Api/apitransaksi_penjualans";
 
 const OrderForm = () => {
   const [deliveryMethod, setDeliveryMethod] = useState("shipped");
@@ -18,7 +18,6 @@ const OrderForm = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [proof, setProof] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const token = sessionStorage.getItem("token");
 
   useEffect(() => {
     fetchData();
@@ -35,21 +34,22 @@ const OrderForm = () => {
 
       // --- Perubahan dimulai di sini ---
       // Ambil data pembeli berdasarkan ID untuk mendapatkan poin terbaru
-//       const currentPembeli = await GetpembeliById(userId);
-//       if (currentPembeli && currentPembeli.point !== undefined) {
-//         setBuyerPoints(currentPembeli.point);
-//       } else {
-//         setBuyerPoints(0); // Set 0 jika tidak ada poin atau pembeli tidak ditemukan
-//       }
-//       // --- Perubahan berakhir di sini ---
-
-//     } catch (err) {
-//       console.error("Failed to fetch data:", err); // Pesan error lebih deskriptif
-//       const pembeli = await GetPembeliInfo();
-//       setBuyerPoints(pembeli.point || 0);
-//     } catch (err) {
-//       console.error("Gagal mengambil data:", err);
-//       alert("Gagal mengambil data. Silakan coba lagi.");
+      const currentPembeli = await GetpembeliById(userId);
+      if (currentPembeli && currentPembeli.point !== undefined) {
+        setBuyerPoints(currentPembeli.point);
+      } else {
+        setBuyerPoints(0); // Set 0 jika tidak ada poin atau pembeli tidak ditemukan
+      }
+      // --- Perubahan berakhir di sini ---
+    } catch (err) {
+      console.error("Failed to fetch data:", err); // Pesan error lebih deskriptif
+      try {
+        const pembeli = await GetPembeliInfo();
+        setBuyerPoints(pembeli.point || 0);
+      } catch (err2) {
+        console.error("Gagal mengambil data:", err2);
+        alert("Gagal mengambil data. Silakan coba lagi.");
+      }
     }
   };
 
@@ -73,9 +73,11 @@ const OrderForm = () => {
       formData.append("alamat_pengiriman", "");
     }
 
+    console.log("Selected Image:", proof);
+
     formData.append("poin_digunakan", pointsToRedeem);
     formData.append("bukti_pembayaran", proof);
-    formData.append("status_pengiriman", "di antar");
+    formData.append("status_pengiriman", "diantar");
     formData.append("status_pembelian", "pending");
     formData.append("verifikasi_pembayaran", false);
 
@@ -83,19 +85,17 @@ const OrderForm = () => {
       formData.append(`selected_cart_ids[${i}]`, id)
     );
 
+    // selectedCartIds.forEach((id) => formData.append("selected_cart_ids[]", id));
+
     try {
-      await axios.post("/api/transaksi-penjualan", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await Createtransaksi_penjualan(formData);
       alert("Transaksi berhasil!");
       setShowUpload(false);
       setProof(null);
       // Optional: Refresh cart or redirect after successful transaction
     } catch (err) {
       alert(err.response?.data?.message || "Gagal melakukan transaksi.");
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -231,6 +231,7 @@ const OrderForm = () => {
               </label>
               <input
                 type="file"
+                accept="image/*"
                 className="form-control"
                 id="proof"
                 required
@@ -254,3 +255,6 @@ const OrderForm = () => {
 };
 
 export default OrderForm;
+
+
+
