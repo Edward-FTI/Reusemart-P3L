@@ -16,19 +16,19 @@ export const GetAllOrganisasi = async () => {
     }
 }
 
-    export const GetPermintaan = async () => {
-      try {
+export const GetPermintaan = async () => {
+    try {
         const response = await useAxios.get("/ujiankelas", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
         });
         return response.data.data;
-      } catch (error) {
+    } catch (error) {
         throw error.response.data;
-      }
-    };
+    }
+};
 
 export const GetOrganisasiByNama = async (nama) => {
     try {
