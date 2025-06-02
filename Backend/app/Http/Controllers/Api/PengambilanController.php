@@ -16,38 +16,20 @@ use App\Models\Detail_transaksi_penjualan; // Menggunakan model Detail_transaksi
 
 class PengambilanController extends Controller
 {
-    /**
-     * Mengambil ID Pegawai Gudang yang sedang login.
-     *
-     * @return int|null ID Pegawai jika ditemukan dan memiliki peran 'Pegawai Gudang', jika tidak null.
-     */
-    private function getPegawaiId()
+
+    private function getPegawai()
     {
         $user = Auth::user();
 
-        // Memastikan pengguna login dan memiliki peran 'Pegawai Gudang'
         if (!$user || $user->role !== 'Pegawai Gudang') {
             return null;
         }
 
-        // Mencari data pegawai berdasarkan email pengguna yang login
-        $pegawai = Pegawai::where('email', $user->email)->first();
-
-        // Mengembalikan ID pegawai jika ditemukan
-        return $pegawai?->id;
+        return Pegawai::where('email', $user->email)->first();
     }
 
-
-    /**
-     * Menampilkan daftar transaksi pengambilan (pengiriman) dengan status "proses".
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index()
     {
-        // Mengambil semua transaksi pengiriman dengan status "proses"
-        // Memuat relasi 'transaksiPenjualan' dengan 'pembeli' dan 'detail' bersarang,
-        // dan 'detail' juga memuat 'barang' bersarang.
         $pengambilan = TransaksiPengiriman::with(['transaksiPenjualan.pembeli', 'transaksiPenjualan.detail.barang'])
             ->where('status_pengiriman', 'proses') // Filter berdasarkan status pengiriman
             ->get();
@@ -60,19 +42,13 @@ class PengambilanController extends Controller
             ], 200);
         }
 
-        // Jika tidak ada data transaksi pengiriman
+
         return response()->json([
             'message' => 'Data pengambilan kosong',
             'data' => []
         ], 200);
     }
 
-    /**
-     * Menyimpan transaksi pengambilan baru atau memperbarui status transaksi yang ada.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
         // Validasi input request
@@ -98,7 +74,6 @@ class PengambilanController extends Controller
             ], 404);
         }
 
-        // Memperbarui status pengiriman menjadi 'diambil'
         $transaksi->status_pengiriman = 'diambil';
         $transaksi->save();
 
@@ -108,16 +83,8 @@ class PengambilanController extends Controller
         ], 200);
     }
 
-    /**
-     * Menampilkan detail transaksi pengambilan berdasarkan ID.
-     *
-     * @param  string  $id ID transaksi pengiriman
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show($id)
     {
-        // Mencari transaksi pengiriman berdasarkan ID dan memuat relasi 'transaksiPenjualan'
-        // dengan 'pembeli' dan 'detail' bersarang, dan 'detail' juga memuat 'barang' bersarang.
         $transaksi = TransaksiPengiriman::with(['transaksiPenjualan.pembeli', 'transaksiPenjualan.detail.barang'])->find($id);
 
         // Jika transaksi tidak ditemukan
@@ -133,13 +100,6 @@ class PengambilanController extends Controller
         ], 200);
     }
 
-    /**
-     * Memperbarui status transaksi pengambilan berdasarkan ID.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string  $id ID transaksi pengiriman
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, $id)
     {
         $transaksi = TransaksiPengiriman::find($id);
@@ -164,13 +124,6 @@ class PengambilanController extends Controller
         ], 200);
     }
 
-
-    /**
-     * Menghapus transaksi pengambilan berdasarkan ID.
-     *
-     * @param  string  $id ID transaksi pengiriman
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy($id)
     {
         // Mencari transaksi pengiriman berdasarkan ID
