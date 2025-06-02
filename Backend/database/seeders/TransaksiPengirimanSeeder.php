@@ -28,7 +28,7 @@ class TransaksiPengirimanSeeder extends Seeder
             [
                 'id_transaksi_penjualan' => $transaksiIds[0],
                 'id_pegawai' => 11,
-                'tgl_pengiriman' => Carbon::create(2025, 5, 20, 9, 0, 0),
+                'tgl_pengiriman' => null,
                 'status_pengiriman' => 'Proses',
                 'biaya_pengiriman' => 22000,
                 'catatan' => 'Menunggu konfirmasi pengiriman.',
@@ -36,7 +36,7 @@ class TransaksiPengirimanSeeder extends Seeder
             [
                 'id_transaksi_penjualan' => $transaksiIds[1],
                 'id_pegawai' => 12,
-                'tgl_pengiriman' => Carbon::create(2025, 5, 21, 11, 30, 0),
+                'tgl_pengiriman' => null,
                 'status_pengiriman' => 'Proses',
                 'biaya_pengiriman' => 25000,
                 'catatan' => 'Sedang dikemas.',
@@ -44,7 +44,7 @@ class TransaksiPengirimanSeeder extends Seeder
             [
                 'id_transaksi_penjualan' => $transaksiIds[2],
                 'id_pegawai' => 11,
-                'tgl_pengiriman' => Carbon::create(2025, 5, 22, 14, 0, 0),
+                'tgl_pengiriman' => null,
                 'status_pengiriman' => 'Selesai',
                 'biaya_pengiriman' => 27000,
                 'catatan' => 'Tiba di tujuan dengan aman.',
@@ -52,7 +52,7 @@ class TransaksiPengirimanSeeder extends Seeder
             [
                 'id_transaksi_penjualan' => $transaksiIds[3],
                 'id_pegawai' => 0,
-                'tgl_pengiriman' => Carbon::create(2025, 5, 23, 15, 45, 0),
+                'tgl_pengiriman' => null,
                 'status_pengiriman' => 'Proses',
                 'biaya_pengiriman' => 24000,
                 'catatan' => 'Belum ditugaskan ke pegawai.',
@@ -60,7 +60,7 @@ class TransaksiPengirimanSeeder extends Seeder
             [
                 'id_transaksi_penjualan' => $transaksiIds[4],
                 'id_pegawai' => 0,
-                'tgl_pengiriman' => Carbon::create(2025, 5, 24, 10, 15, 0),
+                'tgl_pengiriman' => null,
                 'status_pengiriman' => 'Proses',
                 'biaya_pengiriman' => 26000,
                 'catatan' => 'Dalam perjalanan.',

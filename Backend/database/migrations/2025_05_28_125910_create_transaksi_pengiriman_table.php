@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_transaksi_penjualan');
             $table->unsignedBigInteger('id_pegawai');
-            $table->dateTime('tgl_pengiriman');
+            $table->dateTime('tgl_pengiriman')->nullable();
             $table->string('status_pengiriman')->default('Proses'); // Pending, Proses, Selesai
             $table->integer('biaya_pengiriman', 0, 100000);
             $table->text('catatan')->nullable();

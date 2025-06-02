@@ -202,18 +202,6 @@ const CRUDPengirimanPenitip = () => {
       {/* Header: Judul & Tombol Tambah */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">Data Pengiriman Penitip</h2>
-        <button
-          className="btn btn-success"
-          onClick={() => {
-            resetForm();
-            const modal = new window.bootstrap.Modal(
-              document.getElementById("formModal")
-            );
-            modal.show();
-          }}
-        >
-          Tambah Data
-        </button>
       </div>
  
       {/* Navigasi Penitip & Pembeli + Pencarian */}
