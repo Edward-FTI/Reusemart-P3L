@@ -154,6 +154,14 @@ class TransaksiPenjualanController extends Controller
 
                 $cart->barang->status_barang = 'Sold Out';
                 $cart->barang->save();
+
+
+                $penitip = $cart->barang->penitip; // Pastikan relasi 'penitip' tersedia di model Barang
+                if ($penitip) {
+                    $komisi = $cart->barang->harga_barang * 0.8;
+                    $penitip->saldo += $komisi;
+                    $penitip->save();
+                }
             }
 
             $pembeli->saldo -= $totalSetelahPoin;
