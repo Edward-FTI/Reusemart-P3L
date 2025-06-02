@@ -156,7 +156,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pengambilan/searchByIdPembeli/{id}', [PengambilanController::class, 'searchByIdPembeli']);
     Route::get('/pengambilan/searchByIdTransaksi/{id}', [PengambilanController::class, 'searchByIdTransaksi']);
 
-
     //Transaksi Donasi
     Route::get('/transaksi-donasi', [TransaksiDonasiController::class, 'index']);
     Route::post('/transaksi-donasi', [TransaksiDonasiController::class, 'store']);

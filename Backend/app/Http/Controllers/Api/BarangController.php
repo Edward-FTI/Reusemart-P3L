@@ -267,7 +267,7 @@ public function updatePublic(Request $request, string $id)
             'data' => $barang
         ], 200);
     }
- 
+
 
 
 
