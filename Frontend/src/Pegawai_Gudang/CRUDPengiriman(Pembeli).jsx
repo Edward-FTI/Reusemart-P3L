@@ -10,7 +10,8 @@ import {
     UpdatePengambilan, // Assuming this API handles updating a pengiriman record
     DeletePengambilan,
     GetPengambilanById,
-    GetPengambilanByNama
+    GetPengambilanByNama,
+    GetPegawaiLogin
 } from "../Api/apiPengambilan"
 
 import { GetAllKategori } from "../Api/apiKategori";
@@ -28,14 +29,12 @@ const CRUDPengirimanPembeli = () => {
     const [kategoriList, setKategoriList] = useState([]);
     const [penitipList, setPenitipList] = useState([]);
     const [kurirList, setKurirList] = useState([]);
+    const [qcPegawai, setQcPegawai] = useState(null);
 
 
     const [isEdit, setIsEdit] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Form state ini kemungkinan besar untuk TransaksiPenjualan, bukan TransaksiPengiriman secara langsung.
-    // Untuk tampilan, kita akan langsung mengakses data dari objek `item` atau `selectedTransaksi`
-    // yang sudah dimuat dengan relasi bersarang.
     const [form, setForm] = useState({
         id: '',
         id_pembeli: '',
@@ -155,17 +154,21 @@ const CRUDPengirimanPembeli = () => {
         fetchPengambilan();
         fetchKategori();
         fetchPenitip();
-        fetchPegawai(); // Fetch pegawai data on component mount
-    }, []);
+        fetchPegawai(); 
+        
+        const fetchQC = async () => {
+        try {
+            const pegawai = await GetPegawaiLogin();
+            if (pegawai.jabatan === 'Pegawai Gudang') {
+                setQcPegawai(pegawai);
+            }
+        } catch (err) {
+            console.error("Gagal ambil data pegawai login", err);
+        }
+    };
 
-    // Handler for delivery form changes
-    // const handleDeliveryChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setDeliveryForm(prevForm => ({
-    //         ...prevForm,
-    //         [name]: value
-    //     }));
-    // };
+    fetchQC();// Fetch pegawai data on component mount
+    }, []);
 
     const handleDeliveryChange = (e) => {
         const { name, value } = e.target;
@@ -202,16 +205,6 @@ const CRUDPengirimanPembeli = () => {
             });
         }
     };
-
-
-    // Handler for pengambilan form changes
-    // const handlePengambilanChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setPengambilanForm(prevForm => ({
-    //         ...prevForm,
-    //         [name]: value
-    //     }));
-    // };
 
     const handlePengambilanChange = (e) => {
         const { name, value } = e.target;
@@ -331,6 +324,9 @@ const CRUDPengirimanPembeli = () => {
 
     const handleDownloadNota = (orderData) => {
         console.log("orderData.metode_pengiriman:", form.metode_pengiriman);
+        console.log("orderData.id_pegawai:", orderData.id_pegawai);
+        console.log("kurirList:", kurirList);
+
 
         const doc = new jsPDF();
         doc.setFont("times", "normal");
@@ -365,8 +361,9 @@ const CRUDPengirimanPembeli = () => {
         const potonganPoinValue = (transaksiPenjualan.pembeli?.point_digunakan || 0) * 100;
         const finalPaymentTotal = totalAkhir - potonganPoinValue;
 
-        const qcPegawai = kurirList.find(p => p.id === orderData.id_pegawai);
-        const deliveryCourierName = kurirList.find(k => k.id === orderData.id_pegawai)?.nama || 'N/A';
+        const qcPegawai = orderData.pegawai;
+        
+        const deliveryCourierName = kurirList.find(k => k.id === orderData?.id_pegawai)?.nama || 'N/A';
         
         const deliveryCourierId = orderData.id_pegawai ? `(P${orderData.id_pegawai})` : '';
 
@@ -449,16 +446,16 @@ const CRUDPengirimanPembeli = () => {
         y += 15;
 
         // QC dan tanda tangan
-        doc.text(`QC oleh: ${qcPegawai?.nama_pegawai || 'N/A'} ${deliveryCourierId}`, startX, y);
-        y += 10;
-        y += 10;
-        
-        doc.text(metodePengiriman === 'diambil' ? "Diambil oleh:" : "Diterima oleh:", startX, y);
+        doc.text(`QC oleh: ${qcPegawai?.nama || 'Citra Wijaya'} (${qcPegawai?.id || '3'})`, startX, y);
         y += 15;
         doc.text("(...............................)", startX, y);
         y += 5;
         doc.text(`Tanggal: ${formattedDate}`, startX, y);
         doc.save(`Nota_Penjualan_${nomorNota}.pdf`);
+
+        console.log("QC Pegawai ID:", orderData.id_pegawai);
+        console.log("QC Pegawai Object:", qcPegawai);
+
     };
 
    

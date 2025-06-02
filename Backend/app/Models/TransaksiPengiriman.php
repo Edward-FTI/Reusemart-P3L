@@ -23,7 +23,6 @@ class TransaksiPengiriman extends Model
         return $this->belongsTo(Barang::class, 'id_transaksi_penjualan');
     }
 
-
     public function transaksiPenjualan(): BelongsTo
     {
         return $this->belongsTo(TransaksiPenjualan::class, 'id_transaksi_penjualan');
@@ -34,6 +33,5 @@ class TransaksiPengiriman extends Model
     {
         return $this->belongsTo(Pegawai::class, 'id_pegawai');
     }
-
 
 }
