@@ -27,7 +27,8 @@ const CRUDPengirimanPembeli = () => {
 
     const [kategoriList, setKategoriList] = useState([]);
     const [penitipList, setPenitipList] = useState([]);
-    const [kurirList, setKurirList] = useState([]); // New state for courier list
+    const [kurirList, setKurirList] = useState([]);
+
 
     const [isEdit, setIsEdit] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -61,7 +62,7 @@ const CRUDPengirimanPembeli = () => {
     // New state for pengambilan input form
     const [pengambilanForm, setPengambilanForm] = useState({
         id: '',
-        tgl_pengambilan: '', // Tanggal pengambilan
+        tgl_pengiriman: '', // Tanggal pengambilan
         catatan: '' // Catatan pengambilan
     });
 
@@ -78,16 +79,29 @@ const CRUDPengirimanPembeli = () => {
     };
 
     const fetchPegawai = async () => {
-        try {
-            const data = await GetAllPegawai();
-            // Filter pegawai where jabatan is "Kurir"
-            const kurirData = data.filter(pegawai => pegawai.jabatan === 4);
-            setKurirList(kurirData);
-        } catch (error) {
-            console.error("Error fetching pegawai data:", error);
-            toast.error("Gagal mengambil data pegawai.");
-        }
+    try {
+        const data = await GetAllPegawai();
+        const kurirData = data.filter(pegawai => pegawai.jabatan === 4);
+        setKurirList(kurirData);
+    } catch (error) {
+        console.error("Error fetching pegawai data:", error);
+        toast.error("Gagal mengambil data pegawai.");
+    }
     };
+
+    const kurirOptions = kurirList.map(kurir => ({
+        value: kurir.id,
+        label: kurir.nama_pegawai
+    }));
+
+    const handleKurirSelect = (selectedOption) => {
+    setDeliveryForm(prev => ({
+        ...prev,
+        id_pegawai: selectedOption ? selectedOption.value : ''
+    }));
+    };
+
+
 
     const handleSearch = async () => {
         const search = searchTerm.toLowerCase()
@@ -168,23 +182,6 @@ const CRUDPengirimanPembeli = () => {
         }));
     };
 
-    const resetForm = () => {
-        setForm({
-            id: '',
-            id_pembeli: '',
-            total_harga_pembelian: '',
-            metode_pengiriman: '',
-            alamat_pengiriman: '',
-            ongkir: '',
-            bukti_pembayaran: '',
-            status_pengiriman: '',
-            id_pegawai: '',
-            status_pembelian: '',
-            verifikasi_pembayaran: ''
-        });
-        setIsEdit(false);
-    }
-
     // Function to open the detail modal
     const handleShowDetail = (transaksi) => {
         setSelectedTransaksi(transaksi);
@@ -206,70 +203,82 @@ const CRUDPengirimanPembeli = () => {
         modal.show();
     };
 
-    // Function to open the pengambilan input modal
-    const handleOpenPengambilanModal = (transaksi) => {
-        setSelectedTransaksi(transaksi);
-        setPengambilanForm({
-            id: transaksi.id,
-            tgl_pengambilan: transaksi.tgl_pengambilan ? new Date(transaksi.tgl_pengambilan).toISOString().slice(0, 16) : '',
-            status_pengiriman: transaksi.status_pengiriman || 'diambil', // Default to 'diambil' for pickup
-            catatan: transaksi.catatan || ''
-        });
-        const modal = new window.bootstrap.Modal(document.getElementById('pengambilanInputModal'));
-        modal.show();
-    };
+   function formatDateForBackend(datetimeLocalStr) {
+    if (!datetimeLocalStr) return null;
+    const dt = new Date(datetimeLocalStr);
+    const pad = (n) => n.toString().padStart(2, '0');
+    return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
+    }
 
-    // Function to submit delivery input
     const handleSubmitDelivery = async (e) => {
-        e.preventDefault();
-        try {
-            // Ensure status_pengiriman is set, e.g., to 'diproses' if selecting a courier means it's being processed
-            const dataToUpdate = {
-                ...selectedTransaksi, // Keep existing data
-                tgl_pengiriman: deliveryForm.tgl_pengiriman,
-                status_pengiriman: deliveryForm.status_pengiriman, // Use status from form
-                catatan: deliveryForm.catatan,
-                id_pegawai: deliveryForm.id_pegawai // Send the selected courier's ID
-            };
-            await UpdatePengambilan(dataToUpdate.id, dataToUpdate); // Assuming UpdatePengambilan takes ID and the full object
-            toast.success("Data pengiriman berhasil diperbarui.");
-            fetchPengambilan(); // Refresh the list
-            window.bootstrap.Modal.getInstance(document.getElementById('deliveryInputModal')).hide(); // Hide modal
-        } catch (error) {
-            console.error("Error updating delivery data:", error);
-            toast.error("Gagal memperbarui data pengiriman.");
-        }
+    e.preventDefault();
+    try {
+        const dataToUpdate = {
+        tgl_pengiriman: formatDateForBackend(deliveryForm.tgl_pengiriman),
+        status_pengiriman: deliveryForm.status_pengiriman,
+        catatan: deliveryForm.catatan,
+        id_pegawai: deliveryForm.id_pegawai
+        };
+        await UpdatePengambilan(selectedTransaksi.id, dataToUpdate);
+        toast.success("Data pengiriman berhasil diperbarui.");
+        fetchPengambilan();
+        window.bootstrap.Modal.getInstance(document.getElementById('deliveryInputModal')).hide();
+    } catch (error) {
+        console.error("Error updating delivery data:", error);
+        toast.error("Gagal memperbarui data pengiriman.");
+    }
     };
 
-    // Function to submit pengambilan input
     const handleSubmitPengambilan = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
+    try {
+        const dataToUpdate = {
+        tgl_pengiriman: formatDateForBackend(pengambilanForm.tgl_pengiriman),
+        catatan: pengambilanForm.catatan
+        };
+        await UpdatePengambilan(selectedTransaksi.id, dataToUpdate);
+        toast.success("Data pengambilan berhasil diperbarui.");
+        fetchPengambilan();
+        window.bootstrap.Modal.getInstance(document.getElementById('pengambilanInputModal')).hide();
+    } catch (error) {
+        console.error("Error updating pengambilan data:", error);
+        toast.error("Gagal memperbarui data pengambilan.");
+    }
+    };
+
+    const handleKonfirmasiPengambilan = async () => {
         try {
+            const formattedTanggal = pengambilanForm.tgl_pengiriman
+                ? formatDateForBackend(pengambilanForm.tgl_pengiriman)
+                : null;
+
             const dataToUpdate = {
                 ...selectedTransaksi,
-                tgl_pengambilan: pengambilanForm.tgl_pengambilan,
-                status_pengiriman: 'diambil', // Force status to 'diambil' for pickup confirmation
+                tgl_pengiriman: formattedTanggal,
+                status_pengiriman: 'diambil',
                 catatan: pengambilanForm.catatan
             };
+
             await UpdatePengambilan(dataToUpdate.id, dataToUpdate);
-            toast.success("Data pengambilan berhasil diperbarui.");
-            fetchPengambilan(); // Refresh the list
-            window.bootstrap.Modal.getInstance(document.getElementById('pengambilanInputModal')).hide(); // Hide modal
+
+            toast.success("Pengambilan berhasil dikonfirmasi.");
+            fetchPengambilan();
+            window.bootstrap.Modal.getInstance(document.getElementById('pengambilanKonfirmasiModal')).hide();
         } catch (error) {
-            console.error("Error updating pengambilan data:", error);
-            toast.error("Gagal memperbarui data pengambilan.");
+            console.error("Error confirming pickup:", error);
+            toast.error("Gagal konfirmasi pengambilan.");
         }
     };
 
     const handleDownloadNota = (orderData) => {
         const doc = new jsPDF();
-
         doc.setFont("times", "normal");
         let y = 15;
         const startX = 10;
-        const contentWidth = 190; // A4 width 210 - (10 * 2) margins
+        const contentWidth = 90; // setengah halaman
+        const annotationX = 110; // tempat keterangan
 
-        // Helper function for formatted date and time
+        // Helper function untuk format tanggal
         const formatDateTime = (dateString) => {
             if (!dateString) return 'N/A';
             const date = new Date(dateString);
@@ -277,8 +286,6 @@ const CRUDPengirimanPembeli = () => {
             const optionsTime = { hour: '2-digit', minute: '2-digit', hour12: false };
             return `${date.toLocaleDateString('id-ID', optionsDate)} ${date.toLocaleTimeString('id-ID', optionsTime)}`;
         };
-
-        // Helper function for date only
         const formatDate = (dateString) => {
             if (!dateString) return 'N/A';
             const date = new Date(dateString);
@@ -286,46 +293,29 @@ const CRUDPengirimanPembeli = () => {
             return date.toLocaleDateString('id-ID', options);
         };
 
-        // Mengakses data dari relasi transaksi_penjualan
         const transaksiPenjualan = orderData.transaksi_penjualan;
         const totalBarangHarga = transaksiPenjualan.detail.reduce((sum, d) => sum + d.harga_saat_transaksi, 0);
         const totalAkhir = totalBarangHarga + (transaksiPenjualan.ongkir || 0);
 
-        // Calculate points gained: total_belanja / 10000. If total belanja > 500.000, bonus 20%
-        let poinDidapat = Math.floor(totalAkhir / 10000);
-        // Implement bonus 20% if total exceeds 500,000 (as per image note, "Karena belanja > 500.000, bonus 20%: 49 poin")
-        // The image shows 2.500.000 total, 248 pts + 49 pts = 297 pts.
-        // 2.500.000 / 10000 = 250.
-        // It seems the bonus is calculated *on the points*, not on the total.
-        // Let's re-evaluate based on the image's example:
-        // Total belanja 2.500.000 (ongkir tidak termasuk), total point 248
-        // Poin dari pesanan ini: 297. Total poin customer: 300.
-        // 2.500.000 / 10.000 = 250 poin.
-        // Bonus 20%: 250 * 0.20 = 50 poin.
-        // Total Poin Didapat = 250 + 50 = 300 poin.
-        // Ah, the image says "Sehingga mendapat 248 poin. Karena belanja > 500.000, bonus 20%: 49 poin. Total : 297 poin."
-        // This implies: Base points = 248. Bonus points = 49. Total = 297.
-        // The rule seems to be: points = floor(total_barang_harga / 10000). If total_barang_harga > 500000, add bonus of 20% of base points.
         let basePoin = Math.floor(totalBarangHarga / 10000);
-        let bonusPoin = 0;
-        if (totalBarangHarga > 500000) {
-            bonusPoin = Math.floor(basePoin * 0.20);
-        }
-        poinDidapat = basePoin + bonusPoin;
+        let bonusPoin = totalBarangHarga > 500000 ? Math.floor(basePoin * 0.2) : 0;
+        let poinDidapat = basePoin + bonusPoin;
 
-
-        const potonganPoinValue = transaksiPenjualan.pembeli?.point_digunakan ? (transaksiPenjualan.pembeli.point_digunakan * 100) : 0; // As per image 200 poin = 20.000, so 1 point = 100 IDR
+        const potonganPoinValue = (transaksiPenjualan.pembeli?.point_digunakan || 0) * 100;
         const finalPaymentTotal = totalAkhir - potonganPoinValue;
 
-        // Get courier name based on orderData.id_pegawai (assuming this is the QC person for the note)
-        const qcPegawai = kurirList.find(p => p.id === orderData.id_pegawai); // Assuming id_pegawai in orderData is the QC person's ID
-
-        // Get courier name for delivery (if it exists on the transaction)
+        const qcPegawai = kurirList.find(p => p.id === orderData.id_pegawai);
         const deliveryCourierName = kurirList.find(k => k.id === orderData.id_pegawai)?.nama_pegawai || 'N/A';
         const deliveryCourierId = orderData.id_pegawai ? `(P${orderData.id_pegawai})` : '';
 
+        const orderDateObj = new Date(transaksiPenjualan.created_at);
+        const yearFormatted = orderDateObj.getFullYear().toString().slice(-2);
+        const monthFormatted = (orderDateObj.getMonth() + 1).toString().padStart(2, '0');
+        const sequentialNumberFormatted = transaksiPenjualan.id.toString().padStart(3, '0');
+        const nomorNota = `${yearFormatted}.${monthFormatted}.${sequentialNumberFormatted}`;
+        const formattedDate = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
 
-        // --- Header ---
+        // HEADER
         doc.setFontSize(14);
         doc.setFont("times", "bold");
         doc.text("ReUse Mart", startX, y);
@@ -335,21 +325,6 @@ const CRUDPengirimanPembeli = () => {
         doc.text("Jl. Green Eco Park No. 456 Yogyakarta", startX, y);
         y += 10;
 
-        // Generate nomor_nota based on the new rule: YY.MM.SequentialNumber
-        const orderDateObj = new Date(transaksiPenjualan.created_at);
-        const yearFormatted = orderDateObj.getFullYear().toString().slice(-2);
-        const monthFormatted = (orderDateObj.getMonth() + 1).toString().padStart(2, '0');
-        const sequentialNumberFormatted = transaksiPenjualan.id.toString().padStart(3, '0');
-        const nomorNota = `${yearFormatted}.${monthFormatted}.${sequentialNumberFormatted}`;
-        const today = new Date();
-const formattedDate = today.toLocaleDateString('id-ID', {
-  day: '2-digit',
-  month: 'long',
-  year: 'numeric'
-});
-
-        // --- Transaction Details ---
-        doc.setFontSize(10);
         doc.text(`No Nota         : ${nomorNota}`, startX, y);
         y += 5;
         doc.text(`Tanggal pesan   : ${formatDateTime(transaksiPenjualan.created_at)}`, startX, y);
@@ -359,33 +334,19 @@ const formattedDate = today.toLocaleDateString('id-ID', {
         doc.text(`Tanggal kirim   : ${orderData.tgl_pengiriman ? formatDate(orderData.tgl_pengiriman) : 'Akan diatur'}`, startX, y);
         y += 10;
 
-        // --- Buyer Details ---
-        doc.setFontSize(10);
         doc.setFont("times", "bold");
         doc.text(`Pembeli : ${transaksiPenjualan.pembeli?.email || 'N/A'} / ${transaksiPenjualan.pembeli?.nama_pembeli || 'N/A'}`, startX, y);
         y += 5;
         doc.setFont("times", "normal");
-        const alamatLines = doc.splitTextToSize(transaksiPenjualan.alamat_pengiriman || 'N/A', contentWidth - 50); // Adjust width for address
+        const alamatLines = doc.splitTextToSize(transaksiPenjualan.alamat_pengiriman || 'N/A', contentWidth - 10);
         alamatLines.forEach(line => {
             doc.text(line, startX, y);
             y += 5;
         });
-        // Assuming city/district is part of alamat_pengiriman or can be extracted
-        // const cityMatch = transaksiPenjualan.alamat_pengiriman?.match(/([^,]+)$/);
-        // const city = cityMatch ? cityMatch[1].trim() : 'N/A';
-        // doc.text(`${city}`, startX, y); // If city is separate
-        // y += 5;
-
-        // Delivery Method based on selected method and courier
-        if (transaksiPenjualan.metode_pengiriman === 'dikirim') {
-            doc.text(`Delivery: Kurir ReUseMart (${deliveryCourierName})`, startX, y);
-        } else {
-            doc.text(`Delivery: - (${transaksiPenjualan.metode_pengiriman || 'N/A'})`, startX, y);
-        }
+        doc.text(`Delivery: Kurir ReUseMart (${deliveryCourierName})`, startX, y);
         y += 10;
 
-        // --- Item List ---
-        doc.setFontSize(10);
+        // ITEM LIST
         transaksiPenjualan.detail.forEach(item => {
             doc.text(`${item.barang.nama_barang}`, startX, y);
             doc.text(`${item.harga_saat_transaksi?.toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' });
@@ -393,61 +354,42 @@ const formattedDate = today.toLocaleDateString('id-ID', {
         });
         y += 5;
 
-        // --- Summary ---
+        // RINGKASAN
         doc.line(startX, y, startX + contentWidth, y);
         y += 5;
-        doc.setFont("times", "normal");
-        doc.text(`Total Harga Barang`, startX, y);
+        doc.text(`Total`, startX, y);
         doc.text(`${totalBarangHarga.toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' });
         y += 5;
         doc.text(`Ongkos Kirim`, startX, y);
-        doc.text(`${transaksiPenjualan.ongkir?.toLocaleString('id-ID') || 0}`, startX + contentWidth, y, { align: 'right' });
+        doc.text(`${(transaksiPenjualan.ongkir || 0).toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' });
         y += 5;
         doc.text(`Potongan ${transaksiPenjualan.pembeli?.point_digunakan || 0} poin`, startX, y);
         doc.text(`- ${potonganPoinValue.toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' });
         y += 5;
-        doc.setFontSize(12);
         doc.setFont("times", "bold");
-        doc.text(`Total`, startX, y); // "Total" in bold as per image
+        doc.text(`Total`, startX, y);
         doc.text(`${finalPaymentTotal.toLocaleString('id-ID')}`, startX + contentWidth, y, { align: 'right' });
-        y += 10;
-
-        // --- Points Information ---
-        doc.setFontSize(10);
         doc.setFont("times", "normal");
-        doc.text(`Poin dari pesanan ini: ${poinDidapat}`, startX, y);
-        y += 5;
-        // Total poin customer: current_point_balance - points_used + points_gained
-        const currentCustomerTotalPoints = (transaksiPenjualan.pembeli?.point || 0) - (transaksiPenjualan.pembeli?.point_digunakan || 0) + poinDidapat;
-        doc.text(`Total poin customer: ${currentCustomerTotalPoints}`, startX, y);
         y += 10;
 
-        // --- Signatures ---
-        doc.text(`QC oleh: ${qcPegawai?.nama_pegawai || 'N/A'} ${qcPegawai ? `(P${qcPegawai.id})` : ''}`, startX, y);
-        y += 10;
-        doc.text(`Diterima oleh:`, startX, y);
+        // POIN
+        doc.text(`Poin dari pesanan ini: ${poinDidapat}`, startX, y);
+        doc.text(`Total poin customer: ${(transaksiPenjualan.pembeli?.point || 0) - (transaksiPenjualan.pembeli?.point_digunakan || 0) + poinDidapat}`, startX, y + 5);
         y += 15;
-        doc.text(`(...................................)`, startX, y);
+
+        // QC dan tanda tangan
+        doc.text(`QC oleh: ${qcPegawai?.nama_pegawai || 'N/A'} ${deliveryCourierId}`, startX, y);
+        y += 10;
+        doc.text("Diterima oleh:", startX, y);
+        y += 15;
+        doc.text("(...............................)", startX, y);
         y += 5;
         doc.text(`Tanggal: ${formattedDate}`, startX, y);
 
         doc.save(`Nota_Penjualan_${nomorNota}.pdf`);
     };
 
-    // Dropdown Kurir mirip dengan CRUDBarangTitiap.jsx (tapi filter jabatan 'Kurir')
-    // Handler untuk dropdown react-select (jika ingin pakai react-select, bukan <select>)
-    const handleKurirSelect = (selectedOption) => {
-        setDeliveryForm(prevForm => ({
-            ...prevForm,
-            id_pegawai: selectedOption ? selectedOption.value : ''
-        }));
-    };
-
-    // Opsi untuk react-select dropdown kurir
-    const kurirOptions = kurirList.map(kurir => ({
-        value: kurir.id,
-        label: kurir.nama_pegawai
-    }));
+   
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -495,8 +437,8 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                         <th>Metode Pengiriman</th>
                         <th>Alamat Pengiriman</th>
                         <th>Ongkir</th>
-                        <th>Status Pengiriman</th> {/* Status dari TransaksiPengiriman */}
-                        <th>Status Pembelian</th> {/* Status dari TransaksiPenjualan */}
+                        <th>Status Pengiriman</th>
+                        <th>Status Pembelian</th>
                         <th>Tanggal Pengiriman</th>
                         <th>Aksi</th>
                     </tr>
@@ -506,13 +448,12 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                         filteredPengambilanList.map((item, index) => (
                             <tr key={item.id}>
                                 <td>{index + 1}</td>
-                                {/* Mengakses melalui transaksi_penjualan */}
                                 <td>{item.transaksi_penjualan?.pembeli?.nama_pembeli || 'N/A'}</td>
                                 <td>{item.transaksi_penjualan?.total_harga_pembelian?.toLocaleString('id-ID') || 'N/A'}</td>
                                 <td>{item.transaksi_penjualan?.metode_pengiriman || 'N/A'}</td>
                                 <td>{item.transaksi_penjualan?.alamat_pengiriman || 'N/A'}</td>
                                 <td>{item.transaksi_penjualan?.ongkir?.toLocaleString('id-ID') || 'N/A'}</td>
-                                <td>{item.status_pengiriman || 'N/A'}</td> {/* Ini dari TransaksiPengiriman */}
+                                <td>{item.status_pengiriman || 'N/A'}</td>
                                 <td>{item.transaksi_penjualan?.status_pembelian || 'N/A'}</td>
                                 <td>{item.tgl_pengiriman || 'N/A'}</td>
                                 <td>
@@ -530,23 +471,49 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                             </button>
                                         )}
 
-                                        {item.transaksi_penjualan?.metode_pengiriman === 'diambil' && (
-                                            <button
-                                                className="btn btn-sm btn-warning mb-1 text-white"
-                                                onClick={() => handleOpenPengambilanModal(item)}
-                                            >
-                                                Input Pengambilan
-                                            </button>
-                                        )}
+                                       {item.transaksi_penjualan?.metode_pengiriman === 'diambil' && (
+                                            <>
+                                                <button
+                                                    className="btn btn-sm btn-warning mb-1 text-white"
+                                                    onClick={() => {
+                                                        setSelectedTransaksi(item);
+                                                        setPengambilanForm({
+                                                            ...pengambilanForm,
+                                                            id: item.id,
+                                                            tgl_pengiriman: item.tgl_pengiriman
+                                                                ? new Date(item.tgl_pengiriman).toISOString().slice(0, 16)
+                                                                : '',
+                                                            catatan: item.catatan || ''
+                                                        });
+                                                        // Buka modal input tanggal
+                                                        const modalInput = new window.bootstrap.Modal(document.getElementById('pengambilanInputModal'));
+                                                        modalInput.show();
+                                                    }}
+                                                >
+                                                    Tgl Pengambilan
+                                                </button>
 
-                                        <button
-                                            className="btn btn-sm btn-success"
-                                            onClick={() => {
-                                                handleDownloadNota(item);
-                                            }}
-                                        >
-                                            Unduh Nota
-                                        </button>
+                                                <button
+                                                    className="btn btn-sm btn-success mb-1"
+                                                    onClick={() => {
+                                                        setSelectedTransaksi(item);
+                                                        setPengambilanForm({
+                                                            ...pengambilanForm,
+                                                            id: item.id,
+                                                            tgl_pengiriman: item.tgl_pengiriman
+                                                                ? new Date(item.tgl_pengiriman).toISOString().slice(0, 16)
+                                                                : '',
+                                                            catatan: item.catatan || ''
+                                                        });
+                                                        // Buka modal konfirmasi pengambilan (beda modal)
+                                                        const modalKonfirmasi = new window.bootstrap.Modal(document.getElementById('pengambilanKonfirmasiModal'));
+                                                        modalKonfirmasi.show();
+                                                    }}
+                                                >
+                                                    Konfirmasi Pengambilan
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -573,7 +540,7 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                             {selectedTransaksi && (
                                 <div className="row">
                                     <div className="col-md-6">
-                                        <h6>Informasi Pengiriman:</h6> {/* Header diubah menjadi Informasi Pengiriman */}
+                                        <h6>Informasi Pengiriman:</h6>
                                         <p><strong>ID Pengiriman:</strong> {selectedTransaksi.id}</p>
                                         <p><strong>ID Transaksi Penjualan:</strong> {selectedTransaksi.id_transaksi_penjualan}</p>
                                         <p><strong>Tanggal Pengiriman:</strong> {selectedTransaksi.tgl_pengiriman ? new Date(selectedTransaksi.tgl_pengiriman).toLocaleString('id-ID') : 'N/A'}</p>
@@ -581,7 +548,7 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                         <p><strong>Biaya Pengiriman:</strong> {selectedTransaksi.biaya_pengiriman?.toLocaleString('id-ID') || 'N/A'}</p>
                                         <p><strong>Catatan Pengiriman:</strong> {selectedTransaksi.catatan || 'N/A'}</p>
                                         <hr />
-                                        <h6>Informasi Pembelian:</h6> {/* Tambahan informasi pembelian dari TransaksiPenjualan */}
+                                        <h6>Informasi Pembelian:</h6>
                                         <p><strong>Nama Pembeli:</strong> {selectedTransaksi.transaksi_penjualan?.pembeli?.nama_pembeli || 'N/A'}</p>
                                         <p><strong>Email Pembeli:</strong> {selectedTransaksi.transaksi_penjualan?.pembeli?.email || 'N/A'}</p>
                                         <p><strong>Total Harga Pembelian:</strong> {selectedTransaksi.transaksi_penjualan?.total_harga_pembelian?.toLocaleString('id-ID') || 'N/A'}</p>
@@ -601,8 +568,6 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                                     <p><strong>Harga Saat Transaksi:</strong> {detailItem.harga_saat_transaksi?.toLocaleString('id-ID') || 'N/A'}</p>
                                                     <p><strong>Deskripsi:</strong> {detailItem.barang?.deskripsi || 'N/A'}</p>
                                                     <p><strong>Status Barang:</strong> {detailItem.barang?.status_barang || 'N/A'}</p>
-
-                                                    {/* Carousel for images within each detail item */}
                                                     <div id={`carouselGambar-${detailItem.id}`} className="carousel slide" data-bs-ride="carousel">
                                                         <div className="carousel-inner">
                                                             {detailItem.barang?.gambar && (
@@ -648,6 +613,18 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                 </div>
                             )}
                         </div>
+                        <div className="modal-footer">
+                            <button
+                                className="btn btn-success"
+                                onClick={() => handleDownloadNota(selectedTransaksi)}
+                                disabled={!selectedTransaksi}
+                            >
+                                Unduh Nota
+                            </button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                                Tutup
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div >
@@ -670,13 +647,13 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                         <div className="mb-3">
                                             <label htmlFor="id_pegawai" className="form-label">Kurir</label>
                                             <Select
-                                                name="id_pegawai"
-                                                id="id_pegawai"
-                                                options={kurirOptions}
-                                                value={kurirOptions.find(option => option.value === deliveryForm.id_pegawai) || null}
-                                                onChange={handleKurirSelect}
-                                                placeholder="Pilih Kurir..."
-                                                isClearable
+                                            name="id_pegawai"
+                                            id="id_pegawai"
+                                            options={kurirOptions}
+                                            value={kurirOptions.find(opt => opt.value === deliveryForm.id_pegawai) || null}
+                                            onChange={handleKurirSelect}
+                                            placeholder="Pilih Kurir..."
+                                            isClearable
                                             />
                                         </div>
                                         <div className="mb-3">
@@ -714,7 +691,7 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                 </div>
             </div>
 
-            {/* Modal for Input Pengambilan */}
+           {/* Modal for Input Pengambilan */}
             <div className="modal fade" id="pengambilanInputModal" tabIndex="-1" aria-labelledby="pengambilanInputModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -729,16 +706,14 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                         <p><strong>ID Pengambilan:</strong> {selectedTransaksi.id}</p>
                                         <p><strong>Nama Pembeli:</strong> {selectedTransaksi.transaksi_penjualan?.pembeli?.nama_pembeli || 'N/A'}</p>
                                         <p><strong>Alamat Pengambilan:</strong> {selectedTransaksi.transaksi_penjualan?.alamat_pengiriman || 'N/A'}</p>
-                                        <p><strong>Metode Pengiriman:</strong> {selectedTransaksi.transaksi_penjualan?.metode_pengiriman || 'N/A'}</p>
-
                                         <div className="mb-3">
-                                            <label htmlFor="tgl_pengambilan" className="form-label">Tanggal Pengambilan</label>
+                                            <label htmlFor="tgl_pengiriman" className="form-label">Tanggal Pengambilan</label>
                                             <input
                                                 type="datetime-local"
                                                 className="form-control"
-                                                id="tgl_pengambilan"
-                                                name="tgl_pengambilan"
-                                                value={pengambilanForm.tgl_pengambilan}
+                                                id="tgl_pengiriman"
+                                                name="tgl_pengiriman"
+                                                value={pengambilanForm.tgl_pengiriman}
                                                 onChange={handlePengambilanChange}
                                                 required
                                             />
@@ -754,15 +729,39 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                                 onChange={handlePengambilanChange}
                                             ></textarea>
                                         </div>
-                                        {/* Status pengiriman will be set to 'diambil' automatically */}
                                     </>
                                 )}
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                <button type="submit" className="btn btn-primary">Konfirmasi Pengambilan</button>
+                                <button type="submit" className="btn btn-primary">Simpan Pengambilan</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            {/* Modal for Konfirmasi Pengambilan */}
+            <div className="modal fade" id="pengambilanKonfirmasiModal" tabIndex="-1" aria-labelledby="pengambilanKonfirmasiModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title" id="pengambilanKonfirmasiModalLabel">Konfirmasi Pengambilan</h5>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button
+                        type="button"
+                        className="btn btn-success"
+                        onClick={handleKonfirmasiPengambilan}
+                        disabled={!pengambilanForm.tgl_pengiriman}
+                        >
+                        Konfirmasi Pengambilan
+                        </button>
+                    </div>
                     </div>
                 </div>
             </div>

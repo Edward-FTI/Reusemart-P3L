@@ -142,18 +142,20 @@ class PengambilanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Mencari transaksi pengiriman berdasarkan ID
         $transaksi = TransaksiPengiriman::find($id);
 
-        // Jika transaksi tidak ditemukan
         if (!$transaksi) {
             return response()->json([
                 'message' => 'Data pengambilan tidak ditemukan'
             ], 404);
         }
 
-        // Memperbarui status pengiriman (jika ada di request, jika tidak gunakan status lama)
+        // Update field yang dikirim, fallback ke data lama kalau tidak ada
+        $transaksi->tgl_pengiriman = $request->input('tgl_pengiriman', $transaksi->tgl_pengiriman);
         $transaksi->status_pengiriman = $request->input('status_pengiriman', $transaksi->status_pengiriman);
+        $transaksi->catatan = $request->input('catatan', $transaksi->catatan);
+        $transaksi->id_pegawai = $request->input('id_pegawai', $transaksi->id_pegawai);
+
         $transaksi->save();
 
         return response()->json([
@@ -161,6 +163,7 @@ class PengambilanController extends Controller
             'data' => $transaksi
         ], 200);
     }
+
 
     /**
      * Menghapus transaksi pengambilan berdasarkan ID.
