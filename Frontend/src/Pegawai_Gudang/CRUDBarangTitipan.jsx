@@ -290,6 +290,8 @@ const CRUDBarangTitipan = () => {
         doc.save(`Nota_${barangPertama.penitip.nama_penitip}.pdf`);
     };
 
+    
+
 
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
