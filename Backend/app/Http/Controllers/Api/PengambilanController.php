@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Services\NotificationService; // Pastikan ini sesuai dengan namespace NotificationService
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use DateTime;
 use App\Models\Barang;
+use App\Models\Penitip; // Menggunakan model Penitip
+use App\Models\User; // Menggunakan model User
 use App\Models\TransaksiPengiriman; // Menggunakan model TransaksiPengiriman
 use App\Models\Pegawai;
 use App\Models\Pembeli;
@@ -100,6 +104,7 @@ class PengambilanController extends Controller
         ], 200);
     }
 
+
     public function update(Request $request, $id)
     {
         $transaksi = TransaksiPengiriman::find($id);
@@ -110,13 +115,57 @@ class PengambilanController extends Controller
             ], 404);
         }
 
-        // Update field yang dikirim, fallback ke data lama kalau tidak ada
         $transaksi->tgl_pengiriman = $request->input('tgl_pengiriman', $transaksi->tgl_pengiriman);
         $transaksi->status_pengiriman = $request->input('status_pengiriman', $transaksi->status_pengiriman);
         $transaksi->catatan = $request->input('catatan', $transaksi->catatan);
         $transaksi->id_pegawai = $request->input('id_pegawai', $transaksi->id_pegawai);
-
         $transaksi->save();
+
+        // Ambil data terkait untuk notifikasi
+        $notificationService = app(NotificationService::class);
+
+        // 1. Kirim notifikasi ke semua penitip dari barang-barang dalam transaksi ini
+        $barangs = $transaksi->barangs; // pastikan relasi `barangs` didefinisikan di model
+        foreach ($barangs as $barang) {
+            $penitip = Penitip::where('id', $barang->id_penitip)->first();
+            if ($penitip) {
+                $userPenitip = User::where('email', $penitip->email)->first();
+                if ($userPenitip) {
+                    Log::info("Notif Penitip: {$userPenitip->email} - Barang: {$barang->nama_barang}");
+                    $notificationService->sendNotification(
+                        $userPenitip->id,
+                        'Barang Dikirim',
+                        "Barang {$barang->nama_barang} sedang dikirim."
+                    );
+                }
+            }
+        }
+
+        // 2. Kirim notifikasi ke pembeli
+        $pembeli = $transaksi->pembeli; // pastikan relasi `pembeli` didefinisikan di model
+        if ($pembeli) {
+            $userPembeli = User::where('email', $pembeli->email)->first();
+            if ($userPembeli) {
+                Log::info("Notif Pembeli: {$userPembeli->email}");
+                $notificationService->sendNotification(
+                    $userPembeli->id,
+                    'Barang Dalam Pengiriman',
+                    "Pesanan Anda sedang dikirim. Mohon ditunggu."
+                );
+            }
+        }
+
+        // 3. Kirim notifikasi ke pegawai yang ditugaskan
+        $pegawaiId = $transaksi->id_pegawai;
+        $userPegawai = User::find($pegawaiId);
+        if ($userPegawai) {
+            Log::info("Notif Pegawai: {$userPegawai->email}");
+            $notificationService->sendNotification(
+                $userPegawai->id,
+                'Tugas Pengiriman',
+                "Anda telah ditugaskan untuk pengiriman ID {$transaksi->id}."
+            );
+        }
 
         return response()->json([
             'message' => "Pengambilan ID $id berhasil diperbarui",
