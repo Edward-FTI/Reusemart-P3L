@@ -105,13 +105,16 @@ class TransaksiPenjualanController extends Controller
                 }
             }
 
-            $poin_awal = floor($totalHarga / 10000);
+            // Perhitungan poin
+            $poin_awal = floor(max(0, $totalHarga - 20000) / 10000);
             $bonus = $totalHarga > 500000 ? floor($poin_awal * 0.2) : 0;
             $poin_total = $poin_awal + $bonus;
 
+            // Gunakan poin (1 poin = 100 rupiah)
             $poin_digunakan = min($validated['poin_digunakan'] ?? 0, $pembeli->point);
+            $potongan_dari_poin = $poin_digunakan * 100;
 
-            $totalSetelahPoin = max(0, ($totalHarga + $ongkir) - $poin_digunakan);
+            $totalSetelahPoin = max(0, ($totalHarga + $ongkir) - $potongan_dari_poin);
 
             if ($pembeli->saldo < $totalSetelahPoin) {
                 return response()->json([
@@ -128,13 +131,14 @@ class TransaksiPenjualanController extends Controller
                 'alamat_pengiriman' => $validated['metode_pengiriman'] === 'diantar' ? $validated['alamat_pengiriman'] : null,
                 'ongkir' => $ongkir,
                 'bukti_pembayaran' => $validated['bukti_pembayaran'] ?? '',
-                'status_pengiriman' => $validated['status_pengiriman'] === 'diantar' ? $validated['alamat_pengiriman'] : null,,
+
+
+                'status_pengiriman' => $validated['metode_pengiriman'] === 'diantar' ? 'diantar' : 'Menunggu Diambil',
+
                 'status_pembelian' => $validated['status_pembelian'],
                 'verifikasi_pembayaran' => false,
-                // 'id_pegawai' => 1,
             ]);
 
-            // Tambahan: Insert otomatis ke TransaksiPengiriman
             DB::table('transaksi_pengiriman')->insert([
                 'id_transaksi_penjualan' => $transaksi->id,
                 'id_pegawai' => 0,
@@ -182,6 +186,7 @@ class TransaksiPenjualanController extends Controller
             ], 500);
         }
     }
+
 
 
     public function indexPembeli()
