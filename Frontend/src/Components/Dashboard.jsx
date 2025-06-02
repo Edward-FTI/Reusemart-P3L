@@ -26,7 +26,13 @@ const Dashboard = () => {
     const fetchBarang = async () => {
       try {
         const response = await axios.get("http://localhost:8000/api/barang");
-        setBarang(response.data.data);
+
+        // Filter hanya barang yang statusnya "Dijual"
+        const barangDijual = response.data.data.filter(
+          (item) => item.status_barang === "Dijual"
+        );
+
+        setBarang(barangDijual);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching barang data:", error);

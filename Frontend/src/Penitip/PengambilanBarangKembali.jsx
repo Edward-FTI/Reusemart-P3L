@@ -23,9 +23,9 @@ const Transaksi_penitip = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBarangList, setFilteredBarangList] = useState([]);
   const [selectedBarang, setSelectedBarang] = useState(null);
-  const [selectedPengambilanBarang, setSelectedPengambilanBarang] = useState(null);
+  const [selectedPengambilanBarang, setSelectedPengambilanBarang] =
+    useState(null);
   const [tglPengambilan, setTglPengambilan] = useState("");
-
 
   const [form, setForm] = useState({
     id: "",
@@ -47,8 +47,14 @@ const Transaksi_penitip = () => {
     setLoading(true);
     try {
       const data = await GetTransaksi_Penitipan();
-      setBarangList(data);
-      setFilteredBarangList(data);
+
+      // Filter barang yang status_barang-nya bukan "barang untuk Donasi"
+      const filteredData = data.filter(
+        (item) => item.status_barang !== "barang untuk Donasi"
+      );
+
+      setBarangList(filteredData);
+      setFilteredBarangList(filteredData);
     } catch (error) {
       toast.error("Gagal mengambil data barang");
     } finally {
@@ -122,14 +128,18 @@ const Transaksi_penitip = () => {
   };
 
   const handleSubmitPengambilan = async () => {
-    const masaPenitipanDate = new Date(selectedPengambilanBarang.masa_penitipan);
+    const masaPenitipanDate = new Date(
+      selectedPengambilanBarang.masa_penitipan
+    );
     const inputDate = new Date(tglPengambilan);
     const diffDays = Math.ceil(
       (inputDate - masaPenitipanDate) / (1000 * 60 * 60 * 24)
     );
 
     if (diffDays < 0 || diffDays > 7) {
-      toast.error("Tanggal pengambilan harus dalam 7 hari setelah masa penitipan.");
+      toast.error(
+        "Tanggal pengambilan harus dalam 7 hari setelah masa penitipan."
+      );
       return;
     }
 
@@ -151,8 +161,6 @@ const Transaksi_penitip = () => {
     }
   };
 
-
-
   const handleUpdateTanggalPenitipan = async (barang) => {
     const sisaHariStr = getSisaWaktuPenitipan(
       barang.tgl_penitipan,
@@ -167,20 +175,13 @@ const Transaksi_penitip = () => {
     ) {
       try {
         const newMasaPenitipan = new Date(barang.masa_penitipan);
-        newMasaPenitipan.setDate(newMasaPenitipan.getDate() + 30);
+        newMasaPenitipan.setDate(newMasaPenitipan.getDate() + 31);
 
         await UpdatetTransaksi_Penitipan(barang.id, {
-            ...barang,
-            masa_penitipan: newMasaPenitipan.toISOString().split('T')[0],
-            penambahan_durasi: 1 // Set penambahan_durasi menjadi 1
+          ...barang,
+          masa_penitipan: newMasaPenitipan.toISOString().split("T")[0],
+          penambahan_durasi: 1, // Set penambahan_durasi menjadi 1
         });
-
-        // await UpdatetTransaksi_Penitipan(barang.id, {
-        //   ...barang,
-        //   tgl_penitipan: new Date().toISOString().split("T")[0], // tgl baru
-        //   masa_penitipan: newMasaPenitipan.toISOString().split("T")[0],
-        //   penambahan_durasi: 1,
-        // });
 
         toast.success("Berhasil menambah 30 hari masa penitipan");
         fetchBarang();
@@ -278,34 +279,34 @@ const Transaksi_penitip = () => {
                 <td>{b.status_barang}</td>
                 <td>{b.tgl_pengambilan}</td>
                 <td>
-                <div className="d-flex flex-column">
-                  <button
-                    className="btn btn-sm btn-primary me-2 mt-2"
-                    onClick={() => handleShowDetail(b)}
-                  >
-                    Detail
-                  </button>
-
-                  {b.status_barang !== "Diambil" && b.status_barang !== "Ditunggu" && (
+                  <div className="d-flex flex-column">
                     <button
-                      className="btn btn-sm btn-warning mt-2"
-                      onClick={() => handlePengambilan(b)}
+                      className="btn btn-sm btn-primary me-2 mt-2"
+                      onClick={() => handleShowDetail(b)}
                     >
-                      Penjadwalan
+                      Detail
                     </button>
-                  )}
 
-                  {b.penambahan_durasi !== 1 && (
-                    <button
-                      className="btn btn-sm btn-danger me-2 mt-2"
-                      onClick={() => handleUpdateTanggalPenitipan(b)}
-                    >
-                      Update Tanggal
-                    </button>
-                  )}
-                </div>
-              </td>
+                    {b.status_barang !== "Diambil" &&
+                      b.status_barang !== "Ditunggu" && (
+                        <button
+                          className="btn btn-sm btn-warning mt-2"
+                          onClick={() => handlePengambilan(b)}
+                        >
+                          Penjadwalan
+                        </button>
+                      )}
 
+                    {b.penambahan_durasi !== 1 && (
+                      <button
+                        className="btn btn-sm btn-danger me-2 mt-2"
+                        onClick={() => handleUpdateTanggalPenitipan(b)}
+                      >
+                        Update Tanggal
+                      </button>
+                    )}
+                  </div>
+                </td>
               </tr>
             ))
           ) : (
@@ -452,10 +453,7 @@ const Transaksi_penitip = () => {
               />
             </div>
             <div className="modal-footer">
-              <button
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
+              <button className="btn btn-secondary" data-bs-dismiss="modal">
                 Batal
               </button>
               <button
