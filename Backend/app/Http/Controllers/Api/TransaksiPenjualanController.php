@@ -128,10 +128,10 @@ class TransaksiPenjualanController extends Controller
                 'alamat_pengiriman' => $validated['metode_pengiriman'] === 'diantar' ? $validated['alamat_pengiriman'] : null,
                 'ongkir' => $ongkir,
                 'bukti_pembayaran' => $validated['bukti_pembayaran'] ?? '',
-                'status_pengiriman' => $validated['status_pengiriman'],
+                'status_pengiriman' => $validated['status_pengiriman'] === 'diantar' ? $validated['alamat_pengiriman'] : null,,
                 'status_pembelian' => $validated['status_pembelian'],
                 'verifikasi_pembayaran' => false,
-                'id_pegawai' => 1,
+                // 'id_pegawai' => 1,
             ]);
 
             // Tambahan: Insert otomatis ke TransaksiPengiriman
