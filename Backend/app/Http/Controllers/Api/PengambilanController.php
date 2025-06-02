@@ -68,10 +68,16 @@ class PengambilanController extends Controller
             ], 422);
         }
 
+        // Cek pegawai login
+        $pegawai = $this->getPegawai();
+        if (!$pegawai) {
+            return response()->json([
+                'message' => 'Pegawai tidak ditemukan atau bukan Pegawai Gudang',
+            ], 403);
+        }
+
         // Mencari transaksi pengiriman berdasarkan ID
         $transaksi = TransaksiPengiriman::find($request->id_transaksi);
-
-        // Jika transaksi tidak ditemukan
         if (!$transaksi) {
             return response()->json([
                 'message' => 'Transaksi Pengiriman tidak ditemukan'
@@ -79,6 +85,7 @@ class PengambilanController extends Controller
         }
 
         $transaksi->status_pengiriman = 'diambil';
+        $transaksi->id_pegawai = $pegawai->id;
         $transaksi->save();
 
         return response()->json([
