@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { GetAllCart } from "../Api/apiCart";
@@ -18,11 +18,37 @@ const OrderForm = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [proof, setProof] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timer, setTimer] = useState(60);
   const navigate = useNavigate();
+  const timerRef = useRef(null);
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (showUpload) {
+      setTimer(60);
+      timerRef.current = setInterval(() => {
+        setTimer((prev) => {
+          if (prev === 1) {
+            clearInterval(timerRef.current);
+            if (!proof) {
+              alert(
+                "Melebihi Batas Waktu Konfirmasi Pembayaran, Transaksi Gagal!"
+              );
+              navigate("/");
+            }
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      clearInterval(timerRef.current);
+    }
+
+    return () => clearInterval(timerRef.current);
+  }, [showUpload, proof, navigate]);
 
   const fetchData = async () => {
     try {
@@ -49,6 +75,13 @@ const OrderForm = () => {
 
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
+    if (!proof) {
+      alert(
+        "Anda harus mengupload bukti pembayaran sebelum konfirmasi pembayaran."
+      );
+      return;
+    }
+    clearInterval(timerRef.current);
     setIsSubmitting(true);
 
     const formData = new FormData();
@@ -59,11 +92,10 @@ const OrderForm = () => {
       "alamat_pengiriman",
       metode_pengiriman === "diantar" ? address : ""
     );
-
     formData.append("poin_digunakan", pointsToRedeem);
     formData.append("bukti_pembayaran", proof);
     formData.append("status_pengiriman", "diantar");
-    formData.append("status_pembelian", "pending");
+    formData.append("status_pembelian", "Diproses");
     formData.append("verifikasi_pembayaran", false);
 
     selectedCartIds.forEach((id, i) =>
@@ -71,9 +103,7 @@ const OrderForm = () => {
     );
 
     try {
-      console.log("Mengirim transaksi...");
-      const result = await Createtransaksi_penjualan(formData);
-      console.log("Transaksi sukses, redirecting...");
+      await Createtransaksi_penjualan(formData);
       navigate("/customer/profile");
     } catch (err) {
       console.error("Error saat submit:", err);
@@ -84,8 +114,12 @@ const OrderForm = () => {
     (acc, item) => acc + (item.barang?.harga_barang || 0),
     0
   );
-  const diskon = pointsToRedeem * 10000;
-  const totalPembayaran = Math.max(totalHarga - diskon, 0);
+
+  const ongkir =
+    deliveryMethod === "pickup" ? 0 : totalHarga >= 1500000 ? 0 : 100000;
+
+  const diskon = pointsToRedeem * 100;
+  const totalPembayaran = Math.max(totalHarga + ongkir - diskon, 0);
 
   return (
     <div className="container my-5">
@@ -174,7 +208,7 @@ const OrderForm = () => {
                 }}
               />
               <div className="form-text">
-                1 poin = Rp10.000 | Maksimal: {buyerPoints} poin
+                1 poin = Rp100 | Maksimal: {buyerPoints} poin
               </div>
             </div>
 
@@ -194,8 +228,11 @@ const OrderForm = () => {
                 ))}
               </ul>
               <p>
-                Total Harga:{" "}
+                Total Harga Barang:{" "}
                 <strong>Rp{totalHarga.toLocaleString("id-ID")}</strong>
+              </p>
+              <p>
+                Ongkir: <strong>Rp{ongkir.toLocaleString("id-ID")}</strong>
               </p>
               <p>
                 Diskon Poin: <strong>Rp{diskon.toLocaleString("id-ID")}</strong>
@@ -209,25 +246,24 @@ const OrderForm = () => {
             </div>
 
             <div className="d-grid">
-              <div className="d-grid">
-                <button
-                  type="submit"
-                  className={`btn btn-lg ${
-                    buyerSaldo < totalPembayaran
-                      ? "btn-secondary"
-                      : "btn-success"
-                  }`}
-                  disabled={buyerSaldo < totalPembayaran}
-                >
-                  {buyerSaldo < totalPembayaran
-                    ? "Saldo Tidak Cukup"
-                    : "Bayar Sekarang"}
-                </button>
-              </div>
+              <button
+                type="submit"
+                className={`btn btn-lg ${
+                  buyerSaldo < totalPembayaran ? "btn-secondary" : "btn-success"
+                }`}
+                disabled={buyerSaldo < totalPembayaran}
+              >
+                {buyerSaldo < totalPembayaran
+                  ? "Saldo Tidak Cukup"
+                  : "Bayar Sekarang"}
+              </button>
             </div>
           </form>
         ) : (
           <form onSubmit={handleFinalSubmit}>
+            <div className="mb-2 text-end text-danger fw-bold">
+              Waktu tersisa: {timer} detik
+            </div>
             <div className="mb-4">
               <label htmlFor="proof" className="form-label">
                 Upload Bukti Pembayaran:
