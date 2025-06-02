@@ -154,6 +154,7 @@ const CRUDBarangTitipan = () => {
 
             if (isEdit) {
                 // await UpdateBarang(formData);
+                form.tgl_pengambilan = null;
                 await UpdateBarang(form); // Kirim objek, bukan FormData
                 toast.success('Berhasil update data barang');
             } else {

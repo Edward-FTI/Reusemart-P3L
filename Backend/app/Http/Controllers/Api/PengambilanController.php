@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-
+use DateTime;
 use App\Models\Barang;
 use App\Models\TransaksiPengiriman; // Menggunakan model TransaksiPengiriman
 use App\Models\Pegawai;
@@ -142,5 +142,44 @@ class PengambilanController extends Controller
         return response()->json([
             'message' => "Pengambilan ID $id berhasil dihapus"
         ], 200);
+    }
+
+    public function prosesTransaksiHangusOtomatis()
+    {
+        $pengirimanList = TransaksiPengiriman::with('transaksiPenjualan.detail.barang')
+            ->whereNotNull('tgl_pengambilan')
+            ->where('status_transaksi', '!=', 'Hangus')
+            ->get();
+
+        $count = 0;
+
+        foreach ($pengirimanList as $pengiriman) {
+            $tglPengambilan = new DateTime($pengiriman->tgl_pengambilan);
+            $hariIni = new DateTime();
+
+            $selisih = $hariIni->diff($tglPengambilan)->days;
+
+            if ($hariIni > $tglPengambilan && $selisih >= 2) {
+                $pengiriman->status_transaksi = 'Hangus';
+                $pengiriman->save();
+
+                $transaksiPenjualan = $pengiriman->transaksiPenjualan;
+                if ($transaksiPenjualan) {
+                    foreach ($transaksiPenjualan->detail as $detail) {
+                        $barang = $detail->barang;
+                        if ($barang) {
+                            $barang->status_barang = 'barang untuk donasi';
+                            $barang->save();
+                        }
+                    }
+                }
+
+                $count++;
+            }
+        }
+
+        return response()->json([
+            'message' => "Pengecekan selesai. $count transaksi diperbarui menjadi 'Hangus'.",
+        ]);
     }
 }
