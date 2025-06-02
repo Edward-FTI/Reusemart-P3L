@@ -236,8 +236,8 @@ class BarangSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'id_penitip' => 11,
-                'id_kategori' => 11,
+                'id_penitip' => 2,
+                'id_kategori' => 3,
                 'id_pegawai' => 10,
                 'id_hunter' => null,
                 'tgl_penitipan' => now(),
@@ -256,7 +256,7 @@ class BarangSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'id_penitip' => 12,
+                'id_penitip' => 2,
                 'id_kategori' => 3,
                 'id_pegawai' => 10,
                 'id_hunter' => null,
@@ -276,7 +276,7 @@ class BarangSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'id_penitip' => 13,
+                'id_penitip' => 2,
                 'id_kategori' => 4,
                 'id_pegawai' => 10,
                 'id_hunter' => null,
