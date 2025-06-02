@@ -535,13 +535,38 @@ const CRUDPengirimanPembeli = () => {
                                         </button>
 
                                         {item.transaksi_penjualan?.metode_pengiriman === 'dikirim' && (
-                                            <button
-                                                className="btn btn-sm btn-info mb-1 text-white"
-                                                onClick={() => handleOpenDeliveryModal(item)}
-                                            >
-                                                Input Pengiriman
-                                            </button>
+                                            <>
+                                                <button
+                                                    className="btn btn-sm btn-info mb-1 text-white"
+                                                    onClick={() => handleOpenDeliveryModal(item)}
+                                                >
+                                                    Input Pengiriman
+                                                </button>
+
+                                                <button
+                                                    className="btn btn-sm btn-success mb-1"
+                                                    onClick={() => {
+                                                        setSelectedTransaksi(item);
+                                                        setPengambilanForm({
+                                                            ...pengambilanForm,
+                                                            id: item.id,
+                                                            tgl_pengiriman: item.tgl_pengiriman
+                                                                ? new Date(item.tgl_pengiriman).toISOString().slice(0, 16)
+                                                                : '',
+                                                            catatan: item.catatan || '',
+                                                            created_at: item.transaksi_penjualan?.created_at
+                                                        });
+                                                        const modalKonfirmasi = new window.bootstrap.Modal(
+                                                            document.getElementById('pengambilanKonfirmasiModal')
+                                                        );
+                                                        modalKonfirmasi.show();
+                                                    }}
+                                                >
+                                                    Konfirmasi Pengiriman
+                                                </button>
+                                            </>
                                         )}
+
 
                                        {item.transaksi_penjualan?.metode_pengiriman === 'diambil' && (
                                             <>
@@ -861,7 +886,7 @@ const CRUDPengirimanPembeli = () => {
                         onClick={handleKonfirmasiPengambilan}
                         disabled={!pengambilanForm.tgl_pengiriman}
                         >
-                        Konfirmasi Pengambilan
+                        Konfirmasi
                         </button>
                     </div>
                     </div>
@@ -872,4 +897,3 @@ const CRUDPengirimanPembeli = () => {
 };
 
 export default CRUDPengirimanPembeli;
-
