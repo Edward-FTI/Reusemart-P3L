@@ -468,8 +468,6 @@ const CRUDBarangTitipan = () => {
                                     </select>
                                 </div>
 
-
-
                                 <label htmlFor="penitip" className="form-label">Hunter</label>
                                 <div className="mb-3">
                                     <Select
@@ -493,15 +491,7 @@ const CRUDBarangTitipan = () => {
                                         placeholder="Cari Hunter..."
                                         isClearable
                                     />
-
                                 </div>
-
-
-
-
-
-
-
 
                                 <label htmlFor="tgl_penitipan" className="form-label">Tanggal Penitipan</label>
                                 <div className="mb-3">
