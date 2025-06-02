@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('id_penitip')->constrained('penitips');
             $table->foreignId('id_kategori')->constrained('kategori_barangs');
             $table->foreignId('id_pegawai')->constrained('pegawais');
+            $table->foreignId('id_hunter')->nullable()->constrained('pegawais');
             $table->dateTime('tgl_penitipan');
             $table->dateTime('masa_penitipan');
             $table->integer('penambahan_durasi')->default(0);

@@ -134,6 +134,17 @@ class PegawaiSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
+            [
+                'id_jabatan' => 5,
+                'nama' => 'Susanto',
+                'tgl_lahir' => '2020-12-10',
+                'email' => 'susanto@example.com',
+                'password' => bcrypt('password123'),
+                'gaji' => 5100000,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

@@ -1,12 +1,12 @@
 // CRUDPengiriman(Penitip).jsx
-
+ 
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "sonner";
 import Select from "react-select";
 import jsPDF from "jspdf";
 import { Link } from "react-router-dom";
-
+ 
 import {
   GetAllBarang,
   CreateBarang,
@@ -18,7 +18,7 @@ import { GetAllKategori } from "../Api/apiKategori";
 import { GetAllPenitip } from "../Api/apiPenitip";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-
+ 
 const CRUDPengirimanPenitip = () => {
   const [barangList, setBarangList] = useState([]);
   const [kategoriList, setKategoriList] = useState([]);
@@ -27,7 +27,7 @@ const CRUDPengirimanPenitip = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBarangList, setFilteredBarangList] = useState([]);
   const [selectedBarang, setSelectedBarang] = useState(null);
-
+ 
   const handleShowDetail = (barang) => {
     setSelectedBarang(barang);
     const modal = new window.bootstrap.Modal(
@@ -35,7 +35,7 @@ const CRUDPengirimanPenitip = () => {
     );
     modal.show();
   };
-
+ 
   const [form, setForm] = useState({
     id: "",
     id_penitip: "",
@@ -46,11 +46,11 @@ const CRUDPengirimanPenitip = () => {
     berat_barang: "",
     deskripsi: "",
     status_garansi: "",
-    status_barang: "diambil_kembali",
+    status_barang: "diambil kembali",
     gambar: "",
     gambar_dua: "",
   });
-
+ 
   const fetchBarang = async () => {
     try {
       const data = await GetAllBarang();
@@ -64,10 +64,10 @@ const CRUDPengirimanPenitip = () => {
       toast.error("Gagal mengambil data barang");
     }
   };
-
+ 
   const handleSearch = () => {
     const search = searchTerm.toLowerCase();
-
+ 
     const filtered = barangList.filter((b) => {
       return (
         b.nama_barang?.toLowerCase().includes(search) ||
@@ -83,10 +83,10 @@ const CRUDPengirimanPenitip = () => {
         b.pegawai?.nama?.toLowerCase().includes(search)
       );
     });
-
+ 
     setFilteredBarangList(filtered);
   };
-
+ 
   const fetchKategori = async () => {
     try {
       const data = await GetAllKategori();
@@ -95,7 +95,7 @@ const CRUDPengirimanPenitip = () => {
       toast.error("Gagal mengambil data kategori");
     }
   };
-
+ 
   const fetchPenitip = async () => {
     try {
       const data = await GetAllPenitip();
@@ -104,13 +104,13 @@ const CRUDPengirimanPenitip = () => {
       toast.error("Gagal mengambil data penitip");
     }
   };
-
+ 
   useEffect(() => {
     fetchBarang();
     fetchKategori();
     fetchPenitip();
   }, []);
-
+ 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setForm({
@@ -118,14 +118,14 @@ const CRUDPengirimanPenitip = () => {
       [name]: files ? files[0] : value,
     });
   };
-
+ 
   const handelKonfirmasi = async (e, barang) => {
     e.preventDefault();
-
+ 
     try {
       // Call the new API endpoint specifically for status updates
       await UpdateBarangStatus(barang.id, "transaksi_selesai");
-
+ 
       // Update the local state to reflect the change immediately
       const updatedBarangList = barangList.map((item) =>
         item.id === barang.id
@@ -138,11 +138,11 @@ const CRUDPengirimanPenitip = () => {
       );
       setBarangList(reFiltered);
       setFilteredBarangList(reFiltered);
-
+ 
       toast.success(
         `Status barang '${barang.nama_barang}' berhasil diubah menjadi 'transaksi selesai'`
       );
-
+ 
       // No need to open the form modal or set isEdit true here,
       // as this action is just a status update, not an edit operation of the whole form.
       // If you still want to show the form modal with the updated data,
@@ -156,7 +156,7 @@ const CRUDPengirimanPenitip = () => {
       toast.error("Gagal mengubah status barang");
     }
   };
-
+ 
   const handleEdit = (barang) => {
     setForm({ ...barang, gambar: "", gambar_dua: "" });
     setIsEdit(true);
@@ -165,7 +165,7 @@ const CRUDPengirimanPenitip = () => {
     );
     modal.show();
   };
-
+ 
   const handleDelete = async (id) => {
     try {
       if (window.confirm("Yakin ingin menghapus data ini?")) {
@@ -178,7 +178,7 @@ const CRUDPengirimanPenitip = () => {
       toast.error("Gagal menghapus data barang");
     }
   };
-
+ 
   const resetForm = () => {
     setForm({
       id: "",
@@ -196,26 +196,14 @@ const CRUDPengirimanPenitip = () => {
     });
     setIsEdit(false);
   };
-
+ 
   return (
     <div className="container mt-5 bg-white p-4 rounded shadow">
       {/* Header: Judul & Tombol Tambah */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">Data Pengiriman Penitip</h2>
-        <button
-          className="btn btn-success"
-          onClick={() => {
-            resetForm();
-            const modal = new window.bootstrap.Modal(
-              document.getElementById("formModal")
-            );
-            modal.show();
-          }}
-        >
-          Tambah Data
-        </button>
       </div>
-
+ 
       {/* Navigasi Penitip & Pembeli + Pencarian */}
       <div className="row mb-4">
         <div className="col-md-6 d-flex gap-2">
@@ -254,7 +242,7 @@ const CRUDPengirimanPenitip = () => {
           </form>
         </div>
       </div>
-
+ 
       {/* Tabel Barang */}
       <table className="table table-bordered table-hover">
         <thead className="table-light">
@@ -314,7 +302,7 @@ const CRUDPengirimanPenitip = () => {
           )}
         </tbody>
       </table>
-
+ 
       {/* Modal untuk detail barang */}
       <div
         className="modal fade"
@@ -394,7 +382,7 @@ const CRUDPengirimanPenitip = () => {
                       </button>
                     </div>
                   </div>
-
+ 
                   <div className="col-md-6">
                     <h5>{selectedBarang.nama_barang}</h5>
                     <p>
@@ -423,5 +411,5 @@ const CRUDPengirimanPenitip = () => {
     </div>
   );
 };
-
+ 
 export default CRUDPengirimanPenitip;
