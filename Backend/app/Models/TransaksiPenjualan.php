@@ -22,7 +22,7 @@ class TransaksiPenjualan extends Model
         'ongkir',
         'bukti_pembayaran',
         'status_pengiriman',
-        'id_pegawai',
+        // 'id_pegawai',
         'status_pembelian',
         'verifikasi_pembayaran',
     ];
