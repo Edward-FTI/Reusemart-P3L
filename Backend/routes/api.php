@@ -48,7 +48,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
     Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
-    
+
 
 
     // ======================= Jabatan =======================
@@ -155,6 +155,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/pengambilan/{id}', [PengambilanController::class, 'destroy']);
     Route::get('/pengambilan/searchByIdPembeli/{id}', [PengambilanController::class, 'searchByIdPembeli']);
     Route::get('/pengambilan/searchByIdTransaksi/{id}', [PengambilanController::class, 'searchByIdTransaksi']);
+
 
     //Transaksi Donasi
     Route::get('/transaksi-donasi', [TransaksiDonasiController::class, 'index']);

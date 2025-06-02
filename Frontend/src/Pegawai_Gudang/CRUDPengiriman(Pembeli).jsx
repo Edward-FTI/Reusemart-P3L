@@ -15,7 +15,7 @@ import {
 
 import { GetAllKategori } from "../Api/apiKategori";
 import { GetAllPenitip } from "../Api/apiPenitip";
-import { GetAllPegawai } from "../Api/apiPegawai"; // Import API untuk mendapatkan data pegawai
+import { GetAllPegawai, GetPegawaiByJabatan } from "../Api/apiPegawai"; // Import API untuk mendapatkan data pegawai
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -62,7 +62,6 @@ const CRUDPengirimanPembeli = () => {
     const [pengambilanForm, setPengambilanForm] = useState({
         id: '',
         tgl_pengambilan: '', // Tanggal pengambilan
-        status_pengiriman: '', // Status pengiriman (e.g., 'diambil')
         catatan: '' // Catatan pengambilan
     });
 
@@ -82,7 +81,7 @@ const CRUDPengirimanPembeli = () => {
         try {
             const data = await GetAllPegawai();
             // Filter pegawai where jabatan is "Kurir"
-            const kurirData = data.filter(pegawai => pegawai.jabatan === 'Kurir');
+            const kurirData = data.filter(pegawai => pegawai.jabatan === 4);
             setKurirList(kurirData);
         } catch (error) {
             console.error("Error fetching pegawai data:", error);
@@ -199,7 +198,7 @@ const CRUDPengirimanPembeli = () => {
         setDeliveryForm({
             id: transaksi.id,
             tgl_pengiriman: transaksi.tgl_pengiriman ? new Date(transaksi.tgl_pengiriman).toISOString().slice(0, 16) : '', // Format for datetime-local input
-            status_pengiriman: transaksi.status_pengiriman || '',
+            // status_pengiriman: transaksi.status_pengiriman || '',
             catatan: transaksi.catatan || '',
             id_pegawai: transaksi.id_pegawai || '' // Set current courier if exists
         });
@@ -435,20 +434,24 @@ const formattedDate = today.toLocaleDateString('id-ID', {
         doc.save(`Nota_Penjualan_${nomorNota}.pdf`);
     };
 
+    // Dropdown Kurir mirip dengan CRUDBarangTitiap.jsx (tapi filter jabatan 'Kurir')
+    // Handler untuk dropdown react-select (jika ingin pakai react-select, bukan <select>)
+    const handleKurirSelect = (selectedOption) => {
+        setDeliveryForm(prevForm => ({
+            ...prevForm,
+            id_pegawai: selectedOption ? selectedOption.value : ''
+        }));
+    };
 
+    // Opsi untuk react-select dropdown kurir
+    const kurirOptions = kurirList.map(kurir => ({
+        value: kurir.id,
+        label: kurir.nama_pegawai
+    }));
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="mb-0">Data Pengiriman Pembeli</h2>
-                <button
-                    className="btn btn-success"
-                    onClick={() => {
-                        resetForm();
-                        toast.info("Fitur tambah data belum diimplementasikan untuk Pengambilan.");
-                    }}
-                >
-                    Tambah Data
-                </button>
             </div>
 
             <div className="row mb-4">
@@ -494,7 +497,7 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                         <th>Ongkir</th>
                         <th>Status Pengiriman</th> {/* Status dari TransaksiPengiriman */}
                         <th>Status Pembelian</th> {/* Status dari TransaksiPenjualan */}
-                        <th>Verifikasi Pembayaran</th>
+                        <th>Tanggal Pengiriman</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -511,14 +514,14 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                 <td>{item.transaksi_penjualan?.ongkir?.toLocaleString('id-ID') || 'N/A'}</td>
                                 <td>{item.status_pengiriman || 'N/A'}</td> {/* Ini dari TransaksiPengiriman */}
                                 <td>{item.transaksi_penjualan?.status_pembelian || 'N/A'}</td>
-                                <td>{item.transaksi_penjualan?.verifikasi_pembayaran || 'N/A'}</td>
+                                <td>{item.tgl_pengiriman || 'N/A'}</td>
                                 <td>
                                     <div className="d-flex flex-column">
                                         <button className="btn btn-sm btn-primary mb-1" onClick={() => handleShowDetail(item)}>
                                             Detail
                                         </button>
 
-                                        {item.transaksi_penjualan?.metode_pengiriman === 'dikirim' && item.transaksi_penjualan?.status_pembelian === 'selesai' && (
+                                        {item.transaksi_penjualan?.metode_pengiriman === 'dikirim' && (
                                             <button
                                                 className="btn btn-sm btn-info mb-1 text-white"
                                                 onClick={() => handleOpenDeliveryModal(item)}
@@ -527,7 +530,7 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                             </button>
                                         )}
 
-                                        {item.transaksi_penjualan?.metode_pengiriman === 'diambil' && item.transaksi_penjualan?.status_pembelian === 'selesai' && (
+                                        {item.transaksi_penjualan?.metode_pengiriman === 'diambil' && (
                                             <button
                                                 className="btn btn-sm btn-warning mb-1 text-white"
                                                 onClick={() => handleOpenPengambilanModal(item)}
@@ -664,8 +667,18 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                         <p><strong>ID Pengiriman:</strong> {selectedTransaksi.id}</p>
                                         <p><strong>Nama Pembeli:</strong> {selectedTransaksi.transaksi_penjualan?.pembeli?.nama_pembeli || 'N/A'}</p>
                                         <p><strong>Alamat Pengiriman:</strong> {selectedTransaksi.transaksi_penjualan?.alamat_pengiriman || 'N/A'}</p>
-                                        <p><strong>Metode Pengiriman:</strong> {selectedTransaksi.transaksi_penjualan?.metode_pengiriman || 'N/A'}</p>
-
+                                        <div className="mb-3">
+                                            <label htmlFor="id_pegawai" className="form-label">Kurir</label>
+                                            <Select
+                                                name="id_pegawai"
+                                                id="id_pegawai"
+                                                options={kurirOptions}
+                                                value={kurirOptions.find(option => option.value === deliveryForm.id_pegawai) || null}
+                                                onChange={handleKurirSelect}
+                                                placeholder="Pilih Kurir..."
+                                                isClearable
+                                            />
+                                        </div>
                                         <div className="mb-3">
                                             <label htmlFor="tgl_pengiriman" className="form-label">Tanggal Pengiriman</label>
                                             <input
@@ -677,42 +690,6 @@ const formattedDate = today.toLocaleDateString('id-ID', {
                                                 onChange={handleDeliveryChange}
                                                 required
                                             />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="id_pegawai" className="form-label">Kurir</label>
-                                            <select
-                                                className="form-select"
-                                                id="id_pegawai"
-                                                name="id_pegawai"
-                                                value={deliveryForm.id_pegawai}
-                                                onChange={handleDeliveryChange}
-                                                required
-                                            >
-                                                <option value="">Pilih Kurir</option>
-                                                {kurirList.map((kurir) => (
-                                                    <option key={kurir.id} value={kurir.id}>
-                                                        {kurir.nama_pegawai}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        {/* You might still need a status_pengiriman input if it's separate from courier assignment */}
-                                        <div className="mb-3">
-                                            <label htmlFor="status_pengiriman" className="form-label">Status Pengiriman</label>
-                                            <select
-                                                className="form-select"
-                                                id="status_pengiriman"
-                                                name="status_pengiriman"
-                                                value={deliveryForm.status_pengiriman}
-                                                onChange={handleDeliveryChange}
-                                                required
-                                            >
-                                                <option value="">Pilih Status</option>
-                                                <option value="diproses">Diproses</option>
-                                                <option value="dikirim">Dikirim</option>
-                                                <option value="terkirim">Terkirim</option>
-                                                <option value="gagal kirim">Gagal Kirim</option>
-                                            </select>
                                         </div>
                                         <div className="mb-3">
                                             <label htmlFor="catatan" className="form-label">Catatan (Opsional)</label>
@@ -794,3 +771,4 @@ const formattedDate = today.toLocaleDateString('id-ID', {
 };
 
 export default CRUDPengirimanPembeli;
+
