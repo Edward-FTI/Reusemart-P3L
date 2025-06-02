@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:mobile/Hunter/hunter.dart';
 import 'package:mobile/Kurir/kurir.dart';
 import 'package:mobile/Pembeli/pembeli.dart';
 import 'package:mobile/Penitip/penitip.dart';
 import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 import 'package:mobile/data/datasource/remote/auth_remote_datasource.dart';
-// import 'package:mobile_design/profile/profile_pembeli.dart';
+import 'package:mobile/data/datasource/remote/user_remote_datasource.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -16,9 +17,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   void dispose() {
@@ -27,54 +27,58 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _login(String email, String password) async {
-    // form validation
+  Future<void> _login(String email, String password) async {
     if (_formKey.currentState!.validate()) {
       final result = await AuthRemoteDatasource().login(email, password);
+
       if (result != null) {
         await AuthLocalDatasource().saveUserData(result);
-        String role = result.user!.role!;
-        // If login is successful, navigate to the profile page
-        if (role == 'Pembeli') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => ProfilePembeliPage()),
-          );
-        } else if (role == 'Penitip') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => ProfilePenitipPage()),
-          );
-        } else if (role == 'Hunter') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => ProfileHunterPage()),
-          );
-        } else if (role == 'Kurir') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => ProfileKurirPage()),
-          );
-        } else {
-          const snackBar = SnackBar(
-            content: Text('Role not recognized, please contact support.'),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+        
+        final fcmToken = await FirebaseMessaging.instance.getToken();
+        if (fcmToken != null) {
+          await UserRemoteDatasource().updateFcmToken(fcmToken);
         }
-        const snackBar = SnackBar(
-          content: Text('Login successful!'),
+
+        
+        String role = result.user!.role!;
+        Widget? nextPage;
+        switch (role) {
+          case 'Pembeli':
+            nextPage = ProfilePembeliPage();
+            break;
+          case 'Penitip':
+            nextPage = ProfilePenitipPage();
+            break;
+          case 'Hunter':
+            nextPage = ProfileHunterPage();
+            break;
+          case 'Kurir':
+            nextPage = ProfileKurirPage();
+            break;
+          default:
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Role tidak dikenali.')),
+            );
+            return;
+        }
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => nextPage!),
         );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      } else {
-        // If login fails, display a snackbar with an error message
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login failed')),
+          const SnackBar(content: Text('Login berhasil!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login gagal, cek email dan password.')),
         );
       }
     } else {
-      // If the form is not valid, display a snackbar with an error message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
+        const SnackBar(content: Text('Mohon isi semua field.')),
       );
     }
   }
@@ -91,7 +95,6 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 children: [
                   SizedBox(height: constraints.maxHeight * 0.1),
-                  SizedBox(height: constraints.maxHeight * 0.1),
                   Text(
                     "Login",
                     style: TextStyle(fontSize: 50, fontWeight: FontWeight.w800),
@@ -102,71 +105,57 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       children: [
                         TextFormField(
+                          controller: emailController,
                           decoration: const InputDecoration(
                             hintText: 'Email',
                             filled: true,
                             fillColor: Color(0xFFF5FCF9),
                             contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16.0 * 1.5, vertical: 16.0),
+                                horizontal: 24.0, vertical: 16.0),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50)),
+                              borderRadius: BorderRadius.all(Radius.circular(50)),
                             ),
                           ),
-                          controller: emailController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your email';
+                              return 'Masukkan email';
                             }
-                            // Add more validation if needed
                             return null;
                           },
-                          onSaved: (email) {
-                            // Save it
-                          },
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: TextFormField(
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              hintText: 'Password',
-                              filled: true,
-                              fillColor: Color(0xFFF5FCF9),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16.0 * 1.5, vertical: 16.0),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                              ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: passwordController,
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            hintText: 'Password',
+                            filled: true,
+                            fillColor: Color(0xFFF5FCF9),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 16.0),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.all(Radius.circular(50)),
                             ),
-                            controller: passwordController,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              // Add more validation if needed
-                              return null;
-                            },
-                            onSaved: (passaword) {
-                              // Save it
-                            },
                           ),
-                        ),
-                        SizedBox(height: 20),
-
-                        // ini button untuk arahkan ke halaman setelah login
-                        ElevatedButton(
-                          onPressed: () {
-                            _login(emailController.text, passwordController.text);
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Masukkan password';
+                            }
+                            return null;
                           },
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () => _login(
+                            emailController.text,
+                            passwordController.text,
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF00BF6D),
                             foregroundColor: Colors.white,
                             minimumSize: const Size(double.infinity, 48),
-                            // shape: const StadiumBorder(),
                           ),
                           child: const Text("Sign in"),
                         ),
@@ -182,6 +171,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-
-

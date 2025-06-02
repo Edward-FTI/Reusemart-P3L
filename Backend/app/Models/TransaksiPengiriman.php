@@ -34,4 +34,30 @@ class TransaksiPengiriman extends Model
         return $this->belongsTo(Pegawai::class, 'id_pegawai');
     }
 
+
+//     public function barangs()
+//     {
+//         return $this->hasManyThrough(
+//             Barang::class,
+//             Detail_transaksi_penjualan::class,
+//             'id_transaksi_penjualan', // foreign key di detail transaksi
+//             'id',                      // foreign key di barang
+//             'id_transaksi_penjualan', // local key di TransaksiPengiriman
+//             'id_barang'               // local key di detail transaksi
+//         );
+//     }
+
+//     // relasi ke pembeli lewat transaksi
+//     public function pembeli()
+//     {
+//         return $this->hasOneThrough(
+//             Pembeli::class,
+//             TransaksiPenjualan::class,
+//             'id', // id transaksi_penjualan
+//             'id', // id pembeli
+//             'id_transaksi_penjualan', // foreign key di TransaksiPengiriman
+//             'id_pembeli' // foreign key di TransaksiPenjualan
+//         );
+//     }
+
 }
