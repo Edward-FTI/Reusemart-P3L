@@ -41,7 +41,7 @@ const CRUDBarangTitipan = () => {
         id: '',
         id_penitip: '',
         id_kategori: '',
-        id_hunter: '',
+        id_hunter: 0,
         tgl_penitipan: '',
         nama_barang: '',
         harga_barang: '',
@@ -131,7 +131,7 @@ const CRUDBarangTitipan = () => {
             formData.append('id', form.id);
             formData.append('id_penitip', form.id_penitip);
             formData.append('id_kategori', form.id_kategori);
-            formData.append('id_hunter', form.id_hunter);
+            formData.append('id_hunter', parseInt(form.id_hunter) || 0);
             formData.append('tgl_penitipan', form.tgl_penitipan);
             formData.append('nama_barang', form.nama_barang);
             formData.append('harga_barang', form.harga_barang);
@@ -139,6 +139,11 @@ const CRUDBarangTitipan = () => {
             formData.append('deskripsi', form.deskripsi);
             formData.append('status_garansi', form.status_garansi);
             // formData.append('status_barang', form.status_barang);
+
+            if (formData.get("tgl_pengambilan") === "") {
+                formData.set("tgl_pengambilan", null);
+            }
+
 
             if (form.gambar) {
                 formData.append('gambar', form.gambar);
@@ -149,6 +154,7 @@ const CRUDBarangTitipan = () => {
 
             if (isEdit) {
                 // await UpdateBarang(formData);
+                form.tgl_pengambilan = null;
                 await UpdateBarang(form); // Kirim objek, bukan FormData
                 toast.success('Berhasil update data barang');
             } else {
@@ -166,7 +172,7 @@ const CRUDBarangTitipan = () => {
 
 
     const handleEdit = (barang) => {
-        setForm({ ...barang, gambar: '', gambar_dua: '' });
+        setForm({ ...barang, id_hunter: parseInt(barang.id_hunter) || 0, gambar: '', gambar_dua: '' });
         setIsEdit(true);
         const modal = new window.bootstrap.Modal(document.getElementById('formModal'));
         modal.show();
@@ -190,7 +196,7 @@ const CRUDBarangTitipan = () => {
             id: '',
             id_penitip: '',
             id_kategori: '',
-            id_hunter: '',
+            id_hunter: 0,
             tgl_penitipan: '',
             nama_barang: '',
             harga_barang: '',
@@ -283,6 +289,8 @@ const CRUDBarangTitipan = () => {
         doc.rect(8, 10, 190, y + 10); // kotak sekitar seluruh isi
         doc.save(`Nota_${barangPertama.penitip.nama_penitip}.pdf`);
     };
+
+    
 
 
     return (
@@ -484,9 +492,9 @@ const CRUDBarangTitipan = () => {
                                                 value: r.id,
                                                 label: r.nama
                                             }))
-                                            .find(option => option.value === form.id_hunter)}
+                                            .find(option => option.value === parseInt(form.id_hunter))}
                                         onChange={(selectedOption) =>
-                                            setForm({ ...form, id_hunter: selectedOption?.value || '' })
+                                            setForm({ ...form, id_hunter: parseInt(selectedOption?.value) ?? 0 })
                                         }
                                         placeholder="Cari Hunter..."
                                         isClearable

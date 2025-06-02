@@ -202,7 +202,7 @@ class BarangController extends Controller
     }
 
 
-public function updatePublic(Request $request, string $id)
+    public function updatePublic(Request $request, string $id)
     {
         $barang = Barang::find($id);
         if (!$barang) {
@@ -267,7 +267,7 @@ public function updatePublic(Request $request, string $id)
             'data' => $barang
         ], 200);
     }
- 
+
 
 
 

@@ -56,14 +56,16 @@ const CRUDPengirimanPembeli = () => {
         tgl_pengiriman: '',
         status_pengiriman: '', // Keep this if status is still part of pengiriman update
         catatan: '',
-        id_pegawai: '' // To store the selected courier's ID
+        id_pegawai: '',
+        created_at:'' // To store the selected courier's ID
     });
 
     // New state for pengambilan input form
     const [pengambilanForm, setPengambilanForm] = useState({
         id: '',
         tgl_pengiriman: '', // Tanggal pengambilan
-        catatan: '' // Catatan pengambilan
+        catatan: '',
+        created_at: '' // Catatan pengambilan
     });
 
 
@@ -79,26 +81,26 @@ const CRUDPengirimanPembeli = () => {
     };
 
     const fetchPegawai = async () => {
-    try {
-        const data = await GetAllPegawai();
-        const kurirData = data.filter(pegawai => pegawai.jabatan === 4);
-        setKurirList(kurirData);
-    } catch (error) {
-        console.error("Error fetching pegawai data:", error);
-        toast.error("Gagal mengambil data pegawai.");
-    }
+        try {
+            const data = await GetAllPegawai();
+            const kurirData = data.filter(pegawai => pegawai.jabatan?.role === 'Kurir');
+            setKurirList(kurirData);
+        } catch (error) {
+            console.error("Error fetching pegawai data:", error);
+            toast.error("Gagal mengambil data pegawai.");
+        }
     };
 
     const kurirOptions = kurirList.map(kurir => ({
         value: kurir.id,
-        label: kurir.nama_pegawai
+        label: kurir.nama
     }));
 
     const handleKurirSelect = (selectedOption) => {
-    setDeliveryForm(prev => ({
-        ...prev,
-        id_pegawai: selectedOption ? selectedOption.value : ''
-    }));
+        setDeliveryForm(prev => ({
+            ...prev,
+            id_pegawai: selectedOption ? selectedOption.value : ''
+        }));
     };
 
 
@@ -156,31 +158,88 @@ const CRUDPengirimanPembeli = () => {
         fetchPegawai(); // Fetch pegawai data on component mount
     }, []);
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        setForm({
-            ...form,
-            [name]: files ? files[0] : value
-        });
-    };
-
     // Handler for delivery form changes
+    // const handleDeliveryChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setDeliveryForm(prevForm => ({
+    //         ...prevForm,
+    //         [name]: value
+    //     }));
+    // };
+
     const handleDeliveryChange = (e) => {
         const { name, value } = e.target;
-        setDeliveryForm(prevForm => ({
-            ...prevForm,
-            [name]: value
-        }));
+
+        if (name === 'tgl_pengiriman') {
+            const inputDate = new Date(value);
+            const transaksiDate = new Date(deliveryForm.created_at); // Pastikan created_at tersedia di form
+
+            const batasMaksimal = new Date(transaksiDate);
+            batasMaksimal.setDate(batasMaksimal.getDate() + 7);
+
+            // Jika melebihi batas 7 hari
+            if (inputDate > batasMaksimal) {
+                alert('Tanggal pengiriman maksimal 7 hari dari tanggal transaksi.');
+                return;
+            }
+
+            // Jika jam input ≥ 16:00, jadikan hari berikutnya dengan waktu tetap
+            const jam = inputDate.getHours();
+            if (jam >= 16) {
+                inputDate.setDate(inputDate.getDate() + 1);
+                inputDate.setHours(8);  // default pagi hari
+                inputDate.setMinutes(0);
+            }
+
+            setDeliveryForm({
+                ...deliveryForm,
+                [name]: inputDate.toISOString().slice(0, 16), // Format ulang ke datetime-local
+            });
+        } else {
+            setDeliveryForm({
+                ...deliveryForm,
+                [name]: value,
+            });
+        }
     };
 
+
     // Handler for pengambilan form changes
+    // const handlePengambilanChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setPengambilanForm(prevForm => ({
+    //         ...prevForm,
+    //         [name]: value
+    //     }));
+    // };
+
     const handlePengambilanChange = (e) => {
         const { name, value } = e.target;
-        setPengambilanForm(prevForm => ({
-            ...prevForm,
-            [name]: value
-        }));
+
+        if (name === 'tgl_pengiriman') {
+            const inputDate = new Date(value);
+            const transaksiDate = new Date(pengambilanForm.created_at); // created_at harus tersedia
+
+            const batasMaksimal = new Date(transaksiDate);
+            batasMaksimal.setDate(batasMaksimal.getDate() + 7);
+
+            if (inputDate > batasMaksimal) {
+                alert('Tanggal pengambilan maksimal 7 hari dari tanggal transaksi.');
+                return;
+            }
+
+            setPengambilanForm({
+                ...pengambilanForm,
+                [name]: value,
+            });
+        } else {
+            setPengambilanForm({
+                ...pengambilanForm,
+                [name]: value,
+            });
+        }
     };
+
 
     // Function to open the detail modal
     const handleShowDetail = (transaksi) => {
@@ -271,6 +330,8 @@ const CRUDPengirimanPembeli = () => {
     };
 
     const handleDownloadNota = (orderData) => {
+        console.log("orderData.metode_pengiriman:", form.metode_pengiriman);
+
         const doc = new jsPDF();
         doc.setFont("times", "normal");
         let y = 15;
@@ -305,7 +366,8 @@ const CRUDPengirimanPembeli = () => {
         const finalPaymentTotal = totalAkhir - potonganPoinValue;
 
         const qcPegawai = kurirList.find(p => p.id === orderData.id_pegawai);
-        const deliveryCourierName = kurirList.find(k => k.id === orderData.id_pegawai)?.nama_pegawai || 'N/A';
+        const deliveryCourierName = kurirList.find(k => k.id === orderData.id_pegawai)?.nama || 'N/A';
+        
         const deliveryCourierId = orderData.id_pegawai ? `(P${orderData.id_pegawai})` : '';
 
         const orderDateObj = new Date(transaksiPenjualan.created_at);
@@ -314,6 +376,7 @@ const CRUDPengirimanPembeli = () => {
         const sequentialNumberFormatted = transaksiPenjualan.id.toString().padStart(3, '0');
         const nomorNota = `${yearFormatted}.${monthFormatted}.${sequentialNumberFormatted}`;
         const formattedDate = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+        const metodePengiriman = orderData.transaksi_penjualan?.metode_pengiriman || '';
 
         // HEADER
         doc.setFontSize(14);
@@ -331,7 +394,11 @@ const CRUDPengirimanPembeli = () => {
         y += 5;
         doc.text(`Lunas pada      : ${transaksiPenjualan.verifikasi_pembayaran === 'terverifikasi' ? formatDateTime(transaksiPenjualan.updated_at) : 'Belum Lunas'}`, startX, y);
         y += 5;
-        doc.text(`Tanggal kirim   : ${orderData.tgl_pengiriman ? formatDate(orderData.tgl_pengiriman) : 'Akan diatur'}`, startX, y);
+        if (metodePengiriman === 'diambil') {
+        doc.text(`Tanggal ambil   : ${orderData.tgl_pengiriman ? formatDate(orderData.tgl_pengiriman) : 'Akan diambil'}`, startX, y);
+        } else {
+        doc.text(`Tanggal kirim   : ${orderData.tgl_pengiriman ? formatDate(orderData.tgl_pengiriman) : 'Akan dikirim'}`, startX, y);
+        }
         y += 10;
 
         doc.setFont("times", "bold");
@@ -343,7 +410,11 @@ const CRUDPengirimanPembeli = () => {
             doc.text(line, startX, y);
             y += 5;
         });
-        doc.text(`Delivery: Kurir ReUseMart (${deliveryCourierName})`, startX, y);
+        if (metodePengiriman === 'diambil') {
+            doc.text("Delivery: - (diambil sendiri)", startX, y);
+        } else {
+            doc.text(`Delivery: Kurir ReUseMart (${deliveryCourierName})`, startX, y);
+        }
         y += 10;
 
         // ITEM LIST
@@ -380,12 +451,13 @@ const CRUDPengirimanPembeli = () => {
         // QC dan tanda tangan
         doc.text(`QC oleh: ${qcPegawai?.nama_pegawai || 'N/A'} ${deliveryCourierId}`, startX, y);
         y += 10;
-        doc.text("Diterima oleh:", startX, y);
+        y += 10;
+        
+        doc.text(metodePengiriman === 'diambil' ? "Diambil oleh:" : "Diterima oleh:", startX, y);
         y += 15;
         doc.text("(...............................)", startX, y);
         y += 5;
         doc.text(`Tanggal: ${formattedDate}`, startX, y);
-
         doc.save(`Nota_Penjualan_${nomorNota}.pdf`);
     };
 
@@ -463,13 +535,38 @@ const CRUDPengirimanPembeli = () => {
                                         </button>
 
                                         {item.transaksi_penjualan?.metode_pengiriman === 'dikirim' && (
-                                            <button
-                                                className="btn btn-sm btn-info mb-1 text-white"
-                                                onClick={() => handleOpenDeliveryModal(item)}
-                                            >
-                                                Input Pengiriman
-                                            </button>
+                                            <>
+                                                <button
+                                                    className="btn btn-sm btn-info mb-1 text-white"
+                                                    onClick={() => handleOpenDeliveryModal(item)}
+                                                >
+                                                    Input Pengiriman
+                                                </button>
+
+                                                <button
+                                                    className="btn btn-sm btn-success mb-1"
+                                                    onClick={() => {
+                                                        setSelectedTransaksi(item);
+                                                        setPengambilanForm({
+                                                            ...pengambilanForm,
+                                                            id: item.id,
+                                                            tgl_pengiriman: item.tgl_pengiriman
+                                                                ? new Date(item.tgl_pengiriman).toISOString().slice(0, 16)
+                                                                : '',
+                                                            catatan: item.catatan || '',
+                                                            created_at: item.transaksi_penjualan?.created_at
+                                                        });
+                                                        const modalKonfirmasi = new window.bootstrap.Modal(
+                                                            document.getElementById('pengambilanKonfirmasiModal')
+                                                        );
+                                                        modalKonfirmasi.show();
+                                                    }}
+                                                >
+                                                    Konfirmasi Pengiriman
+                                                </button>
+                                            </>
                                         )}
+
 
                                        {item.transaksi_penjualan?.metode_pengiriman === 'diambil' && (
                                             <>
@@ -483,6 +580,7 @@ const CRUDPengirimanPembeli = () => {
                                                             tgl_pengiriman: item.tgl_pengiriman
                                                                 ? new Date(item.tgl_pengiriman).toISOString().slice(0, 16)
                                                                 : '',
+                                                            created_at: item.transaksi_penjualan?.created_at,   
                                                             catatan: item.catatan || ''
                                                         });
                                                         // Buka modal input tanggal
@@ -503,7 +601,8 @@ const CRUDPengirimanPembeli = () => {
                                                             tgl_pengiriman: item.tgl_pengiriman
                                                                 ? new Date(item.tgl_pengiriman).toISOString().slice(0, 16)
                                                                 : '',
-                                                            catatan: item.catatan || ''
+                                                            catatan: item.catatan || '',
+                                                            created_at: item.transaksi_penjualan?.created_at
                                                         });
                                                         // Buka modal konfirmasi pengambilan (beda modal)
                                                         const modalKonfirmasi = new window.bootstrap.Modal(document.getElementById('pengambilanKonfirmasiModal'));
@@ -631,65 +730,86 @@ const CRUDPengirimanPembeli = () => {
 
             {/* Modal for Input Pengiriman */}
             <div className="modal fade" id="deliveryInputModal" tabIndex="-1" aria-labelledby="deliveryInputModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="deliveryInputModalLabel">Input Data Pengiriman</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div className="modal-dialog">
+                <div className="modal-content">
+                <div className="modal-header">
+                    <h5 className="modal-title" id="deliveryInputModalLabel">Input Data Pengiriman</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form onSubmit={handleSubmitDelivery}>
+                    <div className="modal-body">
+                    {selectedTransaksi && (
+                        <>
+                        <p><strong>ID Pengiriman:</strong> {selectedTransaksi.id}</p>
+                        <p><strong>Nama Pembeli:</strong> {selectedTransaksi.transaksi_penjualan?.pembeli?.nama_pembeli || 'N/A'}</p>
+                        <p><strong>Alamat Pengiriman:</strong> {selectedTransaksi.transaksi_penjualan?.alamat_pengiriman || 'N/A'}</p>
+
+                        {/* Tampilkan warning jika tidak ada kurir */}
+                        {kurirOptions.length === 0 && (
+                            <div className="alert alert-warning mt-2">
+                            ⚠️ Tidak ada kurir yang tersedia. Silakan tambahkan pegawai dengan jabatan <strong>"kurir"</strong>.
+                            </div>
+                        )}
+
+                        {/* Select untuk Kurir */}
+                        <div className="mb-3">
+                            <label htmlFor="id_pegawai" className="form-label">Kurir</label>
+                            <Select
+                            name="id_pegawai"
+                            id="id_pegawai"
+                            options={kurirOptions}
+                            value={kurirOptions.find(opt => opt.value === deliveryForm.id_pegawai) || null}
+                            onChange={handleKurirSelect}
+                            placeholder="Pilih Kurir..."
+                            isClearable
+                            />
                         </div>
-                        <form onSubmit={handleSubmitDelivery}>
-                            <div className="modal-body">
-                                {selectedTransaksi && (
-                                    <>
-                                        <p><strong>ID Pengiriman:</strong> {selectedTransaksi.id}</p>
-                                        <p><strong>Nama Pembeli:</strong> {selectedTransaksi.transaksi_penjualan?.pembeli?.nama_pembeli || 'N/A'}</p>
-                                        <p><strong>Alamat Pengiriman:</strong> {selectedTransaksi.transaksi_penjualan?.alamat_pengiriman || 'N/A'}</p>
-                                        <div className="mb-3">
-                                            <label htmlFor="id_pegawai" className="form-label">Kurir</label>
-                                            <Select
-                                            name="id_pegawai"
-                                            id="id_pegawai"
-                                            options={kurirOptions}
-                                            value={kurirOptions.find(opt => opt.value === deliveryForm.id_pegawai) || null}
-                                            onChange={handleKurirSelect}
-                                            placeholder="Pilih Kurir..."
-                                            isClearable
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="tgl_pengiriman" className="form-label">Tanggal Pengiriman</label>
-                                            <input
-                                                type="datetime-local"
-                                                className="form-control"
-                                                id="tgl_pengiriman"
-                                                name="tgl_pengiriman"
-                                                value={deliveryForm.tgl_pengiriman}
-                                                onChange={handleDeliveryChange}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="catatan" className="form-label">Catatan (Opsional)</label>
-                                            <textarea
-                                                className="form-control"
-                                                id="catatan"
-                                                name="catatan"
-                                                rows="3"
-                                                value={deliveryForm.catatan}
-                                                onChange={handleDeliveryChange}
-                                            ></textarea>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                <button type="submit" className="btn btn-primary">Simpan Pengiriman</button>
-                            </div>
-                        </form>
+
+                        {/* Input tanggal */}
+                        <div className="mb-3">
+                            <label htmlFor="tgl_pengiriman" className="form-label">Tanggal Pengiriman</label>
+                            <input
+                            type="datetime-local"
+                            className="form-control"
+                            id="tgl_pengiriman"
+                            name="tgl_pengiriman"
+                            value={deliveryForm.tgl_pengiriman}
+                            onChange={handleDeliveryChange}
+                            required
+                            max={
+                                deliveryForm.created_at
+                                ? new Date(new Date(deliveryForm.created_at).getTime() + 7 * 24 * 60 * 60 * 1000)
+                                    .toISOString()
+                                    .slice(0, 16)
+                                : undefined
+                            }
+                            />
+                        </div>
+
+                        {/* Catatan */}
+                        <div className="mb-3">
+                            <label htmlFor="catatan" className="form-label">Catatan (Opsional)</label>
+                            <textarea
+                            className="form-control"
+                            id="catatan"
+                            name="catatan"
+                            rows="3"
+                            value={deliveryForm.catatan}
+                            onChange={handleDeliveryChange}
+                            ></textarea>
+                        </div>
+                        </>
+                    )}
                     </div>
+                    <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" className="btn btn-primary">Simpan Pengiriman</button>
+                    </div>
+                </form>
                 </div>
             </div>
+            </div>
+
 
            {/* Modal for Input Pengambilan */}
             <div className="modal fade" id="pengambilanInputModal" tabIndex="-1" aria-labelledby="pengambilanInputModalLabel" aria-hidden="true">
@@ -709,14 +829,21 @@ const CRUDPengirimanPembeli = () => {
                                         <div className="mb-3">
                                             <label htmlFor="tgl_pengiriman" className="form-label">Tanggal Pengambilan</label>
                                             <input
-                                                type="datetime-local"
-                                                className="form-control"
-                                                id="tgl_pengiriman"
-                                                name="tgl_pengiriman"
-                                                value={pengambilanForm.tgl_pengiriman}
-                                                onChange={handlePengambilanChange}
-                                                required
-                                            />
+                                            type="datetime-local"
+                                            className="form-control"
+                                            id="tgl_pengiriman"
+                                            name="tgl_pengiriman"
+                                            value={pengambilanForm.tgl_pengiriman}
+                                            onChange={handlePengambilanChange}
+                                            required
+                                            max={
+                                                pengambilanForm.created_at
+                                                    ? new Date(new Date(pengambilanForm.created_at).getTime() + 7 * 24 * 60 * 60 * 1000)
+                                                        .toISOString()
+                                                        .slice(0, 16)
+                                                    : undefined
+                                            }
+                                        />
                                         </div>
                                         <div className="mb-3">
                                             <label htmlFor="pengambilan_catatan" className="form-label">Catatan (Opsional)</label>
@@ -759,7 +886,7 @@ const CRUDPengirimanPembeli = () => {
                         onClick={handleKonfirmasiPengambilan}
                         disabled={!pengambilanForm.tgl_pengiriman}
                         >
-                        Konfirmasi Pengambilan
+                        Konfirmasi
                         </button>
                     </div>
                     </div>
@@ -770,4 +897,3 @@ const CRUDPengirimanPembeli = () => {
 };
 
 export default CRUDPengirimanPembeli;
-

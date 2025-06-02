@@ -180,7 +180,8 @@ const Transaksi_penitip = () => {
         await UpdatetTransaksi_Penitipan(barang.id, {
           ...barang,
           masa_penitipan: newMasaPenitipan.toISOString().split("T")[0],
-          penambahan_durasi: 1, // Set penambahan_durasi menjadi 1
+          penambahan_durasi: 1,
+          tgl_pengambilan: null, // Reset tanggal pengambilan
         });
 
         toast.success("Berhasil menambah 30 hari masa penitipan");
