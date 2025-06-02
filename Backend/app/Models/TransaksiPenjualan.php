@@ -22,7 +22,7 @@ class TransaksiPenjualan extends Model
         'ongkir',
         'bukti_pembayaran',
         'status_pengiriman',
-        'id_pegawai',
+        // 'id_pegawai',
         'status_pembelian',
         'verifikasi_pembayaran',
     ];
@@ -35,4 +35,9 @@ class TransaksiPenjualan extends Model
     {
         return $this->hasMany(Detail_transaksi_penjualan::class, 'id_transaksi_penjualan');
     }
+    public function detail()
+    {
+        return $this->hasMany(Detail_transaksi_penjualan::class, 'id_transaksi_penjualan');
+    }
+
 }

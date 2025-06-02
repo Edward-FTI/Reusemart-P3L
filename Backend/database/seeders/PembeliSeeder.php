@@ -7,12 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class PembeliSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Menambahkan 10 data pembeli secara manual
         DB::table('pembelis')->insert([
             [
                 'nama_pembeli' => 'Aliyah Putri',
@@ -20,6 +16,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '081234567890',
                 'point' => 100,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -29,6 +26,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '082345678901',
                 'point' => 200,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -38,6 +36,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '083456789012',
                 'point' => 150,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -47,6 +46,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '084567890123',
                 'point' => 50,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -56,6 +56,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '085678901234',
                 'point' => 300,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -65,6 +66,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '086789012345',
                 'point' => 400,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -74,6 +76,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '087890123456',
                 'point' => 250,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -83,6 +86,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '088901234567',
                 'point' => 120,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -92,6 +96,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '089012345678',
                 'point' => 180,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -101,6 +106,7 @@ class PembeliSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'no_hp' => '090123456789',
                 'point' => 220,
+                'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]

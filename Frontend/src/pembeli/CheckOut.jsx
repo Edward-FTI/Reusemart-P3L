@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { GetAllCart } from "../Api/apiCart";
 import { GetAllAlamat } from "../Api/apiAlamat";
@@ -17,6 +18,7 @@ const OrderForm = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [proof, setProof] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -69,14 +71,12 @@ const OrderForm = () => {
     );
 
     try {
-      await Createtransaksi_penjualan(formData);
-      alert("Transaksi berhasil!");
-      navigate("/transaksi");
+      console.log("Mengirim transaksi...");
+      const result = await Createtransaksi_penjualan(formData);
+      console.log("Transaksi sukses, redirecting...");
+      navigate("/customer/profile");
     } catch (err) {
-      alert(err.response?.data?.message || "Gagal melakukan transaksi.");
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
+      console.error("Error saat submit:", err);
     }
   };
 

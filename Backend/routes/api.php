@@ -34,6 +34,10 @@ Route::post('/register-org', [OrganisasiController::class, 'registerOrg']);
 
 Route::middleware('auth:api')->group(function () {
 
+
+    // routeFCM token
+    Route::put('/update-fcm-token/{id}', [AuthController::class, 'updateFcmToken']);
+
     // ======================= Pegawai =======================
     Route::get('/pegawai', [PegawaiController::class, 'index']);
     Route::post('/pegawai', [PegawaiController::class, 'store']);
@@ -45,6 +49,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
     Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
+
 
 
     // ======================= Jabatan =======================
@@ -70,7 +75,7 @@ Route::middleware('auth:api')->group(function () {
     // ======================= Penitip =======================
     Route::get('/penitip', [PenitipController::class, 'index']);
     Route::post('/penitip', [PenitipController::class, 'store']);
-    Route::get('/penitip/{id}', [PenitipController::class, 'show']);
+    Route::get('/penitipD', [PenitipController::class, 'getPenitipData']);
     Route::put('/penitip/{id}', [PenitipController::class, 'update']);
     Route::delete('/penitip/{id}', [PenitipController::class, 'destroy']);
     Route::get('/penitip/search/{name}', [PenitipController::class, 'searchByName']);

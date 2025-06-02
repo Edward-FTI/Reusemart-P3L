@@ -10,9 +10,29 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\Auth;
 class PenitipController extends Controller
 {
+
+    private function getPenitipId()
+    {
+        try {
+            $user = Auth::user();
+            if (!$user || !isset($user->email)) {
+                return response()->json(['message' => 'User belum login atau tidak memiliki email'], 401);
+            }
+
+            $penitip = Penitip::where('email', $user->email)->first();
+            if (!$penitip) {
+                return response()->json(['message' => 'Penitip tidak ditemukan untuk email tersebut'], 404);
+            }
+
+            return $penitip->id;
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Gagal mengambil ID penitip', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     // Menampilkan semua data penitip
     public function index()
     {
@@ -291,6 +311,34 @@ class PenitipController extends Controller
             'message' => 'Berhasil mengambil data penitip',
             'data' => $penitip
         ], 200);
+    }
+
+    public function getPenitipData()
+    {
+        try {
+            $user = Auth::user();
+            if (!$user || !isset($user->email)) {
+                return response()->json(['message' => 'User belum login atau tidak memiliki email'], 401);
+            }
+
+            $penitip = Penitip::where('email', $user->email)->first();
+            if (!$penitip) {
+                return response()->json(['message' => 'Penitip tidak ditemukan'], 404);
+            }
+
+            return response()->json([
+                'id' => $penitip->id,
+                'nama_penitip' => $penitip->nama_penitip,
+                'no_ktp' => $penitip->no_ktp,
+                'alamat' => $penitip->alamat,
+                'saldo' => $penitip->saldo,
+                'point' => $penitip->point,
+                'email' => $penitip->email,
+                'badge' => $penitip->badge,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Gagal mengambil data penitip', 'error' => $e->getMessage()], 500);
+        }
     }
 
     // Menampilkan data penitip berdasarkan ID

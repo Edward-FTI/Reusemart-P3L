@@ -1,69 +1,69 @@
-// ShowProfilePenitip.jsx
-import React, { useEffect, useState } from "react";
-import { GetPenitipById } from "../Api/apiPenitip";
-import { Row, Col } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import ListGroup from "react-bootstrap/ListGroup";
+import { GetPenitipData } from "../Api/apiPenitip";
 
 function ShowProfilePenitip() {
   const [penitip, setPenitip] = useState(null);
 
-  const fetchPenitipByLogin = async () => {
-    try {
-      const userId = sessionStorage.getItem("user_id");
-      if (!userId) {
-        alert("User belum login");
-        window.location.href = "/login"; // redirect ke login
-        return;
-      }
-
-      const data = await GetPenitipById(userId);
-      setPenitip(data);
-    } catch (error) {
-      alert("Gagal mengambil data profile penitip");
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    fetchPenitipByLogin();
+    GetPenitipData()
+      .then((data) => setPenitip(data))
+      .catch((err) => console.error(err));
   }, []);
 
+  if (!penitip) return <div>Loading...</div>;
+
   return (
-    <main className="container mt-4">
-      <Row className="justify-content-center">
-        <Col md={6}>
-          <article className="card profile" id="About">
-            <h2 className="card-header">Profile Penitip</h2>
-            <div className="card-body">
-              {penitip ? (
-                <ul className="list-unstyled">
-                  <li>
-                    <strong>Nama:</strong> {penitip.nama}
-                  </li>
-                  <li>
-                    <strong>No KTP:</strong> {penitip.no_ktp}
-                  </li>
-                  <li>
-                    <strong>Saldo:</strong> Rp{" "}
-                    {parseInt(penitip.saldo).toLocaleString("id-ID")}
-                  </li>
-                  <li>
-                    <strong>Point:</strong> {penitip.point}
-                  </li>
-                  <li>
-                    <strong>Email:</strong> {penitip.email}
-                  </li>
-                  <li>
-                    <strong>Badge:</strong> {penitip.badge}
-                  </li>
-                </ul>
-              ) : (
-                <p>Memuat data profile penitip...</p>
-              )}
-            </div>
-          </article>
+    <Container fluid>
+      <Row>
+        <Col md={8}>
+          {/* <h3>Data Penitip</h3>
+          <p>Nama: {penitip.nama_penitip}</p>
+          <p>Alamat: {penitip.alamat}</p>
+          <p>No KTP: {penitip.no_ktp}</p>
+          <p>Email: {penitip.email}</p>
+          <p>Saldo: Rp {penitip.saldo.toLocaleString()}</p>
+          <p>Point: {penitip.point}</p>
+          <p>Badge: {penitip.badge}</p> */}
+        </Col>
+
+        <Col md={4}>
+          <h3>Profil Penitip</h3>
+          <Card>
+            <Card.Img
+              variant="top"
+              src="/src/assets/Logo/profil.png"
+              alt="Profile"
+            />
+            <Card.Body>
+              <Card.Title>{penitip.nama_penitip}</Card.Title>
+              <Card.Text>{penitip.alamat}</Card.Text>
+            </Card.Body>
+            <ListGroup variant="flush">
+              <ListGroup.Item>
+                <strong>No KTP:</strong> {penitip.no_ktp}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <strong>Email:</strong> {penitip.email}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <strong>Point:</strong> {penitip.point}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <strong>Saldo:</strong> Rp {penitip.saldo.toLocaleString()}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <strong>Badge:</strong> {penitip.badge}
+              </ListGroup.Item>
+            </ListGroup>
+          </Card>
         </Col>
       </Row>
-    </main>
+    </Container>
   );
 }
 

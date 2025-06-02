@@ -3,18 +3,20 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:mobile/core/constants/variables.dart';
+import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 
 class UserRemoteDatasource {
   Future<String?> updateFcmToken(
     String fcmToken,
   ) async {
+    final authData = await AuthLocalDatasource().getUserData();
     final header = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      // 'Authorization': 'Bearer ${authData.data.token}',
+      'Authorization': 'Bearer ${authData!.accessToken!}',
     };
 
-    final url = Uri.parse('${Variables.baseUrl}/api/update-fcm-token/11');
+    final url = Uri.parse('${Variables.baseUrl}/api/update-fcm-token/${authData?.user?.id}');
     final response = await http.put(
       url,
       headers: header,
@@ -25,8 +27,8 @@ class UserRemoteDatasource {
       ),
     );
 
-    log("statusCode: ${response.statusCode}");
-    log("body: ${response.body}");
+    log("statusCode FCM TOKEN: ${response.statusCode}");
+    log("body  FCM TOKEN: ${response.body}");
 
     if (response.statusCode == 200) {
       return 'Success Update FCM Token';

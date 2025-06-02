@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 import 'package:mobile/data/datasource/remote/user_remote_datasource.dart';
 
 // import '../../presentation/admin/pages/chat_menu_page.dart';
@@ -70,7 +71,15 @@ class FirebaseMessangingRemoteDatasource {
 
     final fcmToken = await _firebaseMessaging.getToken();
     log("FCM Token: $fcmToken");
-     UserRemoteDatasource().updateFcmToken(fcmToken!);
+final authData = await AuthLocalDatasource().getUserData();
+    if (authData != null) {
+      final userId = authData.user?.id;
+      if (userId != null) {
+        await UserRemoteDatasource().updateFcmToken(
+          fcmToken ?? '',
+        );
+      }
+    }
     // final modelDevice = deviceInfoDatasource.getAllDeviceInfo();
     //String deviceInfoString = '';
     // modelDevice.forEach((key, value) {
@@ -87,8 +96,7 @@ class FirebaseMessangingRemoteDatasource {
 
     FirebaseMessaging.instance.getInitialMessage();
     FirebaseMessaging.onMessage.listen((message) {
-      debugPrint(message.notification?.body);
-      debugPrint(message.notification?.title);
+      debugPrint('Message received: ${message.notification?.title}, ${message.notification?.body}');
     });
 
     FirebaseMessaging.onMessage.listen(firebaseBackgroundHandler);
