@@ -28,7 +28,7 @@ const CRUDPengirimanPembeli = () => {
     const [kategoriList, setKategoriList] = useState([]);
     const [penitipList, setPenitipList] = useState([]);
     const [kurirList, setKurirList] = useState([]);
-
+    const [roleList, setRoleList] = useState([]);
 
     const [isEdit, setIsEdit] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -79,14 +79,14 @@ const CRUDPengirimanPembeli = () => {
     };
 
     const fetchPegawai = async () => {
-    try {
-        const data = await GetAllPegawai();
-        const kurirData = data.filter(pegawai => pegawai.jabatan === 4);
-        setKurirList(kurirData);
-    } catch (error) {
-        console.error("Error fetching pegawai data:", error);
-        toast.error("Gagal mengambil data pegawai.");
-    }
+        try {
+            const data = await GetAllPegawai();
+            const kurirData = data.filter(pegawai => pegawai.jabatan === 4);
+            setKurirList(kurirData);
+        } catch (error) {
+            console.error("Error fetching pegawai data:", error);
+            toast.error("Gagal mengambil data pegawai.");
+        }
     };
 
     const kurirOptions = kurirList.map(kurir => ({
@@ -95,10 +95,10 @@ const CRUDPengirimanPembeli = () => {
     }));
 
     const handleKurirSelect = (selectedOption) => {
-    setDeliveryForm(prev => ({
-        ...prev,
-        id_pegawai: selectedOption ? selectedOption.value : ''
-    }));
+        setDeliveryForm(prev => ({
+            ...prev,
+            id_pegawai: selectedOption ? selectedOption.value : ''
+        }));
     };
 
 
@@ -149,11 +149,23 @@ const CRUDPengirimanPembeli = () => {
         }
     }
 
+    const fetchRole = async () => {
+        try {
+            const data = await GetAllPegawai();
+            // console.log("Data pegawai:", data); // ← Tambahkan ini
+            setRoleList(data);
+        }
+        catch (error) {
+            toast.error('Gagal mengambil data kurir')
+        }
+    }
+
     useEffect(() => {
         fetchPengambilan();
         fetchKategori();
         fetchPenitip();
         fetchPegawai(); // Fetch pegawai data on component mount
+        fetchRole();
     }, []);
 
     const handleChange = (e) => {
@@ -203,47 +215,47 @@ const CRUDPengirimanPembeli = () => {
         modal.show();
     };
 
-   function formatDateForBackend(datetimeLocalStr) {
-    if (!datetimeLocalStr) return null;
-    const dt = new Date(datetimeLocalStr);
-    const pad = (n) => n.toString().padStart(2, '0');
-    return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
+    function formatDateForBackend(datetimeLocalStr) {
+        if (!datetimeLocalStr) return null;
+        const dt = new Date(datetimeLocalStr);
+        const pad = (n) => n.toString().padStart(2, '0');
+        return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
     }
 
     const handleSubmitDelivery = async (e) => {
-    e.preventDefault();
-    try {
-        const dataToUpdate = {
-        tgl_pengiriman: formatDateForBackend(deliveryForm.tgl_pengiriman),
-        status_pengiriman: deliveryForm.status_pengiriman,
-        catatan: deliveryForm.catatan,
-        id_pegawai: deliveryForm.id_pegawai
-        };
-        await UpdatePengambilan(selectedTransaksi.id, dataToUpdate);
-        toast.success("Data pengiriman berhasil diperbarui.");
-        fetchPengambilan();
-        window.bootstrap.Modal.getInstance(document.getElementById('deliveryInputModal')).hide();
-    } catch (error) {
-        console.error("Error updating delivery data:", error);
-        toast.error("Gagal memperbarui data pengiriman.");
-    }
+        e.preventDefault();
+        try {
+            const dataToUpdate = {
+                tgl_pengiriman: formatDateForBackend(deliveryForm.tgl_pengiriman),
+                status_pengiriman: deliveryForm.status_pengiriman,
+                catatan: deliveryForm.catatan,
+                id_pegawai: deliveryForm.id_pegawai
+            };
+            await UpdatePengambilan(selectedTransaksi.id, dataToUpdate);
+            toast.success("Data pengiriman berhasil diperbarui.");
+            fetchPengambilan();
+            window.bootstrap.Modal.getInstance(document.getElementById('deliveryInputModal')).hide();
+        } catch (error) {
+            console.error("Error updating delivery data:", error);
+            toast.error("Gagal memperbarui data pengiriman.");
+        }
     };
 
     const handleSubmitPengambilan = async (e) => {
-    e.preventDefault();
-    try {
-        const dataToUpdate = {
-        tgl_pengiriman: formatDateForBackend(pengambilanForm.tgl_pengiriman),
-        catatan: pengambilanForm.catatan
-        };
-        await UpdatePengambilan(selectedTransaksi.id, dataToUpdate);
-        toast.success("Data pengambilan berhasil diperbarui.");
-        fetchPengambilan();
-        window.bootstrap.Modal.getInstance(document.getElementById('pengambilanInputModal')).hide();
-    } catch (error) {
-        console.error("Error updating pengambilan data:", error);
-        toast.error("Gagal memperbarui data pengambilan.");
-    }
+        e.preventDefault();
+        try {
+            const dataToUpdate = {
+                tgl_pengiriman: formatDateForBackend(pengambilanForm.tgl_pengiriman),
+                catatan: pengambilanForm.catatan
+            };
+            await UpdatePengambilan(selectedTransaksi.id, dataToUpdate);
+            toast.success("Data pengambilan berhasil diperbarui.");
+            fetchPengambilan();
+            window.bootstrap.Modal.getInstance(document.getElementById('pengambilanInputModal')).hide();
+        } catch (error) {
+            console.error("Error updating pengambilan data:", error);
+            toast.error("Gagal memperbarui data pengambilan.");
+        }
     };
 
     const handleKonfirmasiPengambilan = async () => {
@@ -389,7 +401,7 @@ const CRUDPengirimanPembeli = () => {
         doc.save(`Nota_Penjualan_${nomorNota}.pdf`);
     };
 
-   
+
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -471,7 +483,7 @@ const CRUDPengirimanPembeli = () => {
                                             </button>
                                         )}
 
-                                       {item.transaksi_penjualan?.metode_pengiriman === 'diambil' && (
+                                        {item.transaksi_penjualan?.metode_pengiriman === 'diambil' && (
                                             <>
                                                 <button
                                                     className="btn btn-sm btn-warning mb-1 text-white"
@@ -645,16 +657,30 @@ const CRUDPengirimanPembeli = () => {
                                         <p><strong>Nama Pembeli:</strong> {selectedTransaksi.transaksi_penjualan?.pembeli?.nama_pembeli || 'N/A'}</p>
                                         <p><strong>Alamat Pengiriman:</strong> {selectedTransaksi.transaksi_penjualan?.alamat_pengiriman || 'N/A'}</p>
                                         <div className="mb-3">
-                                            <label htmlFor="id_pegawai" className="form-label">Kurir</label>
-                                            <Select
-                                            name="id_pegawai"
-                                            id="id_pegawai"
-                                            options={kurirOptions}
-                                            value={kurirOptions.find(opt => opt.value === deliveryForm.id_pegawai) || null}
-                                            onChange={handleKurirSelect}
-                                            placeholder="Pilih Kurir..."
-                                            isClearable
-                                            />
+                                            <label htmlFor="penitip" className="form-label">Hunter</label>
+                                            <div className="mb-3">
+                                                <Select
+                                                    name="id_hunter"
+                                                    options={roleList
+                                                        .filter(r => r.jabatan?.role?.toLowerCase() === "kurir")
+                                                        .map(r => ({
+                                                            value: r.id,
+                                                            label: r.nama
+                                                        }))}
+                                                    value={roleList
+                                                        .filter(r => r.jabatan?.role?.toLowerCase() === "kurir")
+                                                        .map(r => ({
+                                                            value: r.id,
+                                                            label: r.nama
+                                                        }))
+                                                        .find(option => option.value === form.id_hunter)}
+                                                    onChange={(selectedOption) =>
+                                                        setForm({ ...form, id_hunter: selectedOption?.value || '' })
+                                                    }
+                                                    placeholder="Cari Kurir..."
+                                                    isClearable
+                                                />
+                                            </div>
                                         </div>
                                         <div className="mb-3">
                                             <label htmlFor="tgl_pengiriman" className="form-label">Tanggal Pengiriman</label>
@@ -691,7 +717,7 @@ const CRUDPengirimanPembeli = () => {
                 </div>
             </div>
 
-           {/* Modal for Input Pengambilan */}
+            {/* Modal for Input Pengambilan */}
             <div className="modal fade" id="pengambilanInputModal" tabIndex="-1" aria-labelledby="pengambilanInputModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -747,21 +773,21 @@ const CRUDPengirimanPembeli = () => {
             <div className="modal fade" id="pengambilanKonfirmasiModal" tabIndex="-1" aria-labelledby="pengambilanKonfirmasiModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title" id="pengambilanKonfirmasiModalLabel">Konfirmasi Pengambilan</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button
-                        type="button"
-                        className="btn btn-success"
-                        onClick={handleKonfirmasiPengambilan}
-                        disabled={!pengambilanForm.tgl_pengiriman}
-                        >
-                        Konfirmasi Pengambilan
-                        </button>
-                    </div>
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="pengambilanKonfirmasiModalLabel">Konfirmasi Pengambilan</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button
+                                type="button"
+                                className="btn btn-success"
+                                onClick={handleKonfirmasiPengambilan}
+                                disabled={!pengambilanForm.tgl_pengiriman}
+                            >
+                                Konfirmasi Pengambilan
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
