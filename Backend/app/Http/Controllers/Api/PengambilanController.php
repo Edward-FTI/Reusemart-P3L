@@ -200,6 +200,31 @@ class PengambilanController extends Controller
         ], 200);
     }
 
+
+
+
+    public function indexProgres()
+    {
+        $pengambilan = TransaksiPengiriman::with(['transaksiPenjualan.pembeli', 'transaksiPenjualan.detail.barang'])
+            ->whereNotNull('tgl_pengiriman')
+            ->whereHas('transaksiPenjualan.pembeli', function ($query) {
+                $query->where('metode_pengiriman', 'diantar');
+            })
+            ->get();
+
+        if ($pengambilan->isNotEmpty()) {
+            return response()->json([
+                'message' => 'Berhasil mengambil data pengambilan',
+                'data' => $pengambilan
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Data pengambilan kosong',
+            'data' => []
+        ], 200);
+    }
+
     public function prosesTransaksiHangusOtomatis()
     {
         $pengirimanList = TransaksiPengiriman::with('transaksiPenjualan.detail.barang')
@@ -237,5 +262,6 @@ class PengambilanController extends Controller
         return response()->json([
             'message' => "Pengecekan selesai. $count transaksi diperbarui menjadi 'Hangus'.",
         ]);
+
     }
 }
