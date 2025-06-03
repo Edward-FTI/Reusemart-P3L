@@ -216,6 +216,7 @@ class PengambilanController extends Controller
             'message' => 'Data pengambilan kosong',
             'data' => []
         ], 200);
+    }
 
     public function prosesTransaksiHangusOtomatis()
     {
