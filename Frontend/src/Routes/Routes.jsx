@@ -67,6 +67,8 @@ import OrderForm from "../pembeli/CheckOut";
 import TransaksiPembeli from "../pembeli/TransaksiPembeli";
 import TransaksiCS from "../Customer_Service/VerifikasiPembayaran";
 
+import Barang_Donasi from "../Test2/TampilkanDonasi";
+
 const router = createBrowserRouter([
   {
     path: "*",
@@ -99,6 +101,10 @@ const router = createBrowserRouter([
   {
     path: "/ambil-barang",
     element: <AmbilBarang />,
+  },
+  {
+    path: "/barang-donasi",
+    element: <Barang_Donasi />
   },
   {
     path: "/alamat",
