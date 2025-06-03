@@ -57,7 +57,7 @@ class Transaksi_PenjualanSeeder extends Seeder
                 'id_pembeli' => 4,
                 'total_harga_pembelian' => 900000,
                 'alamat_pengiriman' => 'Jl. Wonosari No. 12, Gunungkidul, Yogyakarta',
-                'ongkir' => 25000,
+                'ongkir' => 0,
                 'bukti_pembayaran' => 'bukti4.jpg',
                 'status_pengiriman' => 'proses',
                 'metode_pengiriman' => 'diambil',

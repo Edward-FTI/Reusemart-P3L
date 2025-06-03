@@ -15,6 +15,21 @@ export const GetPengambilan = async () => {
     }
 }
 
+export const GetPegawaiLogin = async () => {
+    try {
+        const response = await useAxios.get('/pegawai', {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error;
+    }
+};
+
+
 export const GetPengambilanByNama = async (nama) => {
     try {
         const response = await useAxios.get(`/pengambilan/search/${nama}`, {
