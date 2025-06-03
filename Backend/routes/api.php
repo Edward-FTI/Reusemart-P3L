@@ -153,7 +153,9 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/pengambilan/{id}', [PengambilanController::class, 'destroy']);
     Route::get('/pengambilan/searchByIdPembeli/{id}', [PengambilanController::class, 'searchByIdPembeli']);
     Route::get('/pengambilan/searchByIdTransaksi/{id}', [PengambilanController::class, 'searchByIdTransaksi']);
+    Route::get('/pengambilanP', [PengambilanController::class, 'indexProgres']);
     Route::get('/transaksi-pengiriman/proses-hangus', [PengambilanController::class, 'prosesTransaksiHangusOtomatis']);
+
 
     // ======================= Transaksi Donasi =======================
     Route::get('/transaksi-donasi', [TransaksiDonasiController::class, 'index']);
