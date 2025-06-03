@@ -234,4 +234,28 @@ class PengambilanController extends Controller
             'message' => "Pengambilan ID $id berhasil dihapus"
         ], 200);
     }
+
+
+
+    public function indexProgres()
+    {
+        $pengambilan = TransaksiPengiriman::with(['transaksiPenjualan.pembeli', 'transaksiPenjualan.detail.barang'])
+            ->whereNotNull('tgl_pengiriman')
+            ->whereHas('transaksiPenjualan.pembeli', function ($query) {
+                $query->where('metode_pengiriman', 'diantar');
+            })
+            ->get();
+
+        if ($pengambilan->isNotEmpty()) {
+            return response()->json([
+                'message' => 'Berhasil mengambil data pengambilan',
+                'data' => $pengambilan
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Data pengambilan kosong',
+            'data' => []
+        ], 200);
+    }
 }
