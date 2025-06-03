@@ -45,10 +45,17 @@ export const UpdateBarang = async (values) => {
         const formData = new FormData();
 
         for (const key in values) {
+            // Jika tgl_pengambilan kosong, skip append
+            if (key === 'tgl_pengambilan' && !values[key]) {
+                continue; // jangan append field ini
+            }
+
+            // Kalau ada file (gambar), biasanya tipe File, langsung append
+            // Kalau bukan file, append string value
             formData.append(key, values[key]);
         }
 
-        formData.append('_method', 'PUT'); // Tambahkan ini agar backend Laravel mengenali override PUT
+        formData.append('_method', 'PUT'); // override method
 
         const response = await useAxios.post(`/barang-qc/${values.id}`, formData, {
             headers: {
@@ -63,6 +70,7 @@ export const UpdateBarang = async (values) => {
         throw error.response?.data || error;
     }
 };
+
 
 
 // export const UpdateBarang = async (values) => {

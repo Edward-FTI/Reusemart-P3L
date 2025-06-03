@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use DateTime;
 use App\Models\Barang;
 use App\Models\Penitip; // Menggunakan model Penitip
 use App\Models\User; // Menggunakan model User
@@ -19,38 +20,20 @@ use App\Models\Detail_transaksi_penjualan; // Menggunakan model Detail_transaksi
 
 class PengambilanController extends Controller
 {
-    /**
-     * Mengambil ID Pegawai Gudang yang sedang login.
-     *
-     * @return int|null ID Pegawai jika ditemukan dan memiliki peran 'Pegawai Gudang', jika tidak null.
-     */
-    private function getPegawaiId()
+
+    private function getPegawai()
     {
         $user = Auth::user();
 
-        // Memastikan pengguna login dan memiliki peran 'Pegawai Gudang'
         if (!$user || $user->role !== 'Pegawai Gudang') {
             return null;
         }
 
-        // Mencari data pegawai berdasarkan email pengguna yang login
-        $pegawai = Pegawai::where('email', $user->email)->first();
-
-        // Mengembalikan ID pegawai jika ditemukan
-        return $pegawai?->id;
+        return Pegawai::where('email', $user->email)->first();
     }
 
-
-    /**
-     * Menampilkan daftar transaksi pengambilan (pengiriman) dengan status "proses".
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index()
     {
-        // Mengambil semua transaksi pengiriman dengan status "proses"
-        // Memuat relasi 'transaksiPenjualan' dengan 'pembeli' dan 'detail' bersarang,
-        // dan 'detail' juga memuat 'barang' bersarang.
         $pengambilan = TransaksiPengiriman::with(['transaksiPenjualan.pembeli', 'transaksiPenjualan.detail.barang'])
             ->where('status_pengiriman', 'proses') // Filter berdasarkan status pengiriman
             ->get();
@@ -63,19 +46,13 @@ class PengambilanController extends Controller
             ], 200);
         }
 
-        // Jika tidak ada data transaksi pengiriman
+
         return response()->json([
             'message' => 'Data pengambilan kosong',
             'data' => []
         ], 200);
     }
 
-    /**
-     * Menyimpan transaksi pengambilan baru atau memperbarui status transaksi yang ada.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
         // Validasi input request
@@ -101,7 +78,6 @@ class PengambilanController extends Controller
             ], 404);
         }
 
-        // Memperbarui status pengiriman menjadi 'diambil'
         $transaksi->status_pengiriman = 'diambil';
         $transaksi->save();
 
@@ -111,16 +87,8 @@ class PengambilanController extends Controller
         ], 200);
     }
 
-    /**
-     * Menampilkan detail transaksi pengambilan berdasarkan ID.
-     *
-     * @param  string  $id ID transaksi pengiriman
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show($id)
     {
-        // Mencari transaksi pengiriman berdasarkan ID dan memuat relasi 'transaksiPenjualan'
-        // dengan 'pembeli' dan 'detail' bersarang, dan 'detail' juga memuat 'barang' bersarang.
         $transaksi = TransaksiPengiriman::with(['transaksiPenjualan.pembeli', 'transaksiPenjualan.detail.barang'])->find($id);
 
         // Jika transaksi tidak ditemukan
@@ -135,8 +103,6 @@ class PengambilanController extends Controller
             'data' => $transaksi // Data akan mencakup relasi yang dimuat
         ], 200);
     }
-
-
 
 
     public function update(Request $request, $id)
@@ -207,14 +173,6 @@ class PengambilanController extends Controller
         ], 200);
     }
 
-
-
-    /**
-     * Menghapus transaksi pengambilan berdasarkan ID.
-     *
-     * @param  string  $id ID transaksi pengiriman
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy($id)
     {
         // Mencari transaksi pengiriman berdasarkan ID
@@ -234,6 +192,7 @@ class PengambilanController extends Controller
             'message' => "Pengambilan ID $id berhasil dihapus"
         ], 200);
     }
+
 
 
 
@@ -257,5 +216,44 @@ class PengambilanController extends Controller
             'message' => 'Data pengambilan kosong',
             'data' => []
         ], 200);
+
+    public function prosesTransaksiHangusOtomatis()
+    {
+        $pengirimanList = TransaksiPengiriman::with('transaksiPenjualan.detail.barang')
+            ->whereNotNull('tgl_pengambilan')
+            ->where('status_transaksi', '!=', 'Hangus')
+            ->get();
+
+        $count = 0;
+
+        foreach ($pengirimanList as $pengiriman) {
+            $tglPengambilan = new DateTime($pengiriman->tgl_pengambilan);
+            $hariIni = new DateTime();
+
+            $selisih = $hariIni->diff($tglPengambilan)->days;
+
+            if ($hariIni > $tglPengambilan && $selisih >= 2) {
+                $pengiriman->status_transaksi = 'Hangus';
+                $pengiriman->save();
+
+                $transaksiPenjualan = $pengiriman->transaksiPenjualan;
+                if ($transaksiPenjualan) {
+                    foreach ($transaksiPenjualan->detail as $detail) {
+                        $barang = $detail->barang;
+                        if ($barang) {
+                            $barang->status_barang = 'barang untuk donasi';
+                            $barang->save();
+                        }
+                    }
+                }
+
+                $count++;
+            }
+        }
+
+        return response()->json([
+            'message' => "Pengecekan selesai. $count transaksi diperbarui menjadi 'Hangus'.",
+        ]);
+
     }
 }
