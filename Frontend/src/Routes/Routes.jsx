@@ -28,6 +28,7 @@ import CRUDOrganisasi from "../Admin/CRUDOrganisasi";
 import NavbarGudang from "../navbar/NavbarPegawai_gudang";
 import CRUDBarangTitipan from "../Pegawai_Gudang/CRUDBarangTitipan";
 import CRUDPengirimanPembeli from "../Pegawai_Gudang/CRUDPengiriman(Pembeli)";
+import UjianKelas from "../Pegawai_Gudang/UjianKelas"; // Sementara untuk testing
 import CRUDPengirimanPenitip from "../Pegawai_Gudang/CRUDPengiriman(Penitip)";
 
 // CUSTOMER
@@ -199,6 +200,12 @@ const router = createBrowserRouter([
       {
         path: "/gudang/pengiriman/pembeli",
         element: <CRUDPengirimanPembeli />,
+        // element: <UjianKelas />,
+      },
+      {
+        path: "/gudang/pengiriman/ujianKelas",
+        // element: <CRUDPengirimanPembeli />
+        element: <UjianKelas />,
       },
 
       {
