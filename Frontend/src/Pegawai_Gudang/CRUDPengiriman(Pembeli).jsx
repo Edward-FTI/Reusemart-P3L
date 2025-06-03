@@ -277,7 +277,8 @@ const CRUDPengirimanPembeli = () => {
         window.bootstrap.Modal.getInstance(document.getElementById('deliveryInputModal')).hide();
     } catch (error) {
         console.error("Error updating delivery data:", error);
-        toast.error("Gagal memperbarui data pengiriman.");
+        // toast.error("Gagal memperbarui data pengiriman.");
+        window.bootstrap.Modal.getInstance(document.getElementById('deliveryInputModal')).hide();
     }
     };
 
@@ -295,6 +296,7 @@ const CRUDPengirimanPembeli = () => {
     } catch (error) {
         console.error("Error updating pengambilan data:", error);
         toast.error("Gagal memperbarui data pengambilan.");
+        window.bootstrap.Modal.getInstance(document.getElementById('deliveryInputModal')).hide();
     }
     };
 
