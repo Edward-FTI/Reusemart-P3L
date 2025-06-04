@@ -53,6 +53,8 @@ import Owner from "../Owner/Owner";
 import PenjualanBulanan from "../Owner/PenjualanBulanan";
 import KomisiBulanan from "../Owner/KomisiBulanan";
 import StokGudang from "../Owner/StokGudang";
+import MasaPenitipan from "../Owner/MasaPenitipan";
+import KategoriBarang from "../Owner/KategoriBarang";
 
 // Detail Barang
 import DetailBarang from "../Components/DetailBarang";
@@ -317,6 +319,14 @@ const router = createBrowserRouter([
         path: "stok-gudang",
         element: <StokGudang />,
       },
+      {
+        path: "masa-penitipan",
+        element: <MasaPenitipan />,
+      },
+      {
+        path: "kategori-barang",
+        element: <KategoriBarang />,
+      }
     ],
   },
 
