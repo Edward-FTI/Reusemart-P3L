@@ -17,6 +17,7 @@ use App\Http\Controllers\api\OwnerController;
 use App\Http\Controllers\Api\TransaksiPenjualanController;
 use App\Http\Controllers\Api\TransaksiPenitipanController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PengambilanController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RequestDonasiController;
@@ -154,7 +155,9 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/pengambilan/{id}', [PengambilanController::class, 'destroy']);
     Route::get('/pengambilan/searchByIdPembeli/{id}', [PengambilanController::class, 'searchByIdPembeli']);
     Route::get('/pengambilan/searchByIdTransaksi/{id}', [PengambilanController::class, 'searchByIdTransaksi']);
+    Route::get('/pengambilanP', [PengambilanController::class, 'indexProgres']);
     Route::get('/transaksi-pengiriman/proses-hangus', [PengambilanController::class, 'prosesTransaksiHangusOtomatis']);
+
 
     // ======================= Transaksi Donasi =======================
     Route::get('/transaksi-donasi', [TransaksiDonasiController::class, 'index']);
@@ -183,3 +186,7 @@ Route::middleware('auth:api')->group(function () {
 });
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
+
+//Laporan
+// routes/api.php
+Route::get('/laporan/kategori-barang', [LaporanController::class, 'laporanKategoriBarang']);

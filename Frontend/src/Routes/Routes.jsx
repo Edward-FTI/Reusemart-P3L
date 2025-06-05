@@ -28,6 +28,7 @@ import CRUDOrganisasi from "../Admin/CRUDOrganisasi";
 import NavbarGudang from "../navbar/NavbarPegawai_gudang";
 import CRUDBarangTitipan from "../Pegawai_Gudang/CRUDBarangTitipan";
 import CRUDPengirimanPembeli from "../Pegawai_Gudang/CRUDPengiriman(Pembeli)";
+import UjianKelas from "../Pegawai_Gudang/UjianKelas"; // Sementara untuk testing
 import CRUDPengirimanPenitip from "../Pegawai_Gudang/CRUDPengiriman(Penitip)";
 
 // CUSTOMER
@@ -52,6 +53,8 @@ import Owner from "../Owner/Owner";
 import PenjualanBulanan from "../Owner/PenjualanBulanan";
 import KomisiBulanan from "../Owner/KomisiBulanan";
 import StokGudang from "../Owner/StokGudang";
+import MasaPenitipan from "../Owner/MasaPenitipan";
+import KategoriBarang from "../Owner/KategoriBarang";
 
 // Detail Barang
 import DetailBarang from "../Components/DetailBarang";
@@ -67,6 +70,8 @@ import OrderForm from "../pembeli/CheckOut";
 import TransaksiPembeli from "../pembeli/TransaksiPembeli";
 import TransaksiCS from "../Customer_Service/VerifikasiPembayaran";
 import BarangHariIni from "../Pegawai_Gudang/barangHariIni";
+
+import Barang_Donasi from "../Test2/TampilkanDonasi";
 
 const router = createBrowserRouter([
   {
@@ -100,6 +105,10 @@ const router = createBrowserRouter([
   {
     path: "/ambil-barang",
     element: <AmbilBarang />,
+  },
+  {
+    path: "/barang-donasi",
+    element: <Barang_Donasi />
   },
   {
     path: "/alamat",
@@ -194,6 +203,12 @@ const router = createBrowserRouter([
       {
         path: "/gudang/pengiriman/pembeli",
         element: <CRUDPengirimanPembeli />,
+        // element: <UjianKelas />,
+      },
+      {
+        path: "/gudang/pengiriman/ujianKelas",
+        // element: <CRUDPengirimanPembeli />
+        element: <UjianKelas />,
       },
 
       {
@@ -305,6 +320,14 @@ const router = createBrowserRouter([
         path: "stok-gudang",
         element: <StokGudang />,
       },
+      {
+        path: "masa-penitipan",
+        element: <MasaPenitipan />,
+      },
+      {
+        path: "kategori-barang",
+        element: <KategoriBarang />,
+      }
     ],
   },
 

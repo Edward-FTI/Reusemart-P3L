@@ -62,24 +62,24 @@ const Transaksi_penitip = () => {
     }
   };
 
-  const handleSearch = () => {
-    const filtered = barangList.filter(
-      (b) =>
-        b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        b.penitip?.nama_penitip
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        b.kategori_barang?.nama_kategori
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        b.status_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        b.tgl_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        b.harga_barang.toString().includes(searchTerm) ||
-        b.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sisaHari(b.masa_penitipan).toString().includes(searchTerm)
-    );
-    setFilteredBarangList(filtered);
+  const handleSearch = async () => {
+    const search = searchTerm.toLowerCase();
+
+    const filteredData = barangList.filter((b) => {
+      return (
+        b.nama_barang?.toLowerCase().includes(search) ||
+        b.penitip?.nama_penitip?.toLowerCase().includes(search) ||
+        b.kategori_barang?.nama_kategori?.toLowerCase().includes(search) ||
+        b.status_barang?.toLowerCase().includes(search) ||
+        b.tgl_penitipan?.toLowerCase().includes(search) ||
+        b.masa_penitipan?.toLowerCase().includes(search) ||
+        b.harga_barang?.toString().includes(search) ||
+        b.deskripsi?.toLowerCase().includes(search) ||
+        getSisaHari(b.masa_penitipan)?.toString().includes(search)
+      );
+    });
+
+    setFilteredBarangList(filteredData);
   };
 
   const fetchKategori = async () => {
@@ -289,38 +289,37 @@ const Transaksi_penitip = () => {
                     </button>
 
                     {b.status_barang !== "Diambil" &&
-                      b.status_barang !== "Ditunggu" && (
-                        <button
-                          className="btn btn-sm btn-warning mt-2"
-                          onClick={() => handlePengambilan(b)}
-                        >
-                          Penjadwalan
-                        </button>
+                      b.status_barang !== "barang untuk Donasi" && (
+                        <>
+                          <button
+                            className="btn btn-sm btn-warning me-2 mt-2"
+                            onClick={() => handleUpdateTanggalPenitipan(b)}
+                          >
+                            Perpanjang
+                          </button>
+                          <button
+                            className="btn btn-sm btn-success me-2 mt-2"
+                            onClick={() => handlePengambilan(b)}
+                          >
+                            Ambil Barang
+                          </button>
+                        </>
                       )}
-
-                    {b.penambahan_durasi !== 1 && (
-                      <button
-                        className="btn btn-sm btn-danger me-2 mt-2"
-                        onClick={() => handleUpdateTanggalPenitipan(b)}
-                      >
-                        Update Tanggal
-                      </button>
-                    )}
                   </div>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="10" className="text-center fs-2">
-                Belum ada data barang
+              <td colSpan="11" className="text-center">
+                Tidak ada data ditemukan.
               </td>
             </tr>
           )}
         </tbody>
       </table>
 
-      {/* Modal untuk detail barang */}
+      {/* Modal Detail */}
       <div
         className="modal fade"
         id="detailModal"
@@ -338,89 +337,50 @@ const Transaksi_penitip = () => {
                 type="button"
                 className="btn-close"
                 data-bs-dismiss="modal"
-                aria-label="Close"
+                aria-label="Tutup"
               ></button>
             </div>
             <div className="modal-body">
               {selectedBarang && (
-                <div className="row">
-                  <div className="col-md-6">
-                    <div
-                      id="carouselGambar"
-                      className="carousel slide"
-                      data-bs-ride="carousel"
-                    >
-                      <div className="carousel-inner">
-                        <div className="carousel-item active">
-                          <img
-                            src={`http://localhost:8000/${selectedBarang.gambar}`}
-                            className="d-block w-100 rounded"
-                            alt="Gambar 1"
-                            style={{ maxHeight: "300px", objectFit: "contain" }}
-                          />
-                        </div>
-                        {selectedBarang.gambar_dua && (
-                          <div className="carousel-item">
-                            <img
-                              src={`http://localhost:8000/${selectedBarang.gambar_dua}`}
-                              className="d-block w-100 rounded"
-                              alt="Gambar 2"
-                              style={{
-                                maxHeight: "300px",
-                                objectFit: "contain",
-                              }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                      <button
-                        className="carousel-control-prev"
-                        type="button"
-                        data-bs-target="#carouselGambar"
-                        data-bs-slide="prev"
-                      >
-                        <span
-                          className="carousel-control-prev-icon"
-                          aria-hidden="true"
-                        ></span>
-                        <span className="visually-hidden">Previous</span>
-                      </button>
-                      <button
-                        className="carousel-control-next"
-                        type="button"
-                        data-bs-target="#carouselGambar"
-                        data-bs-slide="next"
-                      >
-                        <span
-                          className="carousel-control-next-icon"
-                          aria-hidden="true"
-                        ></span>
-                        <span className="visually-hidden">Next</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="col-md-6">
-                    <h5>{selectedBarang.nama_barang}</h5>
-                    <p>
-                      <strong>Status Garansi:</strong>{" "}
-                      {selectedBarang.status_garansi}
-                    </p>
-                    <p>
-                      <strong>Penitip:</strong>{" "}
-                      {selectedBarang.penitip?.nama_penitip}
-                    </p>
-                    <p>
-                      <strong>Kategori:</strong>{" "}
-                      {selectedBarang.kategori_barang?.nama_kategori}
-                    </p>
-                  </div>
+                <div>
+                  <p>
+                    <strong>Nama Barang:</strong> {selectedBarang.nama_barang}
+                  </p>
+                  <p>
+                    <strong>Deskripsi:</strong> {selectedBarang.deskripsi}
+                  </p>
+                  <p>
+                    <strong>Harga:</strong> {selectedBarang.harga_barang}
+                  </p>
+                  <p>
+                    <strong>Kategori:</strong>{" "}
+                    {selectedBarang.kategori_barang?.nama_kategori}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {selectedBarang.status_barang}
+                  </p>
+                  <p>
+                    <strong>Penitip:</strong>{" "}
+                    {selectedBarang.penitip?.nama_penitip}
+                  </p>
+                  <img
+                    src={selectedBarang.gambar}
+                    alt="Gambar Barang"
+                    className="img-fluid"
+                  />
+                  <img
+                    src={selectedBarang.gambar_dua}
+                    alt="Gambar Barang 2"
+                    className="img-fluid mt-2"
+                  />
                 </div>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modal Pengambilan */}
       <div
         className="modal fade"
         id="pengambilanModal"
@@ -432,20 +392,17 @@ const Transaksi_penitip = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="pengambilanModalLabel">
-                Input Tanggal Pengambilan
+                Konfirmasi Pengambilan
               </h5>
               <button
                 type="button"
                 className="btn-close"
                 data-bs-dismiss="modal"
-                aria-label="Close"
+                aria-label="Tutup"
               ></button>
             </div>
             <div className="modal-body">
-              <p>
-                Masukkan tanggal pengambilan untuk barang:{" "}
-                <strong>{selectedPengambilanBarang?.nama_barang}</strong>
-              </p>
+              <p>Masukkan tanggal pengambilan barang:</p>
               <input
                 type="date"
                 className="form-control"
@@ -461,7 +418,7 @@ const Transaksi_penitip = () => {
                 className="btn btn-primary"
                 onClick={handleSubmitPengambilan}
               >
-                Simpan
+                Konfirmasi Pengambilan
               </button>
             </div>
           </div>
