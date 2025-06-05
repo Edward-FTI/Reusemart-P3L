@@ -22,6 +22,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 2500000,
                 'point'        => 150,
                 'email'        => 'andi.sutrisno@example.com',
+                "badge"        => "-",
             ],
             [
                 'nama_penitip' => 'Penitip1',
@@ -31,6 +32,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 3100000,
                 'point'        => 200,
                 'email'        => 'penitip1@example.com',
+                "badge"        => "-",
             ],
             [
                 'nama_penitip' => 'Citra Wijaya JR',
@@ -40,6 +42,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 2750000,
                 'point'        => 180,
                 'email'        => 'citra.wijayajr@example.com',
+                "badge"        => "-",
             ],
             [
                 'nama_penitip' => 'Dina Pratama',
@@ -49,6 +52,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 2950000,
                 'point'        => 190,
                 'email'        => 'dina.pratama@example.com',
+                "badge"        => "-",
             ],
             [
                 'nama_penitip' => 'Eko Susanto',
@@ -58,6 +62,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 3200000,
                 'point'        => 210,
                 'email'        => 'eko.susanto@example.com',
+                "badge"        => "-",
             ],
             [
                 'nama_penitip' => 'Fani Lestari',
@@ -67,6 +72,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 2800000,
                 'point'        => 175,
                 'email'        => 'fani.lestari@example.com',
+                "badge"        => "-",
             ],
             [
                 'nama_penitip' => 'Gina Hidayati',
@@ -76,6 +82,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 2650000,
                 'point'        => 160,
                 'email'        => 'gina.hidayati@example.com',
+                "badge"        => "-",
             ],
             [
                 'nama_penitip' => 'Hendra Prabowo',
@@ -85,6 +92,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 3050000,
                 'point'        => 220,
                 'email'        => 'hendra.prabowo@example.com',
+                "badge"        => "-",
             ],
             [
                 'nama_penitip' => 'Irma Widya',
@@ -94,6 +102,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 2900000,
                 'point'        => 195,
                 'email'        => 'irma.widya@example.com',
+                "badge"        => "-",
             ],
             [
                 'nama_penitip' => 'Joko Riyadi',
@@ -103,6 +112,7 @@ class PenitipSeeder extends Seeder
                 'saldo'        => 2700000,
                 'point'        => 170,
                 'email'        => 'joko.riyadi@example.com',
+                "badge"        => "-",
             ],
         ];
 
@@ -117,7 +127,7 @@ class PenitipSeeder extends Seeder
                 'email'        => $penitip['email'],
                 'password'     => Hash::make('password123'),
                 'password'     => Hash::make('password123'), // sama seperti di PegawaiSeeder
-                'badge'        => 'Null',
+                'badge'        => $penitip['badge'],
                 'created_at'   => now(),
                 'updated_at'   => now(),
             ]);

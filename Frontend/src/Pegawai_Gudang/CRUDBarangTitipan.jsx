@@ -68,10 +68,12 @@ const CRUDBarangTitipan = () => {
             b.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
             b.penitip?.nama_penitip?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             b.kategori_barang?.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.hunter?.id?.toLowerCase().includes(searchTerm.toLowerCase) ||
+            b.hunter?.nama?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             b.status_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
             b.tgl_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase())
+            b.masa_penitipan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            b.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (b.harga_barang !== null && b.harga_barang !== undefined && b.harga_barang.toString().toLowerCase().includes(searchTerm.toLowerCase()))
         );
         setFilteredBarangList(filtered);
     };
@@ -161,7 +163,9 @@ const CRUDBarangTitipan = () => {
                 await CreateBarang(form);
                 toast.success('Berhasil menambahkan data barang');
             }
-
+            // Reset pencarian setelah submit (opsional)
+            setSearchTerm('');
+            setFilteredBarangList(barangList);
             resetForm();
             fetchBarang();
         } catch (error) {
@@ -252,8 +256,6 @@ const CRUDBarangTitipan = () => {
         doc.setFont("times", "bold");
         doc.text("Penitip :", 20, 60);
 
-
-
         doc.setFont("times", "normal");
         doc.text(penitip, 35, 60);
         doc.text(alamat_penitip, 20, 65);
@@ -289,8 +291,6 @@ const CRUDBarangTitipan = () => {
         doc.rect(8, 10, 190, y + 10); // kotak sekitar seluruh isi
         doc.save(`Nota_${barangPertama.penitip.nama_penitip}.pdf`);
     };
-
-    
 
 
     return (

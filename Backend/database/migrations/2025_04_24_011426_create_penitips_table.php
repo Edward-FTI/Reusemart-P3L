@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('point');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('badge');
+            $table->string('badge')->default("-");
             $table->timestamps();
         });
     }

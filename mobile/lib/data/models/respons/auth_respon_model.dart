@@ -24,6 +24,8 @@ factory AuthResponModel.fromJson(String str) =>
         user: json["user"] == null ? null : User.fromJson(json["user"]),
     );
 
+  get data => null;
+
     Map<String, dynamic> toMap() => {
         "message": message,
         "access_token": accessToken,

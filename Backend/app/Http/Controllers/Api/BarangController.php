@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use DateTime;
+use Exception;
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Barang;
 use App\Models\Pegawai;
+use App\Models\Penitip;
 use Illuminate\Http\Request;
 use App\Models\KategoriBarang;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
-use DateTime;
 use Illuminate\Support\Facades\Auth;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Validator;
 
 class BarangController extends Controller
@@ -25,6 +30,18 @@ class BarangController extends Controller
         }
         return $pegawai->id;
     }
+
+
+    private function getOwner()
+    {
+        $user = Auth::user();
+        // Cek apakah user ada dan role-nya 'owner'
+        if ($user && isset($user->role) && strtolower($user->role) === 'owner') {
+            return $user->id; // Atau return true jika hanya ingin cek owner
+        }
+        return null;
+    }
+
 
     public function updateStatus(Request $request, string $id)
     {
@@ -86,6 +103,25 @@ class BarangController extends Controller
             'data' => []
         ], 200);
     }
+
+
+    // BarangController.php
+    public function indexOwner()
+    {
+        $user = Auth::user();
+        if (!$user || strtolower($user->role) !== 'owner') {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $barang = Barang::with(['penitip', 'kategori_barang', 'pegawai', 'hunter'])->get();
+
+        return response()->json([
+            'message' => 'Berhasil mengambil data barang',
+            'data' => $barang,
+        ]);
+    }
+
+
 
 
     public function indexPublic()
@@ -155,11 +191,126 @@ class BarangController extends Controller
 
         $barang = Barang::create($storeData);
 
+        // === TRIGGER NOTIFIKASI JIKA MASA PENITIPAN SISA 1 HARI ===
+        try {
+            $masaPenitipan = \Carbon\Carbon::parse($barang->masa_penitipan);
+            $now = \Carbon\Carbon::now();
+            $selisihHari = $now->diffInDays($masaPenitipan, false);
+
+            if ($selisihHari === 1) {
+                $penitip = Penitip::find($barang->id_penitip);
+                if ($penitip) {
+                    $user = User::where('email', $penitip->email)->first();
+                    if ($user) {
+                        $notificationService = app(\App\Services\NotificationService::class);
+                        $notificationService->sendNotification(
+                            $user->id,
+                            'Masa Penitipan Hampir Habis',
+                            'Masa penitipan untuk barang ' . $barang->nama_barang . ' akan habis besok. Segera ambil barang Anda!'
+                        );
+                        Log::info('Notifikasi penitipan hampir habis dikirim ke: ' . $user->email);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Gagal mengirim notifikasi masa penitipan: ' . $e->getMessage());
+        }
+        // === END NOTIFIKASI ===
+
         return response([
             'message' => 'Berhasil menambahkan data barang',
             'data' => $barang
         ], 201);
     }
+
+
+    // public function store(Request $request)
+    // {
+    //     $pegawaiId = $this->getPegawaiId();
+    //     if (!$pegawaiId) {
+    //         return response([
+    //             'message' => 'Pegawai tidak ditemukan untuk user yang login'
+    //         ], 404);
+    //     }
+
+    //     $storeData = $request->all();
+    //     $validate = Validator::make($storeData, [
+    //         'id_penitip' => 'required',
+    //         'id_kategori' => 'required',
+    //         'id_hunter' => 'nullable|integer',
+    //         'tgl_penitipan' => 'required',
+    //         'nama_barang' => 'required',
+    //         'harga_barang' => 'required',
+    //         'berat_barang' => 'required',
+    //         'penambahan_durasi' => 'nullable|integer',
+    //         'deskripsi' => 'required',
+    //         'status_garansi' => 'nullable|date',
+    //         'tgl_pengambilan' => 'nullable|date',
+    //         'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    //         'gambar_dua' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    //     ]);
+
+    //     if ($validate->fails()) {
+    //         return response([
+    //             'message' => $validate->errors()
+    //         ], 400);
+    //     }
+
+    //     if ($request->hasFile('gambar') && $request->hasFile('gambar_dua')) {
+    //         $imageName = time() . '_' . uniqid() . '.' . $request->file('gambar')->extension();
+    //         $imageName2 = time() . '_' . uniqid() . '.' . $request->file('gambar_dua')->extension();
+
+    //         $path_gambar = 'images/barang/' . $imageName;
+    //         $path_gambar2 = 'images/barang/' . $imageName2;
+
+    //         $request->file('gambar')->move(public_path('images/barang'), $imageName);
+    //         $request->file('gambar_dua')->move(public_path('images/barang'), $imageName2);
+    //         $storeData['gambar'] = $path_gambar;
+    //         $storeData['gambar_dua'] = $path_gambar2;
+    //     }
+
+    //     $storeData['id_pegawai'] = $pegawaiId;
+    //     $storeData['status_barang'] = 'Dijual';
+    //     $storeData['tgl_penitipan'] = Carbon::parse($storeData['tgl_penitipan'])->setTimeFromTimeString(now()->format('H:i:s'));
+
+    //     // Simulasi masa penitipan hanya 2 menit dari waktu penitipan
+    //     $tglPenitipan = Carbon::parse($storeData['tgl_penitipan'])->copy()->addMinutes(1);
+    //     $storeData['masa_penitipan'] = $tglPenitipan;   
+
+    //     $barang = Barang::create($storeData);
+
+    //     // === CEK NOTIFIKASI 2 MENIT SETELAH PENITIPAN ===
+    //     try {
+    //         $masaPenitipan = Carbon::parse($barang->masa_penitipan);
+    //         $now = Carbon::now();
+    //         $selisihMenit = $masaPenitipan->diffInMinutes($now, false);
+
+    //         if ($selisihMenit <= 1) {
+    //             $penitip = Penitip::find($barang->id_penitip);
+    //             if ($penitip) {
+    //                 $user = User::where('email', $penitip->email)->first();
+    //                 if ($user) {
+    //                     $notificationService = app(\App\Services\NotificationService::class);
+    //                     $notificationService->sendNotification(
+    //                         $user->id,
+    //                         'Masa Penitipan Hampir Habis',
+    //                         'Masa penitipan untuk barang ' . $barang->nama_barang . ' telah berjalan selama 2 menit.'
+    //                     );
+    //                     Log::info('Notifikasi 2 menit penitipan dikirim ke: ' . $user->email);
+    //                 }
+    //             }
+    //         }
+    //     } catch (\Exception $e) {
+    //         Log::error('Gagal mengirim notifikasi 2 menit penitipan: ' . $e->getMessage());
+    //     }
+    //     // === END NOTIFIKASI ===
+
+    //     return response([
+    //         'message' => 'Berhasil menambahkan data barang',
+    //         'data' => $barang
+    //     ], 201);
+    // }
+
 
 
     public function show(string $id)
@@ -373,4 +524,46 @@ class BarangController extends Controller
             'data' => null
         ], 500);
     }
+
+
+    public function masaPenitipan($id)
+    {
+        try {
+            $barang = Barang::select('id', 'masa_penitipan', 'id_penitip', 'nama_barang')->find($id);
+
+            if (!$barang) {
+                return response()->json([
+                    'message' => 'Barang tidak ditemukan'
+                ], 404);
+            }
+
+            $tanggalKedaluwarsa = \Carbon\Carbon::parse($barang->masa_penitipan);
+            $sisaMenit = now()->diffInMinutes($tanggalKedaluwarsa, false); // false: hasil bisa negatif jika lewat
+
+            if ($sisaMenit === 3) {
+                $penitip = Penitip::find($barang->id_penitip);
+                $user = User::where('email', $penitip->email)->first();
+
+                if ($user) {
+                    $notificationService = app(NotificationService::class);
+                    $notificationService->sendNotification(
+                        $user->id,
+                        'Masa Penitipan Hampir Habis',
+                        'Masa penitipan untuk barang ' . $barang->nama_barang . ' akan habis dalam 3 menit.'
+                    );
+                    Log::info('Notifikasi dikirim ke: ' . $user->email);
+                }
+            }
+            return response()->json([
+                'message' => 'Cek masa penitipan berhasil',
+                'sisa_menit' => $sisaMenit
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal memproses masa penitipan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

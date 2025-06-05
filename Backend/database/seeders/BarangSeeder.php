@@ -17,13 +17,34 @@ class BarangSeeder extends Seeder
     {
         // ...
         DB::table('barangs')->insert([
+            // [
+            //     'id_penitip' => 1,
+            //     'id_kategori' => 1,
+            //     'id_pegawai' => 3,
+            //     'id_hunter' => null,
+            //     'tgl_penitipan' => now(),
+            //     'masa_penitipan' => now()->copy()->addDays(30),
+            //     'penambahan_durasi' => 0,
+            //     'nama_barang' => 'Smartphone',
+            //     'harga_barang' => 2500000,
+            //     'berat_barang' => 500,
+            //     'deskripsi' => 'Barang Oke',
+            //     'status_garansi' => now()->copy()->addDays(10),
+            //     'status_barang' => 'Dijual',
+            //     'tgl_pengambilan' => null,
+            //     'gambar' => 'images/barang/smartphone.jpg',
+            //     'gambar_dua' => 'images/barang/smartphone.jpg',
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ],
+
             [
                 'id_penitip' => 1,
                 'id_kategori' => 1,
                 'id_pegawai' => 3,
                 'id_hunter' => null,
                 'tgl_penitipan' => now(),
-                'masa_penitipan' => now()->copy()->addDays(30),
+                'masa_penitipan' => now()->copy()->addDays(1)->addMinutes(2), // <= ini bagian penting
                 'penambahan_durasi' => 0,
                 'nama_barang' => 'Smartphone',
                 'harga_barang' => 2500000,
@@ -37,6 +58,8 @@ class BarangSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
+
             [
                 'id_penitip' => 2,
                 'id_kategori' => 2,
