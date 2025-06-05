@@ -66,6 +66,7 @@ import CRUDPegawai from "../admin/CRUDPegawai";
 import OrderForm from "../pembeli/CheckOut";
 import TransaksiPembeli from "../pembeli/TransaksiPembeli";
 import TransaksiCS from "../Customer_Service/VerifikasiPembayaran";
+import BarangHariIni from "../Pegawai_Gudang/barangHariIni";
 
 const router = createBrowserRouter([
   {
@@ -312,6 +313,12 @@ const router = createBrowserRouter([
     path: "/detail/:id",
     element: <DetailBarang />,
   },
+
+  {
+    path: '/barang/barang-baru',
+    element: <BarangHariIni/>
+  }
+
 ]);
 
 const AppRouter = () => {

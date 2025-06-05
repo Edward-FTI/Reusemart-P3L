@@ -66,6 +66,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/barang-qc/{id}', [BarangController::class, 'destroy']);
     Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
     Route::patch('/barang/{id}/status', [BarangController::class, 'updateStatus']);
+    Route::get('indexOwner', [BarangController::class, 'indexOwner']);
 
 
     // ======================= Kategori Barang =======================
