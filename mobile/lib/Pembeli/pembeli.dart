@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:mobile/Pembeli/history_pembeli.dart';
 import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 import 'package:mobile/data/models/pembeli/ModelPembeli.dart';
 import 'package:mobile/data/datasource/pembeli/pembeli_data_source.dart';
@@ -119,9 +120,13 @@ class _ProfilePembeliPageState extends State<ProfilePembeliPage> {
 
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {
-                // TODO: Navigasi ke halaman history
-              },
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return HistoryPembeli();
+                  },
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 padding:

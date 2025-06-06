@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:mobile/Penitip/HistoryPenitip.dart';
 import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 import 'package:mobile/data/models/penitip/PenitipModel.dart';
 import 'package:mobile/data/datasource/penitip/penitip_data_source.dart';
@@ -122,6 +123,10 @@ class _ProfilePenitipPageState extends State<ProfilePenitipPage> {
             ElevatedButton(
               onPressed: () {
                 // TODO: Navigasi ke halaman history
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return HistoryPenitipanPage();
+                }));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,

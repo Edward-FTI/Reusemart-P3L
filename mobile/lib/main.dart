@@ -14,18 +14,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   firebaseMessagingRemote.firebaseBackgroundHandler(message);
 }
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 // bool isPermissionGranted = await requestLocationPermission();
-await PermessionHelper().requestNotificationPermission();
-FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await PermessionHelper().requestNotificationPermission();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  await firebaseMessagingRemote.initialize();       
-await FirebaseMessangingRemoteDatasource().initialize();
+  await firebaseMessagingRemote.initialize();
+  await FirebaseMessangingRemoteDatasource().initialize();
 
   runApp(const MyApp());
 }
@@ -57,7 +58,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:  LoginPage(),
+      home: LoginPage(),
     );
   }
 }
