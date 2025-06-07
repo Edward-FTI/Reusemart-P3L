@@ -102,6 +102,17 @@ const LinkSidebar = () => {
                             className="d-inline-block" />
                         Laporan Stok Gudang
                     </Link>
+
+                    <Link to="masa-penitipan" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Masa Penitipan
+                    </Link>
+                    <Link to="kategori-barang" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=13547&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Kategori Barang
+                    </Link>
                 </>
             )}
 

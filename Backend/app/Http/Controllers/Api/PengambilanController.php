@@ -122,17 +122,22 @@ class PengambilanController extends Controller
             ], 404);
         }
 
+        // Simpan status lama untuk deteksi perubahan
+        $statusLama = $transaksi->status_pengiriman;
+
+        // Update data
         $transaksi->tgl_pengiriman = $request->input('tgl_pengiriman', $transaksi->tgl_pengiriman);
         $transaksi->status_pengiriman = $request->input('status_pengiriman', $transaksi->status_pengiriman);
         $transaksi->catatan = $request->input('catatan', $transaksi->catatan);
         $transaksi->id_pegawai = $request->input('id_pegawai', $transaksi->id_pegawai);
         $transaksi->save();
 
-        // Ambil data terkait untuk notifikasi
+        // Inisialisasi NotificationService
         $notificationService = app(NotificationService::class);
 
-        // 1. Kirim notifikasi ke semua penitip dari barang-barang dalam transaksi ini
-        $barangs = $transaksi->barangs; // pastikan relasi `barangs` didefinisikan di model
+        // Ambil data barang
+        $barangs = $transaksi->barangs;
+
         foreach ($barangs as $barang) {
             $penitip = Penitip::where('id', $barang->id_penitip)->first();
             if ($penitip) {
@@ -148,8 +153,8 @@ class PengambilanController extends Controller
             }
         }
 
-        // 2. Kirim notifikasi ke pembeli
-        $pembeli = $transaksi->pembeli; // pastikan relasi `pembeli` didefinisikan di model
+        // Kirim notifikasi ke pembeli
+        $pembeli = $transaksi->pembeli;
         if ($pembeli) {
             $userPembeli = User::where('email', $pembeli->email)->first();
             if ($userPembeli) {
@@ -162,7 +167,7 @@ class PengambilanController extends Controller
             }
         }
 
-        // 3. Kirim notifikasi ke pegawai yang ditugaskan
+        // Kirim notifikasi ke pegawai
         $pegawaiId = $transaksi->id_pegawai;
         $userPegawai = User::find($pegawaiId);
         if ($userPegawai) {
@@ -172,6 +177,34 @@ class PengambilanController extends Controller
                 'Tugas Pengiriman',
                 "Anda telah ditugaskan untuk pengiriman ID {$transaksi->id}."
             );
+        }
+
+        // 💡 Tambahan kondisi jika status menjadi 'diambil'
+        if (strtolower($transaksi->status_pengiriman) === 'diambil' && strtolower($statusLama) !== 'diambil') {
+            foreach ($barangs as $barang) {
+                $penitip = Penitip::find($barang->id_penitip);
+                if ($penitip) {
+                    $userPenitip = User::where('email', $penitip->email)->first();
+                    if ($userPenitip) {
+                        $notificationService->sendNotification(
+                            $userPenitip->id,
+                            'Barang Telah Diambil',
+                            "Barang {$barang->nama_barang} sudah diambil oleh pembeli."
+                        );
+                    }
+                }
+            }
+
+            if ($pembeli) {
+                $userPembeli = User::where('email', $pembeli->email)->first();
+                if ($userPembeli) {
+                    $notificationService->sendNotification(
+                        $userPembeli->id,
+                        'Terima Kasih',
+                        "Terima kasih telah mengambil barang Anda. Semoga puas dengan pembelian Anda."
+                    );
+                }
+            }
         }
 
         return response()->json([

@@ -14,7 +14,13 @@ class KategoriBarang extends Model
         'nama_kategori',
     ];
 
-    public function barang(): HasMany {
-        return $this->hasMany(KategoriBarang::class);
+    // public function barang(): HasMany
+    // {
+    //     return $this->hasMany(KategoriBarang::class);
+    // }
+
+    public function barangId(): HasMany
+    {
+        return $this->hasMany(Barang::class, 'id_kategori');
     }
 }

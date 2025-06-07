@@ -11,17 +11,40 @@ class BarangSeeder extends Seeder
     /**
      * Run the database seeds.
      */
+
+
     public function run(): void
     {
         // ...
         DB::table('barangs')->insert([
+            // [
+            //     'id_penitip' => 1,
+            //     'id_kategori' => 1,
+            //     'id_pegawai' => 3,
+            //     'id_hunter' => null,
+            //     'tgl_penitipan' => now(),
+            //     'masa_penitipan' => now()->copy()->addDays(30),
+            //     'penambahan_durasi' => 0,
+            //     'nama_barang' => 'Smartphone',
+            //     'harga_barang' => 2500000,
+            //     'berat_barang' => 500,
+            //     'deskripsi' => 'Barang Oke',
+            //     'status_garansi' => now()->copy()->addDays(10),
+            //     'status_barang' => 'Dijual',
+            //     'tgl_pengambilan' => null,
+            //     'gambar' => 'images/barang/smartphone.jpg',
+            //     'gambar_dua' => 'images/barang/smartphone.jpg',
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ],
+
             [
                 'id_penitip' => 1,
                 'id_kategori' => 1,
                 'id_pegawai' => 3,
                 'id_hunter' => null,
                 'tgl_penitipan' => now(),
-                'masa_penitipan' => now()->copy()->addDays(30),
+                'masa_penitipan' => now()->copy()->addDays(1)->addMinutes(2), // <= ini bagian penting
                 'penambahan_durasi' => 0,
                 'nama_barang' => 'Smartphone',
                 'harga_barang' => 2500000,
@@ -35,6 +58,8 @@ class BarangSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
+
             [
                 'id_penitip' => 2,
                 'id_kategori' => 2,
@@ -101,7 +126,7 @@ class BarangSeeder extends Seeder
                 'id_pegawai' => 3,
                 'id_hunter' => 13,
                 'tgl_penitipan' => now(),
-                'masa_penitipan' => now()->copy()->addDays(-1),
+                'masa_penitipan' => now()->copy()->addDays(0),
                 'penambahan_durasi' => 0,
                 'nama_barang' => 'Pakain Anak',
                 'harga_barang' => 100000,
@@ -181,7 +206,7 @@ class BarangSeeder extends Seeder
                 'id_pegawai' => 6,
                 'id_hunter' => 13,
                 'tgl_penitipan' => now(),
-                'masa_penitipan' => now()->copy()->addDays(1),
+                'masa_penitipan' => now()->copy()->addDays(-1),
                 'penambahan_durasi' => 0,
                 'nama_barang' => 'Kereta Bayi',
                 'harga_barang' => 45000,
@@ -335,6 +360,95 @@ class BarangSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
+
+
         ]);
+
+        $staticData = [
+            [
+                'id_penitip' => 1,
+                'id_kategori' => 1,
+                'id_pegawai' => 3,
+                'id_hunter' => null,
+                'tgl_penitipan' => now(),
+                'masa_penitipan' => now()->copy()->addDays(30),
+                'penambahan_durasi' => 0,
+                'nama_barang' => 'Smartphone',
+                'harga_barang' => 2500000,
+                'berat_barang' => 500,
+                'deskripsi' => 'Barang Oke',
+                'status_garansi' => now()->copy()->addDays(10),
+                'status_barang' => 'Dijual',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/smartphone.jpg',
+                'gambar_dua' => 'images/barang/smartphone.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            // Tambah data manual lain kalau perlu
+        ];
+
+        // Generate 200 data acak
+        $dummyData = $this->generateDummyData(200);
+
+        // Gabungkan dan insert semua data
+        DB::table('barangs')->insert(array_merge($staticData, $dummyData));
+    }
+
+    protected function randomDateThisYear()
+    {
+        $start = strtotime(date('Y') . '-01-01');
+        $end = strtotime(date('Y') . '-12-31');
+        return date('Y-m-d', rand($start, $end));
+    }
+
+    protected function generateDummyData($jumlah = 200)
+    {
+        $statusList = ['barang untuk donasi', 'dijual', 'penitip habis', 'terjual'];
+        $pegawaiList = [3, 6, 9];
+        $gambarList = [
+            'images/barang/buku1.jpeg',
+            'images/barang/baju2.jpeg',
+            'images/barang/sepatu3.jpeg',
+            'images/barang/elektronik4.jpeg',
+            'images/barang/mainan5.jpeg',
+            'images/barang/random6.jpeg',
+            'images/barang/random7.jpeg',
+        ];
+
+        $data = [];
+
+        for ($i = 0; $i < $jumlah; $i++) {
+            $tglPenitipan = $this->randomDateThisYear();
+            $masaHari = rand(0, 30);
+            $masaPenitipan = date('Y-m-d', strtotime("+$masaHari days", strtotime($tglPenitipan)));
+            $gambar = $gambarList[array_rand($gambarList)];
+            $status = $statusList[array_rand($statusList)];
+            $idPegawai = $pegawaiList[array_rand($pegawaiList)];
+
+            $data[] = [
+                'id_penitip' => rand(1, 10),
+                'id_kategori' => rand(1, 10),
+                'id_pegawai' => $idPegawai,
+                'id_hunter' => null,
+                'tgl_penitipan' => $tglPenitipan,
+                'masa_penitipan' => $masaPenitipan,
+                'penambahan_durasi' => rand(0, 2),
+                'nama_barang' => 'Barang Dummy ' . ($i + 1),
+                'harga_barang' => rand(0, 1) ? rand(10000, 1000000) : 0,
+                'berat_barang' => rand(1, 5),
+                'deskripsi' => 'Deskripsi dummy ' . ($i + 1),
+                'status_garansi' => null,
+                'status_barang' => $status,
+                'tgl_pengambilan' => null,
+                'gambar' => $gambar,
+                'gambar_dua' => $gambar,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        return $data;
     }
 }

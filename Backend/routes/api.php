@@ -17,6 +17,7 @@ use App\Http\Controllers\api\OwnerController;
 use App\Http\Controllers\Api\TransaksiPenjualanController;
 use App\Http\Controllers\Api\TransaksiPenitipanController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PengambilanController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RequestDonasiController;
@@ -66,6 +67,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/barang-qc/{id}', [BarangController::class, 'destroy']);
     Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
     Route::patch('/barang/{id}/status', [BarangController::class, 'updateStatus']);
+    Route::get('indexOwner', [BarangController::class, 'indexOwner']);
 
 
     // ======================= Kategori Barang =======================
@@ -184,3 +186,7 @@ Route::middleware('auth:api')->group(function () {
 });
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
+
+//Laporan
+// routes/api.php
+Route::get('/laporan/kategori-barang', [LaporanController::class, 'laporanKategoriBarang']);

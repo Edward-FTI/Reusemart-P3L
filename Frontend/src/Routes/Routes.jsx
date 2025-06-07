@@ -53,6 +53,8 @@ import Owner from "../Owner/Owner";
 import PenjualanBulanan from "../Owner/PenjualanBulanan";
 import KomisiBulanan from "../Owner/KomisiBulanan";
 import StokGudang from "../Owner/StokGudang";
+import MasaPenitipan from "../Owner/MasaPenitipan";
+import KategoriBarang from "../Owner/KategoriBarang";
 
 // Detail Barang
 import DetailBarang from "../Components/DetailBarang";
@@ -67,6 +69,9 @@ import CRUDPegawai from "../admin/CRUDPegawai";
 import OrderForm from "../pembeli/CheckOut";
 import TransaksiPembeli from "../pembeli/TransaksiPembeli";
 import TransaksiCS from "../Customer_Service/VerifikasiPembayaran";
+// import BarangHariIni from "../Pegawai_Gudang/barangHariIni";
+
+import Barang_Donasi from "../Test2/TampilkanDonasi";
 
 const router = createBrowserRouter([
   {
@@ -100,6 +105,10 @@ const router = createBrowserRouter([
   {
     path: "/ambil-barang",
     element: <AmbilBarang />,
+  },
+  {
+    path: "/barang-donasi",
+    element: <Barang_Donasi />
   },
   {
     path: "/alamat",
@@ -311,6 +320,14 @@ const router = createBrowserRouter([
         path: "stok-gudang",
         element: <StokGudang />,
       },
+      {
+        path: "masa-penitipan",
+        element: <MasaPenitipan />,
+      },
+      {
+        path: "kategori-barang",
+        element: <KategoriBarang />,
+      }
     ],
   },
 
@@ -319,6 +336,7 @@ const router = createBrowserRouter([
     path: "/detail/:id",
     element: <DetailBarang />,
   },
+
 ]);
 
 const AppRouter = () => {
