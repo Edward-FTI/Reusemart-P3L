@@ -73,9 +73,25 @@ const NavbarCustomer_Service = () => {
 const LinkSidebar = ({ navigate }) => {
   return (
     <div className="d-flex flex-column gap-3">
-      <DrawerItem label="Dashboard" icon="https://img.icons8.com/?size=100&id=iPqKoSmxmAyJ&format=png&color=000000" onClick={() => navigate('/dashboard')} />
-      <DrawerItem label="Penitip" icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" onClick={() => navigate('/penitip')} />
-      <DrawerItem label="Diskusi" icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" />
+      <DrawerItem
+        label="Dashboard"
+        icon="https://img.icons8.com/?size=100&id=iPqKoSmxmAyJ&format=png&color=000000"
+        onClick={() => navigate("/")}
+      />
+      <DrawerItem
+        label="Penitip"
+        icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
+        onClick={() => navigate("/penitip")}
+      />
+      <DrawerItem
+        label="Verifikasi Pembayaran"
+        icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
+        onClick={() => navigate("/customer-service/verifikasi")}
+      />
+      <DrawerItem
+        label="Diskusi"
+        icon="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
+      />
     </div>
   );
 };
