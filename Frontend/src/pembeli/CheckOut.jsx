@@ -33,6 +33,7 @@ const OrderForm = () => {
         setTimer((prev) => {
           if (prev === 1) {
             clearInterval(timerRef.current);
+            timerRef.current = null;
             if (!proof) {
               alert(
                 "Melebihi Batas Waktu Konfirmasi Pembayaran, Transaksi Gagal!"
@@ -43,12 +44,13 @@ const OrderForm = () => {
           return prev - 1;
         });
       }, 1000);
-    } else {
-      clearInterval(timerRef.current);
     }
 
-    return () => clearInterval(timerRef.current);
-  }, [showUpload, proof, navigate]);
+    return () => {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    };
+  }, [showUpload, navigate]);
 
   const fetchData = async () => {
     try {
@@ -82,6 +84,7 @@ const OrderForm = () => {
       return;
     }
     clearInterval(timerRef.current);
+    timerRef.current = null;
     setIsSubmitting(true);
 
     const formData = new FormData();

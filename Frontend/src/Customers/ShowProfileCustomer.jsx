@@ -109,7 +109,11 @@ function ShowProfileCustomer() {
                       </td>
                       <td>{t.status_pengiriman}</td>
                       <td>{t.status_pembelian}</td>
-                      <td>{t.verifikasi_pembayaran == 1 ? "Terverifikasi" : "Belum Verifikasi"}</td>
+                      <td>
+                        {t.verifikasi_pembayaran == 1
+                          ? "Terverifikasi"
+                          : "Belum Verifikasi"}
+                      </td>
                       <td>
                         {t.rating ? (
                           <Button variant="success" disabled>
@@ -151,7 +155,7 @@ function ShowProfileCustomer() {
                 <strong>Point:</strong> {pembeli.point}
               </ListGroup.Item>
               <ListGroup.Item>
-                <strong>Saldo:</strong> {pembeli.saldo}
+                <strong>Saldo: Rp </strong> {pembeli.saldo}
               </ListGroup.Item>
             </ListGroup>
           </Card>
