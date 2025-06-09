@@ -160,6 +160,10 @@ Route::middleware('auth:api')->group(function () {
 
 
     // ======================= Transaksi Donasi =======================
+    Route::get('/detail-transaksi', [TransaksiPenjualanController::class, 'indexPdf']);
+
+
+    // ======================= Transaksi Donasi =======================
     Route::get('/transaksi-donasi', [TransaksiDonasiController::class, 'index']);
     Route::post('/transaksi-donasi', [TransaksiDonasiController::class, 'store']);
     Route::get('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'show']);

@@ -63,3 +63,19 @@ export const verifikasi_pembayaran = async (id) => {
     throw error.response?.data || error;
   }
 };
+
+
+export const cetakPdf = async () => {
+  try {
+    const respone = await useAxios.get('/detail-transaksi', {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return respone.data;
+  }
+  catch (error) {
+    throw error.response.data;
+  }
+};

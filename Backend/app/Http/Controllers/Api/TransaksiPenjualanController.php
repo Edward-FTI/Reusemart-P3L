@@ -50,6 +50,7 @@ class TransaksiPenjualanController extends Controller
                 'status_pengiriman' => 'required|string|in:diantar,tiba di tujuan',
                 'status_pembelian' => 'required|string',
                 'poin_digunakan' => 'nullable|integer|min:0',
+                'tgl_transaksi' => now(),
             ]);
 
             if ($validator->fails()) {
@@ -137,6 +138,7 @@ class TransaksiPenjualanController extends Controller
 
                 'status_pembelian' => $validated['status_pembelian'],
                 'verifikasi_pembayaran' => false,
+                'tgl_transaksi' => now(),
             ]);
 
             DB::table('transaksi_pengiriman')->insert([
@@ -194,7 +196,6 @@ class TransaksiPenjualanController extends Controller
             ], 500);
         }
     }
-
 
 
     public function indexPembeli()
@@ -306,5 +307,28 @@ class TransaksiPenjualanController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+
+    public function indexPdf()
+    {
+        $user = Auth::user();
+        if (!$user || strtolower($user->role) !== 'owner') {
+            return response([
+                'message' => 'Owner belum login',
+            ], 401);
+        }
+
+        $detail = Detail_transaksi_penjualan::with(['barang', 'transaksi'])->get();
+        if (count($detail) > 0) {
+            return response([
+                'message' => 'Berhasil mengambil seluruh data detail transaksi',
+                'data' => $detail
+            ], 200);
+        }
+        return response([
+            'message' => 'Gagal mengambil data detail transaksi',
+            'data' => []
+        ], 400);
     }
 }

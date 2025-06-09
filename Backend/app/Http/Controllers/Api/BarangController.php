@@ -122,8 +122,6 @@ class BarangController extends Controller
     }
 
 
-
-
     public function indexPublic()
     {
         $barang = Barang::with(['penitip', 'kategori_barang'])->get();

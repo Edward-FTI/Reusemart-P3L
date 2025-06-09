@@ -6,6 +6,7 @@ import 'package:mobile/data/datasource/remote/user_remote_datasource.dart';
 import 'package:mobile/data/permission_helper.dart';
 import 'package:mobile/firebase_options.dart';
 import 'package:mobile/login/login.dart';
+import 'package:mobile/landing_page.dart';
 
 final firebaseMessagingRemote = FirebaseMessangingRemoteDatasource();
 
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginPage(),
+      home: LandingPage(),
     );
   }
 }

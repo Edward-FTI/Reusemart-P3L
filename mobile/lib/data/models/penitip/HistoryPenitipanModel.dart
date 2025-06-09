@@ -94,7 +94,10 @@ class HistoryPenitipanResponseModel {
         data: json["data"] == null
             ? []
             : List<HistoryPenitipanModel>.from(
-                json["data"]!.map((x) => HistoryPenitipanModel.fromJson(x))),
+                json["data"]!.map(
+                  (x) => HistoryPenitipanModel.fromJson(x),
+                ),
+              ),
       );
 
   Map<String, dynamic> toJson() => {
