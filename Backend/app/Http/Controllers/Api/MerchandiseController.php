@@ -8,41 +8,40 @@ use Illuminate\Http\Request;
 
 class MerchandiseController extends Controller
 {
-
+    /**
+     * Menampilkan semua data merchandise (dengan relasi penukaran).
+     */
     public function index()
     {
-        //
+        $merchandises = Merchandise::with('penukaranMerchandise')->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Semua Merchandise',
+            'data' => $merchandises
+        ], 200);
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
+     * Menampilkan detail merchandise berdasarkan ID (dengan relasi penukaran).
      */
     public function show(string $id)
     {
-        //
+        $merchandise = Merchandise::with('penukaranMerchandise')->find($id);
+
+        if (!$merchandise) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Merchandise tidak ditemukan',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Detail Merchandise',
+            'data' => $merchandise
+        ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    // Fungsi lainnya (store, update, destroy) masih kosong dan bisa ditambahkan nanti.
 }

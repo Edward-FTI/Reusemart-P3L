@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:mobile/Hunter/hunter.dart';
 import 'package:mobile/Kurir/kurir.dart';
 import 'package:mobile/Pembeli/pembeli.dart';
+import 'package:mobile/screen/merchandise_screen.dart';
 import 'package:mobile/Penitip/penitip.dart';
 import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 import 'package:mobile/data/datasource/remote/auth_remote_datasource.dart';
@@ -45,7 +46,8 @@ class _LoginPageState extends State<LoginPage> {
         Widget? nextPage;
         switch (role) {
           case 'Pembeli':
-            nextPage = ProfilePembeliPage();
+            // nextPage = ProfilePembeliPage();
+            nextPage = MerchandiseScreen();
             break;
           case 'Penitip':
             nextPage = ProfilePenitipPage();

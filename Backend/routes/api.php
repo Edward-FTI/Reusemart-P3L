@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PengambilanController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RequestDonasiController;
+use App\Http\Controllers\Api\MerchandiseController;
 use App\Http\Controllers\Api\PenukaranMerchandiseController;
 use App\Models\Rating;
 
@@ -204,6 +205,10 @@ Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
 Route::get('/penukaran-merchandise', [PenukaranMerchandiseController::class, 'indexPublic']);
 Route::get('/penukaran-merchandise/show-merchandise/{id}', [PenukaranMerchandiseController::class, 'showMerchandise']);
 Route::get('/penukaran-merchandise/list-merchandise', [PenukaranMerchandiseController::class, 'listMerchandise']);
+
+// ======================= Merchandise =======================
+Route::get('/merchandise', [MerchandiseController::class, 'index']);
+Route::post('/merchandise', [MerchandiseController::class, 'show']);
 
 //Laporan
 // routes/api.php
