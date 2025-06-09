@@ -21,7 +21,9 @@ use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PengambilanController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RequestDonasiController;
+use App\Http\Controllers\Api\TransaksiPengirimanController;
 use App\Models\Rating;
+use App\Models\TransaksiDonasi;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -50,7 +52,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
     Route::get('/pegawai/{id}', [PegawaiController::class, 'searchById']);
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
-
+    Route::get('/kurirP', [PegawaiController::class, 'getPegawaiData']);
 
 
     // ======================= Jabatan =======================
@@ -103,6 +105,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/request-donasi/{id}', [RequestDonasiController::class, 'update']);
     Route::delete('/request-donasi/{id}', [RequestDonasiController::class, 'destroy']);
     Route::get('/request-donasi/searchByIdOrganisasi/{id}', [RequestDonasiController::class, 'searchByIdOrganisasi']);
+    Route::get('/request/owner', [RequestDonasiController::class, 'indexRequestDonasiOwner']);
 
 
     // ======================= Alamat Pembeli =======================
@@ -166,6 +169,8 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'update']);
     Route::delete('/transaksi-donasi/{id}', [TransaksiDonasiController::class, 'destroy']);
     Route::get('/transaksi-donasi/searchByIdOrganisasi/{id}', [TransaksiDonasiController::class, 'searchByIdOrganisasi']);
+    Route::get('/donasi/owner', [TransaksiDonasiController::class, 'indexDonasiOwner']);
+
 
     // ======================= Owner =======================
     Route::get('/owner', [OwnerController::class, 'indexOwner']);
@@ -178,6 +183,15 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/cart/{id}', [CartController::class, 'show']);
     Route::delete('/cart/{id}', [CartController::class, 'destroy']);
     Route::patch('/cart/{id}/update-transaksi', [CartController::class, 'updateTransaksi']);
+
+    // ======================= Pengiriman =======================
+    Route::get('/kurir-pengiriman', [TransaksiPengirimanController::class, 'index']);
+    Route::get('/pengiriman/selesai', [TransaksiPengirimanController::class, 'selesai']);
+    Route::get('/pengiriman/proses', [TransaksiPengirimanController::class, 'proses']);
+    Route::put('/pengiriman/{id}/selesai', [TransaksiPengirimanController::class, 'updateStatusSelesai']);
+
+
+
 
 
     // ======================= Rating =======================

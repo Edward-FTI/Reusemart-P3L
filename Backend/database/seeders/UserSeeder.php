@@ -88,7 +88,7 @@ class UserSeeder extends Seeder
             ],
             // Data pegawai gudang yang juga bisa jadi user
             [
-                'name' => 'Citra Wijay', // Ini seharusnya Citra Wijaya dari penitip atau ada kesalahpenulisan?
+                'name' => 'Citra Wijaya', // Ini seharusnya Citra Wijaya dari penitip atau ada kesalahpenulisan?
                 'email' => 'citra.wijaya@example.com',
                 'role' => 'Pegawai Gudang', // Jika Citra Wijaya juga Pegawai Gudang
                 'password' => 'password123',
@@ -105,6 +105,19 @@ class UserSeeder extends Seeder
                 'role' => 'Pegawai Gudang',
                 'password' => 'password123',
             ],
+            [
+                'name' => 'Kiki Ramadhan',
+                'email' => 'kiki.ramadhan@example.com',
+                'role' => 'Kurir',
+                'password' => 'password123',
+            ],
+            [
+                'name' => 'Lina Anggraini',
+                'email' => 'lina.anggraini@example.com',
+                'role' => 'Kurir',
+                'password' => 'password123',
+            ],
+
         ];
 
         foreach ($users as $user) {

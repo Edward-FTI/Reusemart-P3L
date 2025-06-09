@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Organisasi;
 use App\Models\Pegawai;
+use App\Models\TransaksiDonasi;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -37,6 +38,7 @@ class DatabaseSeeder extends Seeder
             Transaksi_PenjualanSeeder::class,
             Detail_transaksi_penjualanSeeder ::class,
             TransaksiPengirimanSeeder::class,
+            Transaksi_DonasiSeeder::class,
         ]);
     }
 }

@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('request__donasis', function (Blueprint $table) {
+        Schema::create('request_donasis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_organisasi')->constrained('organisasis');
             $table->string('request');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('request__donasis');
+        Schema::dropIfExists('request_donasis');
     }
 };
