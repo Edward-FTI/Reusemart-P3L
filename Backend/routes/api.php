@@ -22,6 +22,8 @@ use App\Http\Controllers\Api\PengambilanController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RequestDonasiController;
 use App\Http\Controllers\Api\TransaksiPengirimanController;
+use App\Http\Controllers\Api\MerchandiseController;
+use App\Http\Controllers\Api\PenukaranMerchandiseController;
 use App\Models\Rating;
 use App\Models\TransaksiDonasi;
 
@@ -162,6 +164,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transaksi-pengiriman/proses-hangus', [PengambilanController::class, 'prosesTransaksiHangusOtomatis']);
 
 
+    // ======================= Transaksi Cetak PDF =======================
+    Route::get('/detail-transaksi', [TransaksiPenjualanController::class, 'indexPdf']);
+
+
     // ======================= Transaksi Donasi =======================
     Route::get('/transaksi-donasi', [TransaksiDonasiController::class, 'index']);
     Route::post('/transaksi-donasi', [TransaksiDonasiController::class, 'store']);
@@ -197,9 +203,26 @@ Route::middleware('auth:api')->group(function () {
     // ======================= Rating =======================
     Route::get('/rating', [RatingController::class, 'index']);
     Route::post('/rating', [RatingController::class, 'store']);
+
+    // Endpoint privat (perlu login, gunakan sanctum)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/penukaran-merchandise-login', [PenukaranMerchandiseController::class, 'index']);
+        Route::post('/penukaran-merchandise-login', [PenukaranMerchandiseController::class, 'store']);
+        Route::get('/penukaran-merchandise/{id}', [PenukaranMerchandiseController::class, 'show']);
+        Route::delete('/penukaran-merchandise/{id}', [PenukaranMerchandiseController::class, 'destroy']);
+    });
 });
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
+
+// Endpoint publik (tidak perlu login)
+Route::get('/penukaran-merchandise', [PenukaranMerchandiseController::class, 'indexPublic']);
+Route::get('/penukaran-merchandise/show-merchandise/{id}', [PenukaranMerchandiseController::class, 'showMerchandise']);
+Route::get('/penukaran-merchandise/list-merchandise', [PenukaranMerchandiseController::class, 'listMerchandise']);
+
+// ======================= Merchandise =======================
+Route::get('/merchandise', [MerchandiseController::class, 'index']);
+Route::post('/merchandise', [MerchandiseController::class, 'show']);
 
 //Laporan
 // routes/api.php

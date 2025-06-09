@@ -65,7 +65,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 2,
                 'id_kategori' => 3,
                 'id_pegawai' => 3,
-                'id_hunter' => 13,
+                'id_hunter' => 14,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(15),
                 'penambahan_durasi' => 0,
@@ -105,7 +105,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 2,
                 'id_kategori' => 3,
                 'id_pegawai' => 3,
-                'id_hunter' => 13,
+                'id_hunter' => 14,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(0),
                 'penambahan_durasi' => 0,
@@ -125,7 +125,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 3,
                 'id_kategori' => 3,
                 'id_pegawai' => 3,
-                'id_hunter' => 13,
+                'id_hunter' => 15,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(20),
                 'penambahan_durasi' => 0,
@@ -145,7 +145,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 4,
                 'id_kategori' => 4,
                 'id_pegawai' => 6,
-                'id_hunter' => 13,
+                'id_hunter' => 14,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(30),
                 'penambahan_durasi' => 1,
@@ -165,7 +165,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 5,
                 'id_kategori' => 5,
                 'id_pegawai' => 6,
-                'id_hunter' => 13,
+                'id_hunter' => 15,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(30),
                 'penambahan_durasi' => 1,
@@ -185,7 +185,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 6,
                 'id_kategori' => 6,
                 'id_pegawai' => 6,
-                'id_hunter' => 13,
+                'id_hunter' => 15,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(-1),
                 'penambahan_durasi' => 0,
@@ -205,7 +205,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 7,
                 'id_kategori' => 7,
                 'id_pegawai' => 9,
-                'id_hunter' => 13,
+                'id_hunter' => 15,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(0),
                 'penambahan_durasi' => 0,
@@ -225,7 +225,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 8,
                 'id_kategori' => 8,
                 'id_pegawai' => 9,
-                'id_hunter' => 13,
+                'id_hunter' => 15,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(0),
                 'penambahan_durasi' => 0,
@@ -245,7 +245,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 9,
                 'id_kategori' => 9,
                 'id_pegawai' => 9,
-                'id_hunter' => 13,
+                'id_hunter' => 14,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(2),
                 'penambahan_durasi' => 0,
@@ -265,7 +265,7 @@ class BarangSeeder extends Seeder
                 'id_penitip' => 10,
                 'id_kategori' => 10,
                 'id_pegawai' => 9,
-                'id_hunter' => 13,
+                'id_hunter' => 14,
                 'tgl_penitipan' => now(),
                 'masa_penitipan' => now()->copy()->addDays(3),
                 'penambahan_durasi' => 0,
@@ -341,9 +341,6 @@ class BarangSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
-
-
         ]);
 
         $staticData = [
@@ -371,10 +368,10 @@ class BarangSeeder extends Seeder
         ];
 
         // Generate 200 data acak
-        $dummyData = $this->generateDummyData(200);
+        // $dummyData = $this->generateDummyData(200);
 
-        // Gabungkan dan insert semua data
-        DB::table('barangs')->insert(array_merge($staticData, $dummyData));
+        // DB::table('barangs')->insert(array_merge($staticData, $dummyData));
+        DB::table('barangs')->insert($staticData);
     }
 
     protected function randomDateThisYear()
@@ -386,16 +383,16 @@ class BarangSeeder extends Seeder
 
     protected function generateDummyData($jumlah = 200)
     {
-        $statusList = ['barang untuk donasi', 'dijual', 'penitip habis', 'terjual'];
+        $statusList = ['barang untuk donasi', 'Dijual', 'penitip habis', 'terjual'];
         $pegawaiList = [3, 6, 9];
         $gambarList = [
-            'images/barang/buku1.jpeg',
-            'images/barang/baju2.jpeg',
-            'images/barang/sepatu3.jpeg',
-            'images/barang/elektronik4.jpeg',
-            'images/barang/mainan5.jpeg',
-            'images/barang/random6.jpeg',
-            'images/barang/random7.jpeg',
+            'images/barang/buku.jpeg',
+            'images/barang/cangkul.jpeg',
+            'images/barang/fotocopy.jpeg',
+            'images/barang/keretabayi.jpeg',
+            'images/barang/mainan.jpeg',
+            'images/barang/meja.jpeg',
+            'images/barang/motor.jpeg',
         ];
 
         $data = [];
