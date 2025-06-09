@@ -387,9 +387,10 @@ class BarangSeeder extends Seeder
         ];
 
         // Generate 200 data acak
-        $dummyData = $this->generateDummyData(200);
+        // $dummyData = $this->generateDummyData(200);
 
-        DB::table('barangs')->insert(array_merge($staticData, $dummyData));
+        // DB::table('barangs')->insert(array_merge($staticData, $dummyData));
+        DB::table('barangs')->insert($staticData);
     }
 
     protected function randomDateThisYear()
