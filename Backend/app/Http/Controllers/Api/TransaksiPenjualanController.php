@@ -319,7 +319,7 @@ class TransaksiPenjualanController extends Controller
             ], 401);
         }
 
-        $detail = Detail_transaksi_penjualan::with(['barang', 'transaksi'])->get();
+        $detail = Detail_transaksi_penjualan::with(['barang', 'transaksi', 'barang.hunter'])->get();
         if (count($detail) > 0) {
             return response([
                 'message' => 'Berhasil mengambil seluruh data detail transaksi',
