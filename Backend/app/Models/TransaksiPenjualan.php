@@ -25,6 +25,7 @@ class TransaksiPenjualan extends Model
         // 'id_pegawai',
         'status_pembelian',
         'verifikasi_pembayaran',
+        'tgl_transaksi'
     ];
 
     public function pembeli(): BelongsTo

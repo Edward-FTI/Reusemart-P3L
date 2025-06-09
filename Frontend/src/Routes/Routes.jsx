@@ -13,10 +13,11 @@ import ResetPassword from "../Components/resetPassword";
 import AmbilBarang from "../Components/AmbilBarang";
 
 // CUSTOMER SERVICE
-import NavbarCustomer_Service from "../navbar/NavbarCustomer_Service";
+// import NavbarCustomer_Service from "../navbar/NavbarCustomer_Service";
 import CRUDPenitip from "../Customer_Service/CRUDPenitip";
 import CRUDDiskusi from "../Customer_Service/CRUDDiskusi";
 import VerifikasiPembayaran from "../Customer_Service/VerifikasiPembayaran";
+import Merchandise from "../Customer_Service/merchandise";
 
 // ADMIN
 import Admin from "../Admin/Admin";
@@ -162,33 +163,66 @@ const router = createBrowserRouter([
   },
 
   // CUSTOMER SERVICE
+
   {
-    path: "/customer-service/penitip",
-    element: (
-      <div>
-        <NavbarCustomer_Service />
-        <CRUDPenitip />
-      </div>
-    ),
+    path: "/customer-service",
+    element: <Layout />,
+    children: [
+      {
+        path: "penitip",
+        element: <CRUDPenitip />, // atau komponen dashboard admin Anda
+      },
+      {
+        path: "verifikasi",
+        element: <TransaksiCS />,
+      },
+      {
+        path: "diskusi",
+        element: <CRUDDiskusi />,
+      },
+      {
+        path: "merchandise",
+        element: <Merchandise />,
+      },
+    ],
   },
-  {
-    path: "/customer-service/verifikasi",
-    element: (
-      <div>
-        <NavbarCustomer_Service />
-        <TransaksiCS />
-      </div>
-    ),
-  },
-  {
-    path: "/customer-service/diskusi",
-    element: (
-      <div>
-        <CRUDDiskusi />
-        <Footer />
-      </div>
-    ),
-  },
+
+  // {
+  //   path: "/customer-service/penitip",
+  //   element: (
+  //     <div>
+  //       <NavbarCustomer_Service />
+  //       <CRUDPenitip />
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   path: "/customer-service/verifikasi",
+  //   element: (
+  //     <div>
+  //       <NavbarCustomer_Service />
+  //       <TransaksiCS />
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   path: "/customer-service/diskusi",
+  //   element: (
+  //     <div>
+  //       <CRUDDiskusi />
+  //       <Footer />
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   path: "/customer-service/merchandise",
+  //   element: (
+  //     <div>
+  //       <Merchandise />
+  //       <Footer />
+  //     </div>
+  //   ),
+  // },
 
   // PEGAWAI GUDANG
   {

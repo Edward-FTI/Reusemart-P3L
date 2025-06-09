@@ -29,6 +29,12 @@ class UserSeeder extends Seeder
                 'role' => 'Customer Service',
                 'password' => 'cs12345',
             ],
+            [
+                'name' => 'Heru',
+                'email' => 'heru@example.com',
+                'role' => 'Customer Service',
+                'password' => 'password123',
+            ],
             // password: gudang123
             [
                 'name' => 'Pegawai Gudang User',

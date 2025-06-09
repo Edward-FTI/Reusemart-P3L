@@ -23,6 +23,7 @@ return new class extends Migration
             // $table->unsignedBigInteger('id_pegawai')->nullable();
             $table->string('status_pembelian');
             $table->string('verifikasi_pembayaran');
+            $table->date('tgl_transaksi');
             $table->timestamps();
         });
     }

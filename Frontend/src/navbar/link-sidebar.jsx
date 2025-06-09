@@ -52,14 +52,27 @@ const LinkSidebar = () => {
             )}
 
             {/* Customer Service */}
-            {/* {role === "Customer Service" && (
-                <Link to="/customer-service/penitip" className="d-flex align-items-center gap-2 text-white link-side">
-                    <img src="https://img.icons8.com/?size=100&id=aurymxpl98YH&format=png&color=000000" alt="" width="30"
-                        className="d-inline-block" />
-                    Kelola Penitip
-                </Link>
-            )} */}
-    
+            {role === "Customer Service" && (
+                <>
+                    <Link to="penitip/" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Penitip
+                    </Link>
+
+                    <Link to="diskusi/" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=13042&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Diskusi
+                    </Link>
+                    <Link to="merchandise/" className="d-flex align-items-center gap-2 text-white link-side">
+                        <img src="https://img.icons8.com/?size=100&id=FYDMKDveHa85&format=png&color=000000" alt="" width="30"
+                            className="d-inline-block" />
+                        Merchandise
+                    </Link>
+                </>
+            )}
+
             {/* Pegawai Gudang */}
             {role === "Pegawai Gudang" && (
                 <>
