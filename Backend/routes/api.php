@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PengambilanController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\RequestDonasiController;
+use App\Http\Controllers\Api\PenukaranMerchandiseController;
 use App\Models\Rating;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -183,9 +184,22 @@ Route::middleware('auth:api')->group(function () {
     // ======================= Rating =======================
     Route::get('/rating', [RatingController::class, 'index']);
     Route::post('/rating', [RatingController::class, 'store']);
+
+    // Endpoint privat (perlu login, gunakan sanctum)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/penukaran-merchandise-login', [PenukaranMerchandiseController::class, 'index']);
+        Route::post('/penukaran-merchandise-login', [PenukaranMerchandiseController::class, 'store']);
+        Route::get('/penukaran-merchandise/{id}', [PenukaranMerchandiseController::class, 'show']);
+        Route::delete('/penukaran-merchandise/{id}', [PenukaranMerchandiseController::class, 'destroy']);
+    });
 });
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
+
+// Endpoint publik (tidak perlu login)
+Route::get('/penukaran-merchandise', [PenukaranMerchandiseController::class, 'indexPublic']);
+Route::get('/penukaran-merchandise/show-merchandise/{id}', [PenukaranMerchandiseController::class, 'showMerchandise']);
+Route::get('/penukaran-merchandise/list-merchandise', [PenukaranMerchandiseController::class, 'listMerchandise']);
 
 //Laporan
 // routes/api.php

@@ -405,14 +405,14 @@ class BarangSeeder extends Seeder
 
     protected function generateDummyData($jumlah = 200)
     {
-        $statusList = ['barang untuk donasi', 'dijual', 'penitip habis', 'terjual'];
+        $statusList = ['barang untuk donasi', 'Dijual', 'penitip habis', 'terjual'];
         $pegawaiList = [3, 6, 9];
         $gambarList = [
             'images/barang/buku1.jpeg',
             'images/barang/baju2.jpeg',
             'images/barang/sepatu3.jpeg',
             'images/barang/elektronik4.jpeg',
-            'images/barang/mainan5.jpeg',
+            'images/barang/smartphone.jpg',
             'images/barang/random6.jpeg',
             'images/barang/random7.jpeg',
         ];

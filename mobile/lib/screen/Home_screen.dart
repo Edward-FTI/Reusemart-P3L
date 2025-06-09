@@ -27,7 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
       setState(() {
         // Filter barang untuk slider berdasar id 1 sampai 3
-        _sliderBarang = barangList.where((barang) => barang.id >= 1 && barang.id <= 3).toList();
+        _sliderBarang = barangList
+            .where((barang) => barang.id >= 1 && barang.id <= 3)
+            .toList();
 
         // Jika kosong, ambil 3 barang pertama sebagai fallback
         if (_sliderBarang.isEmpty && barangList.isNotEmpty) {
@@ -54,25 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-//   void _showBarangDetailModal(Barang barang) {
-//   showDialog(
-//     context: context,
-//     builder: (context) {
-//       return AlertDialog(
-//         title: Text(barang.namaBarang),
-//         content: Text(barang.deskripsi),
-//         actions: [
-//           TextButton(
-//             onPressed: () => Navigator.pop(context),
-//             child: const Text('Tutup'),
-//           ),
-//         ],
-//       );
-//     },
-//   );
-// }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,20 +77,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildBarangSlider(),
-
                   const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Rekomendasi Pilihan',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
-
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10.0,
                       mainAxisSpacing: 10.0,
@@ -159,9 +142,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   decoration: InputDecoration(
                     hintText: 'Cari di reusemart',
                     hintStyle: TextStyle(color: Colors.grey[600], fontSize: 14),
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 20),
+                    prefixIcon:
+                        const Icon(Icons.search, color: Colors.grey, size: 20),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                   ),
                   style: const TextStyle(fontSize: 14),
                 ),
@@ -210,7 +195,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.bottomLeft,
                 child: Container(
                   margin: const EdgeInsets.all(8),
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.6),
                     borderRadius: BorderRadius.circular(5),
@@ -278,25 +264,32 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       barang.namaBarang,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w600),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       barang.formattedHarga,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green),
                     ),
                     const Spacer(),
                     Row(
                       children: [
                         const Icon(Icons.star, color: Colors.amber, size: 16),
-                        Text('4.5', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                        Text('4.5',
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey[600])),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             ' (100+ terjual)',
-                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey[600]),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -323,10 +316,14 @@ class _HomeScreenState extends State<HomeScreen> {
         print('Bottom nav item $index clicked');
       },
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Beranda'),
-        BottomNavigationBarItem(icon: Icon(Icons.category_outlined), label: 'Kategori'),
-        BottomNavigationBarItem(icon: Icon(Icons.inbox_outlined), label: 'Inbox'),
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined), label: 'Beranda'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.category_outlined), label: 'Kategori'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.inbox_outlined), label: 'Inbox'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline), label: 'Akun'),
       ],
     );
   }
