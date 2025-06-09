@@ -160,7 +160,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transaksi-pengiriman/proses-hangus', [PengambilanController::class, 'prosesTransaksiHangusOtomatis']);
 
 
-    // ======================= Transaksi Donasi =======================
+    // ======================= Transaksi Cetak PDF =======================
     Route::get('/detail-transaksi', [TransaksiPenjualanController::class, 'indexPdf']);
 
 
