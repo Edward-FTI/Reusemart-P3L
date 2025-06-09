@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class MerchandiseController extends Controller
 {
-    
+
     public function index()
     {
         //

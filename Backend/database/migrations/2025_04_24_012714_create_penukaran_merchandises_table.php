@@ -13,13 +13,18 @@ return new class extends Migration
     {
         Schema::create('penukaran_merchandises', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_pembeli')->constrained('pembelis');
-            $table->foreignId('id_merhandise')->constrained('merchandises');
-            $table->foreignId('id_pegawai')->constrained('pegawais');
-            $table->date('tanggal_penukaran');
-            $table->string('status');
+            $table->unsignedBigInteger('id_pembeli');
+            $table->unsignedBigInteger('id_merchandise'); // <- Pastikan ini ada!
+            $table->unsignedBigInteger('id_pegawai')->nullable();
+            $table->dateTime('tanggal_penukaran');
             $table->integer('jumlah');
+            $table->string('status');
             $table->timestamps();
+
+            // Foreign keys (optional but recommended)
+            $table->foreign('id_pembeli')->references('id')->on('pembelis');
+            $table->foreign('id_merchandise')->references('id')->on('merchandises');
+            $table->foreign('id_pegawai')->references('id')->on('pegawais');
         });
     }
 

@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('merchandises', function (Blueprint $table) {
             $table->id();
-            $table->string('jenis_merchandise');
+            $table->string('nama_merchandise');
+            $table->integer('jumlah')->nullable();
+            $table->string('gambar')->nullable();
             $table->integer('nilai_point');
             $table->timestamps();
         });
