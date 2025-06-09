@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Request_Donasi extends Model
 {
-    protected $table = 'request__donasis';
+    protected $table = 'request_donasis';
     protected $fillable = [
         'id_organisasi',
         'request',
+        'status',
     ];
 
     public function organisasi()
