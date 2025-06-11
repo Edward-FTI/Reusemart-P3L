@@ -6,118 +6,153 @@ import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 import 'package:mobile/data/models/merchandise/penukaran_merchandise.dart';
 
 class PenukaranMerchandiseDatasource {
-  /// Ambil semua data penukaran merchandise
+  String? _accessToken;
+
+  Future<String?> _getToken() async {
+    if (_accessToken != null) return _accessToken;
+    final authData = await AuthLocalDatasource().getUserData();
+    _accessToken = authData?.accessToken;
+    return _accessToken;
+  }
+
   Future<List<PenukaranMerchandise>> getAllPenukaran() async {
-    final authData = await AuthLocalDatasource().getUserData();
+    try {
+      final token = await _getToken();
+      if (token == null) throw Exception("Token tidak ditemukan");
 
-    final response = await http.get(
-      Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise'),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer ${authData?.accessToken}",
-        "Accept": "application/json",
-      },
-    );
+      final response = await http.get(
+        Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      ).timeout(const Duration(seconds: 10));
 
-    log("Status Code: ${response.statusCode}");
-    log("Response Body: ${response.body}");
-
-    if (response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
-
-      if (jsonData is List) {
-        return jsonData
-            .map((item) => PenukaranMerchandise.fromJson(item))
-            .toList();
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        if (jsonData is List) {
+          return jsonData
+              .map((item) => PenukaranMerchandise.fromJson(item))
+              .toList();
+        } else {
+          throw Exception("Format response tidak sesuai (harus List)");
+        }
       } else {
-        log("Format response tidak sesuai (harus List)");
-        return [];
+        throw Exception("Gagal mengambil data penukaran: ${response.statusCode}");
       }
-    } else {
-      log("Gagal mengambil data penukaran merchandise");
-      return [];
+    } catch (e) {
+      log("Error getAllPenukaran: $e");
+      rethrow;
     }
   }
 
-  /// Ambil satu data penukaran berdasarkan ID
   Future<PenukaranMerchandise?> getPenukaranById(int id) async {
-    final authData = await AuthLocalDatasource().getUserData();
+    try {
+      final token = await _getToken();
+      if (token == null) throw Exception("Token tidak ditemukan");
 
-    final response = await http.get(
-      Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise/$id'),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer ${authData?.accessToken}",
-        "Accept": "application/json",
-      },
-    );
+      final response = await http.get(
+        Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise/$id'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      ).timeout(const Duration(seconds: 10));
 
-    log("Status Code: ${response.statusCode}");
-    log("Response Body: ${response.body}");
-
-    if (response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
-      return PenukaranMerchandise.fromJson(jsonData);
-    } else {
-      log("Gagal mengambil data penukaran dengan ID: $id");
-      return null;
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        return PenukaranMerchandise.fromJson(jsonData);
+      } else if (response.statusCode == 404) {
+        // Data tidak ditemukan, return null saja
+        return null;
+      } else {
+        throw Exception("Gagal mengambil data penukaran dengan ID: $id");
+      }
+    } catch (e) {
+      log("Error getPenukaranById: $e");
+      rethrow;
     }
   }
 
-  /// Buat penukaran baru
   Future<bool> createPenukaran(Map<String, dynamic> data) async {
-    final authData = await AuthLocalDatasource().getUserData();
+    try {
+      final token = await _getToken();
+      if (token == null) throw Exception("Token tidak ditemukan");
 
-    final response = await http.post(
-      Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise'),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer ${authData?.accessToken}",
-        "Accept": "application/json",
-      },
-      body: jsonEncode(data),
-    );
+      final response = await http.post(
+        Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+        body: jsonEncode(data),
+      ).timeout(const Duration(seconds: 10));
 
-    log("Status Code: ${response.statusCode}");
-    log("Response Body: ${response.body}");
-
-    return response.statusCode == 201;
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        log("Gagal createPenukaran: ${response.statusCode} - ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      log("Error createPenukaran: $e");
+      return false;
+    }
   }
 
-  /// Ubah status atau data penukaran
   Future<bool> updatePenukaran(int id, Map<String, dynamic> data) async {
-    final authData = await AuthLocalDatasource().getUserData();
+    try {
+      final token = await _getToken();
+      if (token == null) throw Exception("Token tidak ditemukan");
 
-    final response = await http.put(
-      Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise/$id'),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer ${authData?.accessToken}",
-        "Accept": "application/json",
-      },
-      body: jsonEncode(data),
-    );
+      final response = await http.put(
+        Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise/$id'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+        body: jsonEncode(data),
+      ).timeout(const Duration(seconds: 10));
 
-    log("Status Code: ${response.statusCode}");
-    log("Response Body: ${response.body}");
-
-    return response.statusCode == 200;
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        log("Gagal updatePenukaran: ${response.statusCode} - ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      log("Error updatePenukaran: $e");
+      return false;
+    }
   }
 
-  /// Hapus data penukaran
   Future<bool> deletePenukaran(int id) async {
-    final authData = await AuthLocalDatasource().getUserData();
+    try {
+      final token = await _getToken();
+      if (token == null) throw Exception("Token tidak ditemukan");
 
-    final response = await http.delete(
-      Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise/$id'),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer ${authData?.accessToken}",
-        "Accept": "application/json",
-      },
-    );
+      final response = await http.delete(
+        Uri.parse('${Variables.baseUrl}/api/penukaran-merchandise/$id'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      ).timeout(const Duration(seconds: 10));
 
-    log("Status Code: ${response.statusCode}");
-    return response.statusCode == 204;
+      if (response.statusCode == 204) {
+        return true;
+      } else {
+        log("Gagal deletePenukaran: ${response.statusCode} - ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      log("Error deletePenukaran: $e");
+      return false;
+    }
   }
 }
