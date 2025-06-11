@@ -14,11 +14,14 @@ return new class extends Migration
         Schema::create('transaksi_donasis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_organisasi')->constrained('organisasis');
+            $table->foreignId('id_penitip')->constrained('penitips');
+            $table->foreignId('id_barang')->constrained('barangs');
             $table->string('status')->default('pending');
-            $table->string('nama_penitip');
-            $table->string('jenis_barang');
-            $table->string('jumlah_barang');
+            // $table->string('nama_penitip');
+            // $table->string('jenis_barang');
+            // $table->string('jumlah_barang');
             $table->dateTime('tgl_transaksi');
+            $table->string('nama_penerima');
             $table->timestamps();
         });
     }

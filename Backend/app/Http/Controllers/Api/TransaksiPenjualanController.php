@@ -134,7 +134,7 @@ class TransaksiPenjualanController extends Controller
                 'bukti_pembayaran' => $validated['bukti_pembayaran'] ?? '',
 
 
-                'status_pengiriman' => $validated['metode_pengiriman'] === 'diantar' ? 'diantar' : 'Menunggu Diambil',
+                'status_pengiriman' => $validated['metode_pengiriman'] === 'diantar' ? 'Proses' : 'Menunggu Diambil',
 
                 'status_pembelian' => $validated['status_pembelian'],
                 'verifikasi_pembayaran' => false,
@@ -144,8 +144,8 @@ class TransaksiPenjualanController extends Controller
             DB::table('transaksi_pengiriman')->insert([
                 'id_transaksi_penjualan' => $transaksi->id,
                 'id_pegawai' => 0,
-                'tgl_pengiriman' => now(),
-                'status_pengiriman' => 'diproses',
+                'tgl_pengiriman' => null,
+                'status_pengiriman' => $transaksi->status_pengiriman,
                 'biaya_pengiriman' => $ongkir,
                 'catatan' => null
             ]);
@@ -319,7 +319,7 @@ class TransaksiPenjualanController extends Controller
             ], 401);
         }
 
-        $detail = Detail_transaksi_penjualan::with(['barang', 'transaksi'])->get();
+        $detail = Detail_transaksi_penjualan::with(['barang', 'transaksi', 'barang.hunter'])->get();
         if (count($detail) > 0) {
             return response([
                 'message' => 'Berhasil mengambil seluruh data detail transaksi',

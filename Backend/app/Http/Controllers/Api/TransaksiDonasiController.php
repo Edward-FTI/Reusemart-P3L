@@ -7,6 +7,7 @@ use App\Models\Organisasi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
 use Exception;
 
 class TransaksiDonasiController extends Controller
@@ -187,5 +188,36 @@ class TransaksiDonasiController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+
+    public function indexDonasiOwner(): JsonResponse
+    {
+        $user = Auth::user();
+        if (!$user || strtolower($user->role) !== 'owner') {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $transaksis = TransaksiDonasi::with(['barang', 'penitip', 'organisasi'])
+            ->where('status', 'selesai')
+            ->get();
+
+        $data = $transaksis->map(function ($transaksi) {
+            return [
+                'kode_produk'     => strtoupper(substr($transaksi->barang->nama_barang, 0, 1)) . $transaksi->id_barang,
+                'nama_produk'     => $transaksi->barang->nama_barang,
+                'id_penitip'      => 'T' . $transaksi->id_penitip,
+                'nama_penitip'    => $transaksi->penitip->nama_penitip,
+                'tanggal_donasi'  => $transaksi->tgl_transaksi->format('Y-m-d'),
+                'organisasi'      => $transaksi->organisasi->nama,
+                'nama_penerima'   => $transaksi->nama_penerima,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Transaksi Donasi Berhasil Diambil',
+            'data'    => $data,
+        ]);
     }
 }
