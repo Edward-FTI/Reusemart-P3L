@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\JabatanController;
 use App\Models\Pegawai;
 use App\Models\Jabatan;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -260,5 +261,34 @@ class PegawaiController extends Controller
             'message' => 'Password berhasil direset ke tanggal lahir',
             'data' => $pegawai
         ], 200);
+    }
+
+
+    public function getPegawaiData()
+    {
+        try {
+            $user = Auth::user();
+            if (!$user || !isset($user->email)) {
+                return response()->json(['message' => 'User belum login atau tidak memiliki email'], 401);
+            }
+
+            $pegawai = Pegawai::with('jabatan')->where('email', $user->email)->first();
+            if (!$pegawai) {
+                return response()->json(['message' => 'Pegawai tidak ditemukan'], 404);
+            }
+
+            return response()->json([
+                'nama' => $pegawai->nama,
+                'email' => $pegawai->email,
+                'tgl_lahir' => $pegawai->tgl_lahir,
+                'gaji' => $pegawai->gaji,
+                'jabatan' => $pegawai->jabatan ? $pegawai->jabatan->role : null,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal mengambil data pegawai',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

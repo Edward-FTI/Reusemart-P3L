@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/login/login.dart';
+import 'package:mobile/screen/Home_screen.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -176,7 +177,8 @@ class LandingPage extends StatelessWidget {
                         // Navigasi ke halaman login
                         Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
-                          return LoginPage();
+                          // return LoginPage();
+                          return HomeScreen();
                         }));
                       },
                       style: ElevatedButton.styleFrom(

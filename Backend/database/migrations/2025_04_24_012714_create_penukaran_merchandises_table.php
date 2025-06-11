@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_pembeli');
             $table->unsignedBigInteger('id_merchandise'); // <- Pastikan ini ada!
             $table->unsignedBigInteger('id_pegawai')->nullable();
-            $table->dateTime('tanggal_penukaran');
+            $table->dateTime('tanggal_penukaran')->nullable();
             $table->integer('jumlah');
             $table->string('status');
             $table->timestamps();

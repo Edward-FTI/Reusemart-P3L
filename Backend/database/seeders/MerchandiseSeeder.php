@@ -11,7 +11,7 @@ class MerchandiseSeeder extends Seeder
     {
         $merchandises = [
             // 100 poin
-            ['nama_merchandise' => 'Ballpoin', 'jumlah' => 100, 'gambar' => 'images/merchandise/ballpoin.png', 'nilai_point' => 100],
+            ['nama_merchandise' => 'Ballpoin', 'jumlah' => 100, 'gambar' => 'images/merchandise/ballpoint.png', 'nilai_point' => 100],
             ['nama_merchandise' => 'Stiker', 'jumlah' => 100, 'gambar' => 'images/merchandise/sticker.png', 'nilai_point' => 100],
 
             // 250 poin
