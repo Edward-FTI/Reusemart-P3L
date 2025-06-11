@@ -17,7 +17,7 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
   late Future<PembeliModel> _pembeliProfileFuture;
   final RewardService _rewardService = RewardService();
 
-  int _currentPembeliPoints = 0;
+  int _currentPembeliPoints = PembeliModel().point ?? 0;
   final Map<int, int> _itemsToClaim = {}; // merchandiseId -> quantity
 
   @override
@@ -78,7 +78,8 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
   Future<void> _claimSingleMerchandise(Merchandise merchandise) async {
     if (_currentPembeliPoints < merchandise.nilaiPoint) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Poin Anda tidak cukup untuk klaim item ini!')),
+        const SnackBar(
+            content: Text('Poin Anda tidak cukup untuk klaim item ini!')),
       );
       return;
     }
@@ -106,10 +107,14 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                 TextSpan(text: ' dengan '),
                 TextSpan(
                   text: '${merchandise.nilaiPoint} Poin',
-                  style: const TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: Colors.deepOrange, fontWeight: FontWeight.bold),
                 ),
-                TextSpan(text: '.\n\nPoin Anda saat ini: ${NumberFormat('#,###').format(_currentPembeliPoints)}'),
-                TextSpan(text: '\nApakah Anda yakin ingin melanjutkan klaim ini?'),
+                TextSpan(
+                    text:
+                        '.\n\nPoin Anda saat ini: ${NumberFormat('#,###').format(_currentPembeliPoints)}'),
+                TextSpan(
+                    text: '\nApakah Anda yakin ingin melanjutkan klaim ini?'),
               ],
             ),
           ),
@@ -148,7 +153,9 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
   Future<void> _claimAllSelectedMerchandise() async {
     if (_itemsToClaim.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih merchandise yang ingin diklaim terlebih dahulu.')),
+        const SnackBar(
+            content:
+                Text('Pilih merchandise yang ingin diklaim terlebih dahulu.')),
       );
       return;
     }
@@ -167,14 +174,17 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal mendapatkan detail merchandise untuk klaim: $e')),
+        SnackBar(
+            content:
+                Text('Gagal mendapatkan detail merchandise untuk klaim: $e')),
       );
       return;
     }
 
     if (_currentPembeliPoints < totalPointsNeeded) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Poin Anda tidak cukup untuk klaim semua item ini!')),
+        const SnackBar(
+            content: Text('Poin Anda tidak cukup untuk klaim semua item ini!')),
       );
       return;
     }
@@ -190,14 +200,18 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Poin Anda saat ini: ${NumberFormat('#,###').format(_currentPembeliPoints)}'),
-                  Text('Poin yang dibutuhkan: ${NumberFormat('#,###').format(totalPointsNeeded)}'),
+                  Text(
+                      'Poin Anda saat ini: ${NumberFormat('#,###').format(_currentPembeliPoints)}'),
+                  Text(
+                      'Poin yang dibutuhkan: ${NumberFormat('#,###').format(totalPointsNeeded)}'),
                   const SizedBox(height: 10),
-                  const Text('Detail Klaim:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text('Detail Klaim:',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 6),
                   ...selectedMerchandiseDetails.map((merch) {
                     final qty = _itemsToClaim[merch.id] ?? 1;
-                    return Text('- ${merch.namaMerchandise} x $qty (${merch.nilaiPoint * qty} Poin)');
+                    return Text(
+                        '- ${merch.namaMerchandise} x $qty (${merch.nilaiPoint * qty} Poin)');
                   }),
                   const SizedBox(height: 12),
                   const Text('Apakah Anda yakin ingin melanjutkan klaim ini?'),
@@ -206,8 +220,12 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Batal')),
-            ElevatedButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Klaim Semua')),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Batal')),
+            ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Klaim Semua')),
           ],
         );
       },
@@ -244,7 +262,8 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
             icon: const Icon(Icons.history),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const MyClaimsHistoryScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const MyClaimsHistoryScreen()),
               );
             },
           ),
@@ -256,7 +275,8 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
             padding: const EdgeInsets.all(16),
             child: Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -271,7 +291,8 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                           style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                         Text(
-                          NumberFormat('#,###').format(_currentPembeliPoints) + ' Poin',
+                          NumberFormat('#,###').format(_currentPembeliPoints) +
+                              ' Poin',
                           style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -306,12 +327,14 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('Tidak ada merchandise ditemukan.'));
+                  return const Center(
+                      child: Text('Tidak ada merchandise ditemukan.'));
                 }
                 final merchandiseList = snapshot.data!;
 
                 return GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 12,
@@ -366,7 +389,8 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[700],
                   minimumSize: const Size.fromHeight(50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
               ),
             ),
@@ -400,14 +424,17 @@ class MerchandiseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canClaim = merchandise.jumlah > 0 && currentPembeliPoints >= merchandise.nilaiPoint;
+    final canClaim = merchandise.jumlah > 0 &&
+        currentPembeliPoints >= merchandise.nilaiPoint;
 
     return GestureDetector(
       onTap: () => onToggleSelect(merchandise),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          border: Border.all(color: isSelected ? Colors.green : Colors.grey.shade300, width: 2),
+          border: Border.all(
+              color: isSelected ? Colors.green : Colors.grey.shade300,
+              width: 2),
           borderRadius: BorderRadius.circular(12),
           color: isSelected ? Colors.green.shade50 : Colors.white,
           boxShadow: [
@@ -435,7 +462,8 @@ class MerchandiseCard extends StatelessWidget {
                         image: merchandise.fullGambarUrl,
                         fit: BoxFit.contain,
                         imageErrorBuilder: (context, error, stackTrace) =>
-                            Image.asset('assets/image_error.png', fit: BoxFit.contain),
+                            Image.asset('assets/image_error.png',
+                                fit: BoxFit.contain),
                       ),
                     ),
                   ),
@@ -443,14 +471,19 @@ class MerchandiseCard extends StatelessWidget {
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
-                        color: merchandise.jumlah > 0 ? Colors.green : Colors.red,
+                        color:
+                            merchandise.jumlah > 0 ? Colors.green : Colors.red,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        merchandise.jumlah > 0 ? 'Stok: ${merchandise.jumlah}' : 'Stok Habis',
-                        style: const TextStyle(color: Colors.white, fontSize: 11),
+                        merchandise.jumlah > 0
+                            ? 'Stok: ${merchandise.jumlah}'
+                            : 'Stok Habis',
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 11),
                       ),
                     ),
                   ),
@@ -458,7 +491,8 @@ class MerchandiseCard extends StatelessWidget {
                     const Positioned(
                       top: 8,
                       left: 8,
-                      child: Icon(Icons.check_circle, color: Colors.green, size: 26),
+                      child: Icon(Icons.check_circle,
+                          color: Colors.green, size: 26),
                     ),
                 ],
               ),
@@ -489,18 +523,27 @@ class MerchandiseCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    onPressed: quantity > 1 ? () => onDecreaseQuantity(merchandise.id) : null,
-                    icon: const Icon(Icons.remove_circle_outline, color: Colors.green),
+                    onPressed: quantity > 1
+                        ? () => onDecreaseQuantity(merchandise.id)
+                        : null,
+                    icon: const Icon(Icons.remove_circle_outline,
+                        color: Colors.green),
                     iconSize: 22,
                     tooltip: 'Kurangi jumlah',
                   ),
                   Text(
                     quantity.toString(),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green),
                   ),
                   IconButton(
-                    onPressed: merchandise.jumlah > quantity ? () => onIncreaseQuantity(merchandise.id) : null,
-                    icon: const Icon(Icons.add_circle_outline, color: Colors.green),
+                    onPressed: merchandise.jumlah > quantity
+                        ? () => onIncreaseQuantity(merchandise.id)
+                        : null,
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.green),
                     iconSize: 22,
                     tooltip: 'Tambah jumlah',
                   ),
@@ -512,7 +555,8 @@ class MerchandiseCard extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: canClaim ? Colors.green : Colors.grey,
                   minimumSize: const Size.fromHeight(36),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
                 ),
                 child: const Text('Klaim'),
               ),

@@ -17,7 +17,7 @@ class Pembeli extends Authenticatable
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'nama_pembeli',  
+        'nama_pembeli',
         'email',
         'password',
         'no_hp',
@@ -29,13 +29,13 @@ class Pembeli extends Authenticatable
         'remember_token',
     ];
 
-    public function beliBarang(): BelongsTo {
+    public function beliBarang(): BelongsTo
+    {
         return $this->belongsTo(Barang::class);
     }
 
     public function carts()
-{
-    return $this->hasMany(Cart::class, 'id_pembeli');
-}
-
+    {
+        return $this->hasMany(Cart::class, 'id_pembeli');
+    }
 }
