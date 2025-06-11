@@ -25,7 +25,7 @@ class PembeliSeeder extends Seeder
                 'email' => 'budi@example.com',
                 'password' => bcrypt('password123'),
                 'no_hp' => '082345678901',
-                'point' => 1000,
+                'point' => 9999000,
                 'saldo' => 500000,
                 'created_at' => now(),
                 'updated_at' => now(),

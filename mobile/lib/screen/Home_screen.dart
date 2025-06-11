@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:mobile/data/models/barang/barang.dart';
 import 'package:mobile/data/service/api_service.dart';
 import 'package:mobile/screen/barang_detail_modal.dart';
+import 'package:mobile/login/login.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -162,7 +163,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         IconButton(
           icon: const Icon(Icons.login, color: Colors.grey),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
+          },
         ),
       ],
     );

@@ -29,15 +29,10 @@ class AuthLocalDatasource {
     }
   }
 
- 
-
   //check if user is logged in
   Future<bool> isLoggedIn() async {
     final pref = await SharedPreferences.getInstance();
     final user = pref.getString('user');
     return user != null;
   }
-
- 
-  
 }
