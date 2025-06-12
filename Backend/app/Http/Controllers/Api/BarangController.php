@@ -273,7 +273,7 @@ class BarangController extends Controller
 
     //     // Simulasi masa penitipan hanya 2 menit dari waktu penitipan
     //     $tglPenitipan = Carbon::parse($storeData['tgl_penitipan'])->copy()->addMinutes(1);
-    //     $storeData['masa_penitipan'] = $tglPenitipan;   
+    //     $storeData['masa_penitipan'] = $tglPenitipan;
 
     //     $barang = Barang::create($storeData);
 
@@ -564,4 +564,22 @@ class BarangController extends Controller
         }
     }
 
+    public function barangHunterLogin(Request $request)
+    {
+        $user = Auth::user();
+
+        // Cari pegawai berdasarkan email user login
+        $pegawai = Pegawai::where('email', $user->email)->first();
+
+        if (!$pegawai) {
+            return response()->json(['message' => 'Pegawai tidak ditemukan'], 404);
+        }
+
+        // Ambil barang di mana pegawai ini adalah hunter-nya
+        $barang = Barang::with(['penitip', 'kategori_barang', 'pegawai', 'hunter'])
+            ->where('id_hunter', $pegawai->id)
+            ->get();
+
+        return response()->json($barang);
+    }
 }

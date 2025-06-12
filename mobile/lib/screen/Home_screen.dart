@@ -21,7 +21,27 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    _allBarangFuture = ApiService().fetchAllBarang();
+    _allBarangFuture = ApiService().fetchAllBarang().then((barangList) {
+      // Filter hanya barang yang statusnya "Dijual"
+      final barangDijual = barangList
+          .where((barang) => barang.statusBarang == "Dijual")
+          .toList();
+
+      // Atur _sliderBarang dari barangDijual
+      if (mounted) {
+        setState(() {
+          _sliderBarang = barangDijual
+              .where((barang) => barang.id >= 1 && barang.id <= 3)
+              .toList();
+
+          if (_sliderBarang.isEmpty && barangDijual.isNotEmpty) {
+            _sliderBarang = barangDijual.take(3).toList();
+          }
+        });
+      }
+
+      return barangDijual;
+    });
 
     _allBarangFuture.then((barangList) {
       if (!mounted) return;
@@ -132,27 +152,27 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(width: 16),
-            Expanded(
-              child: Container(
-                height: 38,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Cari di reusemart',
-                    hintStyle: TextStyle(color: Colors.grey[600], fontSize: 14),
-                    prefixIcon:
-                        const Icon(Icons.search, color: Colors.grey, size: 20),
-                    border: InputBorder.none,
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  ),
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-            ),
+            // Expanded(
+            //   child: Container(
+            //     height: 38,
+            //     decoration: BoxDecoration(
+            //       color: Colors.grey[200],
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     child: TextField(
+            //       decoration: InputDecoration(
+            //         hintText: 'Cari di reusemart',
+            //         hintStyle: TextStyle(color: Colors.grey[600], fontSize: 14),
+            //         prefixIcon:
+            //             const Icon(Icons.search, color: Colors.grey, size: 20),
+            //         border: InputBorder.none,
+            //         contentPadding:
+            //             const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+            //       ),
+            //       style: const TextStyle(fontSize: 14),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
