@@ -581,6 +581,7 @@ class BarangController extends Controller
             ->get();
 
         return response()->json($barang);
+    }
 
     public function getBarangByPenitipAndMonth(Request $request)
     {

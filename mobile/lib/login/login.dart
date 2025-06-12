@@ -47,8 +47,8 @@ class _LoginPageState extends State<LoginPage> {
         switch (role) {
           case 'Pembeli':
             // nextPage = HomeScreen();
-            // nextPage = ProfilePembeliPage();
-            nextPage = MerchandiseScreen();
+            nextPage = ProfilePembeliPage();
+            // nextPage = MerchandiseScreen();
             break;
           case 'Penitip':
             nextPage = ProfilePenitipPage();
