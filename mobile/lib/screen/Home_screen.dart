@@ -5,6 +5,7 @@ import 'package:mobile/data/models/barang/barang.dart';
 import 'package:mobile/data/service/api_service.dart';
 import 'package:mobile/screen/barang_detail_modal.dart';
 import 'package:mobile/login/login.dart';
+import 'package:mobile/Pembeli/pembeli.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -311,15 +312,29 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  int _currentIndex = 0; // Tambahkan ini di atas dalam _HomeScreenState
+
   BottomNavigationBar _buildBottomNavBar() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       selectedItemColor: Colors.green,
       unselectedItemColor: Colors.grey,
       showUnselectedLabels: true,
-      currentIndex: 0,
+      currentIndex: _currentIndex,
       onTap: (index) {
-        print('Bottom nav item $index clicked');
+        setState(() {
+          _currentIndex = index;
+        });
+
+        if (index == 3) {
+          // Navigasi ke halaman profil/akun
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfilePembeliPage()),
+          );
+        }
+
+        // Tambahkan navigasi lain jika diperlukan untuk index 1 dan 2
       },
       items: const [
         BottomNavigationBarItem(

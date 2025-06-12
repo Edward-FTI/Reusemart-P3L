@@ -211,14 +211,17 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/penukaran-merchandise/{id}', [PenukaranMerchandiseController::class, 'show']);
         Route::delete('/penukaran-merchandise/{id}', [PenukaranMerchandiseController::class, 'destroy']);
     });
+    Route::get('/penukaran-merchandise', [PenukaranMerchandiseController::class, 'indexPublic']);
+    Route::put('penukaran/{id}/input-tanggal', [PenukaranMerchandiseController::class, 'updateTanggalPengambilan']);
 });
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
 
+// Route::get('/penukaran-merchandise', [PenukaranMerchandiseController::class, 'indexPublic']);
 // Endpoint publik (tidak perlu login)
-Route::get('/penukaran-merchandise', [PenukaranMerchandiseController::class, 'indexPublic']);
 Route::get('/penukaran-merchandise/show-merchandise/{id}', [PenukaranMerchandiseController::class, 'showMerchandise']);
 Route::get('/penukaran-merchandise/list-merchandise', [PenukaranMerchandiseController::class, 'listMerchandise']);
+
 
 // ======================= Merchandise =======================
 Route::get('/merchandise', [MerchandiseController::class, 'index']);
