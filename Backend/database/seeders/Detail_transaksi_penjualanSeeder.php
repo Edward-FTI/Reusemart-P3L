@@ -32,6 +32,12 @@ class Detail_transaksi_penjualanSeeder extends Seeder
 
             // Transaksi Penjualan ID 5 => Cart 10
             ['id_transaksi_penjualan' => 5, 'id_barang' => 10, 'harga_saat_transaksi' => 25000, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+
+            // untuk laporan
+            // Transaksi Penjualan ID 6 => Cart 11, 12, 13
+            ['id_transaksi_penjualan' => 6, 'id_barang' => 17, 'harga_saat_transaksi' => 120000, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id_transaksi_penjualan' => 6, 'id_barang' => 18, 'harga_saat_transaksi' => 120000, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id_transaksi_penjualan' => 7, 'id_barang' => 19, 'harga_saat_transaksi' => 15000, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ]);
     }
 }

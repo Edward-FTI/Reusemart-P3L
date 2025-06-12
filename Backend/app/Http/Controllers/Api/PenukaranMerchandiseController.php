@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Pegawai;
+use App\Models\Pembeli;
+use App\Models\Merchandise;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\PenukaranMerchandise;
-use App\Models\Merchandise;
-use App\Models\Pembeli;
-use App\Models\Pegawai;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 class PenukaranMerchandiseController extends Controller
 {
@@ -125,7 +126,7 @@ class PenukaranMerchandiseController extends Controller
                     'id_pegawai' => $pegawai ? $pegawai->id : null,
                     'tanggal_penukaran' => null,
                     'jumlah' => $item['jumlah'],
-                    'status' => 'proses'
+                    'status' => 'Belum diambil'
                 ]);
             }
 
@@ -217,4 +218,75 @@ class PenukaranMerchandiseController extends Controller
             'data' => $merchandises
         ]);
     }
+
+
+    private function getPegawaiId()
+    {
+        $userEmail = Auth::user()->email;
+        $pegawai = Pegawai::with('jabatan')->where('email', $userEmail)->first();
+
+        if (!$pegawai) {
+            return null;
+        }
+        return $pegawai;
+    }
+
+
+    public function updateTanggalPengambilan(Request $request, $id)
+    {
+        try {
+            $penukaran = PenukaranMerchandise::find($id);
+            if (!$penukaran) {
+                return response([
+                    'message' => 'Data penukaran tidak ada',
+                    'data' => null,
+                ], 404);
+            }
+
+            $pegawai = $this->getPegawaiId();
+
+            if (!$pegawai || !$pegawai->jabatan || $pegawai->jabatan->role !== 'Customer Service') {
+                return response([
+                    'message' => 'Akses ditolak. Hanya pegawai dengan role cs yang dapat input tanggal.',
+                ], 403);
+            }
+
+            $penukaran->tanggal_penukaran = $request->tanggal_penukaran;
+            $penukaran->status = "Transaksi selesai";
+            $penukaran->id_pegawai = $pegawai->id;
+            $penukaran->save();
+
+            return response([
+                'message' => "Berhasil input tanggal pengambilan",
+                'data' => $penukaran,
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error("Gagal update tanggal pengambilan: " . $e->getMessage());
+            return response([
+                'message' => 'Terjadi kesalahan pada server.',
+            ], 500);
+        }
+    }
+
+
+
+    //     public function updateTanggalPengambilan(Request $request, $id) {
+    //         $penukaran = PenukaranMerchandise::find($id);
+
+    //         if(!$penukaran) {
+    //             return response([
+    //                 'message' => 'Data penukaran tidak ada',
+    //                 'data' => null,
+    //             ], 404);
+    //         }
+    //         $penukaran->tanggal_penukaran = $request->tanggal_penukaran;
+    //         $penukaran->status = "Transaksi selesai";
+    //         $penukaran->id_pegawai = $this->getPegawaiId();
+    //         $penukaran->save();
+
+    //         return response([
+    //             'message' => "Berhasil input tanggal pengambilan",
+    //             'data' => $penukaran,
+    //         ], 200);
+    //     }
 }
