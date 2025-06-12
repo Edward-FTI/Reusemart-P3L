@@ -51,7 +51,7 @@ class _HistoryPenitipanPageState extends State<HistoryPenitipanPage> {
                 height: 24,
               ),
               Text(
-                "Loading...",
+                "Memuat data history penitipan...",
                 style: TextStyle(fontSize: 15, color: Colors.black54),
               )
             ],
@@ -127,6 +127,14 @@ class _HistoryPenitipanPageState extends State<HistoryPenitipanPage> {
                       color: Colors.grey,
                     ),
                   ),
+                  // const SizedBox(width: 12),
+                  // Text(
+                  //   item.kategori?.namaKategori ?? '',
+                  //   style: const TextStyle(
+                  //     fontSize: 12,
+                  //     color: Colors.grey,
+                  //   ),
+                  // ),
                 ],
               ),
             ),

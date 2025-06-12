@@ -10,6 +10,7 @@
 analyzer:
   errors:
     prefer_const_constructors: ignore
+    camel_case_types: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

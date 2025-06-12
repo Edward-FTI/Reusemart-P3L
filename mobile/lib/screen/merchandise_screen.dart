@@ -1,7 +1,9 @@
+// lib/screens/rewards/merchandise_screen.dart
 import 'package:flutter/material.dart';
 import 'package:mobile/data/models/merchandise/merchandise.dart';
 import 'package:mobile/data/models/merchandise/penukaran_merchandise.dart';
-import 'package:mobile/data/models/pembeli/ModelPembeli.dart';
+import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
+import 'package:mobile/data/models/pembeli/ModelPembeli.dart'; // Menggunakan model Pembeli yang konsisten
 import 'package:mobile/data/service/reward_service.dart';
 import 'package:intl/intl.dart';
 
@@ -14,11 +16,15 @@ class MerchandiseScreen extends StatefulWidget {
 
 class _MerchandiseScreenState extends State<MerchandiseScreen> {
   late Future<List<Merchandise>> _merchandiseCatalogFuture;
-  late Future<PembeliModel> _pembeliProfileFuture;
+  late Future<PembeliModel> _pembeliProfileFuture; // Menggunakan model Pembeli
   final RewardService _rewardService = RewardService();
 
+  bool _isRefreshing = false; // Flag untuk menampilkan loading state
   int _currentPembeliPoints = 0;
-  final Map<int, int> _itemsToClaim = {}; // merchandiseId -> quantity
+  final Map<int, int> _itemsToClaim = {}; // {merchandiseId: quantity}
+
+  List<Merchandise> _cachedMerchandiseCatalog =
+      []; // Cache untuk akses item berdasarkan ID
 
   @override
   void initState() {
@@ -32,9 +38,20 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
       _pembeliProfileFuture = _rewardService.fetchCurrentPembeliProfile();
     });
 
+    // Handle catalog data to cache it
+    _merchandiseCatalogFuture.then((catalog) {
+      setState(() {
+        _cachedMerchandiseCatalog = catalog;
+      });
+    }).catchError((error) {
+      print('Error caching merchandise catalog: $error');
+      // Tidak perlu SnackBar di sini, error sudah ditangani oleh FutureBuilder
+    });
+
     _pembeliProfileFuture.then((pembeliData) {
       setState(() {
-        _currentPembeliPoints = pembeliData.point ?? 0;
+        _currentPembeliPoints =
+            pembeliData.point ?? 0; // Akses properti 'point'
       });
     }).catchError((error) {
       print('Error fetching pembeli data: $error');
@@ -47,38 +64,59 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
         _currentPembeliPoints = 0;
       });
     });
+    setState(() {
+      _isRefreshing = false;
+    });
   }
 
+// Fungsi untuk toggle (memilih/membatalkan pilihan) item untuk klaim multi-item
   void _toggleItemClaim(Merchandise merchandise) {
     setState(() {
       if (_itemsToClaim.containsKey(merchandise.id)) {
         _itemsToClaim.remove(merchandise.id);
       } else {
-        _itemsToClaim[merchandise.id] = 1;
+        _itemsToClaim[merchandise.id] =
+            1; // Default kuantitas 1 saat pertama kali dipilih
       }
     });
   }
 
+// Fungsi untuk menambah kuantitas item yang dipilih
   void _increaseQuantity(int merchId) {
     setState(() {
-      _itemsToClaim.update(merchId, (value) => value + 1);
-    });
-  }
-
-  void _decreaseQuantity(int merchId) {
-    setState(() {
-      if (_itemsToClaim[merchId]! > 1) {
-        _itemsToClaim.update(merchId, (value) => value - 1);
+      final currentQty = _itemsToClaim[merchId] ?? 0;
+      final merchandise =
+          _cachedMerchandiseCatalog.firstWhere((m) => m.id == merchId);
+      if (currentQty < merchandise.jumlah) {
+        // Cek agar tidak melebihi stok
+        _itemsToClaim.update(merchId, (value) => value + 1);
       } else {
-        _itemsToClaim.remove(merchId);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'Tidak bisa menambahkan lebih banyak, stok tidak cukup.')),
+        );
       }
     });
   }
 
+// Fungsi untuk mengurangi kuantitas item yang dipilih
+  void _decreaseQuantity(int merchId) {
+    setState(() {
+      if ((_itemsToClaim[merchId] ?? 0) > 1) {
+        _itemsToClaim.update(merchId, (value) => value - 1);
+      } else {
+        _itemsToClaim.remove(merchId); // Hapus jika kuantitas jadi 0
+      }
+    });
+  }
+
+// Fungsi untuk klaim merchandise tunggal (dipanggil dari tombol 'Klaim' di card)
   Future<void> _claimSingleMerchandise(Merchandise merchandise) async {
     if (_currentPembeliPoints < merchandise.nilaiPoint) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Poin Anda tidak cukup untuk klaim item ini!')),
+        const SnackBar(
+            content: Text('Poin Anda tidak cukup untuk klaim item ini!')),
       );
       return;
     }
@@ -88,7 +126,6 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
       );
       return;
     }
-
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -98,18 +135,22 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
             text: TextSpan(
               style: Theme.of(context).textTheme.bodyMedium,
               children: [
-                TextSpan(text: 'Anda akan menukarkan '),
+                const TextSpan(text: 'Anda akan menukarkan '),
                 TextSpan(
                   text: '${merchandise.namaMerchandise}',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                TextSpan(text: ' dengan '),
+                const TextSpan(text: ' dengan '),
                 TextSpan(
                   text: '${merchandise.nilaiPoint} Poin',
-                  style: const TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: Colors.deepOrange, fontWeight: FontWeight.bold),
                 ),
-                TextSpan(text: '.\n\nPoin Anda saat ini: ${NumberFormat('#,###').format(_currentPembeliPoints)}'),
-                TextSpan(text: '\nApakah Anda yakin ingin melanjutkan klaim ini?'),
+                TextSpan(
+                    text:
+                        '.\n\nPoin Anda saat ini: ${NumberFormat('#,###').format(_currentPembeliPoints)}'),
+                const TextSpan(
+                    text: '\nApakah Anda yakin ingin melanjutkan klaim ini?'),
               ],
             ),
           ),
@@ -127,57 +168,95 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
       },
     );
 
+    // if (confirm == true) {
+    //   try {
+    //     final currentPembeliProfile = await _pembeliProfileFuture;
+    //     await _rewardService.claimMerchandise([
+    //       {
+    //         'id_merchandise': merchandise.id,
+    //         'jumlah': 1,
+    //         'id_pembeli': currentPembeliProfile.id
+    //       }
+    //     ]);
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Klaim merchandise berhasil!')),
+    //     );
+    //     _loadData();
+    //   } catch (e) {
+    //     print('Error claiming single merchandise: $e');
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Gagal klaim merchandise: ${e.toString()}')),
+    //     );
+    //   }
+    // }
+
     if (confirm == true) {
       try {
+        final currentPembeliProfile = await _pembeliProfileFuture;
         await _rewardService.claimMerchandise([
-          {'id_merchandise': merchandise.id, 'jumlah': 1}
+          {
+            'id_merchandise': merchandise.id,
+            'jumlah': 1,
+            'id_pembeli': currentPembeliProfile.id
+          }
         ]);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Klaim merchandise berhasil!')),
         );
         _loadData();
       } catch (e) {
-        print('Error claiming merchandise: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal klaim merchandise: $e')),
-        );
+        if (e.toString().contains('Semua item berhasil ditukarkan')) {
+          // Jangan tampilkan error jika ini pesan dari backend
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Klaim merchandise berhasil!')),
+          );
+        } else {
+          print('Error claiming single merchandise: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal klaim merchandise: ${e.toString()}')),
+          );
+        }
       }
     }
   }
 
+  // Fungsi untuk klaim semua item yang dipilih di keranjang
   Future<void> _claimAllSelectedMerchandise() async {
     if (_itemsToClaim.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih merchandise yang ingin diklaim terlebih dahulu.')),
+        const SnackBar(
+            content:
+                Text('Pilih merchandise yang ingin diklaim terlebih dahulu.')),
       );
       return;
     }
 
     int totalPointsNeeded = 0;
     List<Map<String, dynamic>> itemsPayload = [];
-    List<Merchandise> selectedMerchandiseDetails = [];
 
-    try {
-      List<Merchandise> catalog = await _merchandiseCatalogFuture;
-      _itemsToClaim.forEach((merchId, quantity) {
-        final merch = catalog.firstWhere((m) => m.id == merchId);
-        totalPointsNeeded += merch.nilaiPoint * quantity;
-        itemsPayload.add({'id_merchandise': merchId, 'jumlah': quantity});
-        selectedMerchandiseDetails.add(merch);
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal mendapatkan detail merchandise untuk klaim: $e')),
-      );
-      return;
-    }
+    _itemsToClaim.forEach((merchId, quantity) {
+      final merch =
+          _cachedMerchandiseCatalog.firstWhere((m) => m.id == merchId);
+      totalPointsNeeded += merch.nilaiPoint * quantity;
+      itemsPayload.add({'id_merchandise': merchId, 'jumlah': quantity});
+    });
 
     if (_currentPembeliPoints < totalPointsNeeded) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Poin Anda tidak cukup untuk klaim semua item ini!')),
+        const SnackBar(
+            content: Text('Poin Anda tidak cukup untuk klaim semua item ini!')),
       );
       return;
     }
+
+    // Bangun daftar detail klaim untuk dialog konfirmasi
+    List<Widget> confirmationDetails = [];
+    _itemsToClaim.forEach((merchId, quantity) {
+      final merch =
+          _cachedMerchandiseCatalog.firstWhere((m) => m.id == merchId);
+      confirmationDetails.add(Text(
+          '- ${merch.namaMerchandise} x $quantity (${merch.nilaiPoint * quantity} Poin)'));
+    });
 
     bool? confirm = await showDialog<bool>(
       context: context,
@@ -190,15 +269,15 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Poin Anda saat ini: ${NumberFormat('#,###').format(_currentPembeliPoints)}'),
-                  Text('Poin yang dibutuhkan: ${NumberFormat('#,###').format(totalPointsNeeded)}'),
+                  Text(
+                      'Poin Anda saat ini: ${NumberFormat('#,###').format(_currentPembeliPoints)}'),
+                  Text(
+                      'Poin yang dibutuhkan: ${NumberFormat('#,###').format(totalPointsNeeded)}'),
                   const SizedBox(height: 10),
-                  const Text('Detail Klaim:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text('Detail Klaim:',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 6),
-                  ...selectedMerchandiseDetails.map((merch) {
-                    final qty = _itemsToClaim[merch.id] ?? 1;
-                    return Text('- ${merch.namaMerchandise} x $qty (${merch.nilaiPoint * qty} Poin)');
-                  }),
+                  ...confirmationDetails, // Detail item yang diklaim
                   const SizedBox(height: 12),
                   const Text('Apakah Anda yakin ingin melanjutkan klaim ini?'),
                 ],
@@ -206,16 +285,55 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Batal')),
-            ElevatedButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Klaim Semua')),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Batal')),
+            ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Klaim Semua')),
           ],
         );
       },
     );
 
+    // if (confirm == true) {
+    //   try {
+    //     final currentPembeliProfile = await _pembeliProfileFuture;
+    //     final finalItemsPayload = itemsPayload
+    //         .map((item) => {
+    //               ...item,
+    //               'id_pembeli': currentPembeliProfile
+    //                   .id, // Tambahkan id_pembeli ke setiap item
+    //             })
+    //         .toList();
+
+    //     await _rewardService.claimMerchandise(finalItemsPayload);
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Klaim merchandise berhasil!')),
+    //     );
+    //     setState(() {
+    //       _itemsToClaim.clear();
+    //     });
+    //     _loadData();
+    //   } catch (e) {
+    //     print('Error claiming all merchandise: $e');
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Gagal klaim merchandise: ${e.toString()}')),
+    //     );
+    //   }
+    // }
+
     if (confirm == true) {
       try {
-        await _rewardService.claimMerchandise(itemsPayload);
+        final currentPembeliProfile = await _pembeliProfileFuture;
+        final finalItemsPayload = itemsPayload
+            .map((item) => {
+                  ...item,
+                  'id_pembeli': currentPembeliProfile.id,
+                })
+            .toList();
+
+        await _rewardService.claimMerchandise(finalItemsPayload);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Klaim merchandise berhasil!')),
         );
@@ -224,10 +342,16 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
         });
         _loadData();
       } catch (e) {
-        print('Error claiming merchandise: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal klaim merchandise: $e')),
-        );
+        if (e.toString().contains('Semua item berhasil ditukarkan')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Klaim merchandise berhasil!')),
+          );
+        } else {
+          print('Error claiming all merchandise: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal klaim merchandise: ${e.toString()}')),
+          );
+        }
       }
     }
   }
@@ -241,12 +365,8 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const MyClaimsHistoryScreen()),
-              );
-            },
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadData,
           ),
         ],
       ),
@@ -256,7 +376,8 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
             padding: const EdgeInsets.all(16),
             child: Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -271,7 +392,8 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                           style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                         Text(
-                          NumberFormat('#,###').format(_currentPembeliPoints) + ' Poin',
+                          NumberFormat('#,###').format(_currentPembeliPoints) +
+                              ' Poin',
                           style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -279,7 +401,7 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                           ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -306,12 +428,14 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('Tidak ada merchandise ditemukan.'));
+                  return const Center(
+                      child: Text('Tidak ada merchandise ditemukan.'));
                 }
                 final merchandiseList = snapshot.data!;
 
                 return GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 12,
@@ -342,31 +466,22 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.card_giftcard),
                 onPressed: _claimAllSelectedMerchandise,
-                label: Builder(builder: (context) {
-                  final pointsTotal = _itemsToClaim.entries.fold<int>(
+                label: Text(
+                  'Klaim ${_itemsToClaim.length} Item Terpilih (Total Poin: ${NumberFormat('#,###').format(_itemsToClaim.entries.fold<int>(
                     0,
                     (sum, entry) {
-                      final merchId = entry.key;
-                      final qty = entry.value;
-                      // cari poin merchandise dari katalog cached
-                      // Note: kita pastikan Future sudah complete saat ini, jadi pake FutureBuilder utk data katalog di atas
-                      // Jadi di sini kita dapat akses snapshot data katalog?
-                      // Sebagai solusi, kita gunakan snapshot.data dari builder di atas,
-                      // tapi kita di luar builder sehingga kita perlu simpan data katalog di state.
-                      // Untuk kesederhanaan, kita hitung total poin di widget MerchandiseCard & setState di _itemsToClaim.
-                      // Jadi untuk button ini, hitung ulang poin di sini dari _itemsToClaim dan data katalog.
-                      return sum; // sementara, hitung ulang di sini nanti
+                      final merch = _cachedMerchandiseCatalog
+                          .firstWhere((m) => m.id == entry.key);
+                      return sum + (merch.nilaiPoint * entry.value);
                     },
-                  );
-
-                  // Jadi untuk simplifikasi: hitung ulang total poin dengan cara memanggil Future secara sync? Tidak bisa.
-                  // Solusi praktis: kita simpan catalog di state saat Future selesai di load.
-                  return Text('Klaim ${_itemsToClaim.length} Item Terpilih');
-                }),
+                  ))})',
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[700],
+                  foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
               ),
             ),
@@ -400,14 +515,17 @@ class MerchandiseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canClaim = merchandise.jumlah > 0 && currentPembeliPoints >= merchandise.nilaiPoint;
+    final canClaimSingle = merchandise.jumlah > 0 &&
+        currentPembeliPoints >= merchandise.nilaiPoint;
 
     return GestureDetector(
       onTap: () => onToggleSelect(merchandise),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          border: Border.all(color: isSelected ? Colors.green : Colors.grey.shade300, width: 2),
+          border: Border.all(
+              color: isSelected ? Colors.green : Colors.grey.shade300,
+              width: 2),
           borderRadius: BorderRadius.circular(12),
           color: isSelected ? Colors.green.shade50 : Colors.white,
           boxShadow: [
@@ -435,7 +553,8 @@ class MerchandiseCard extends StatelessWidget {
                         image: merchandise.fullGambarUrl,
                         fit: BoxFit.contain,
                         imageErrorBuilder: (context, error, stackTrace) =>
-                            Image.asset('assets/image_error.png', fit: BoxFit.contain),
+                            Image.asset('assets/image_error.png',
+                                fit: BoxFit.contain),
                       ),
                     ),
                   ),
@@ -443,14 +562,19 @@ class MerchandiseCard extends StatelessWidget {
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
-                        color: merchandise.jumlah > 0 ? Colors.green : Colors.red,
+                        color:
+                            merchandise.jumlah > 0 ? Colors.green : Colors.red,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        merchandise.jumlah > 0 ? 'Stok: ${merchandise.jumlah}' : 'Stok Habis',
-                        style: const TextStyle(color: Colors.white, fontSize: 11),
+                        merchandise.jumlah > 0
+                            ? 'Stok: ${merchandise.jumlah}'
+                            : 'Stok Habis',
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 11),
                       ),
                     ),
                   ),
@@ -458,7 +582,8 @@ class MerchandiseCard extends StatelessWidget {
                     const Positioned(
                       top: 8,
                       left: 8,
-                      child: Icon(Icons.check_circle, color: Colors.green, size: 26),
+                      child: Icon(Icons.check_circle,
+                          color: Colors.green, size: 26),
                     ),
                 ],
               ),
@@ -479,7 +604,7 @@ class MerchandiseCard extends StatelessWidget {
               '${NumberFormat('#,###').format(merchandise.nilaiPoint)} Poin',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: canClaim ? Colors.green[700] : Colors.grey[600],
+                color: canClaimSingle ? Colors.green[700] : Colors.grey[600],
                 fontSize: 13,
               ),
             ),
@@ -489,18 +614,27 @@ class MerchandiseCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    onPressed: quantity > 1 ? () => onDecreaseQuantity(merchandise.id) : null,
-                    icon: const Icon(Icons.remove_circle_outline, color: Colors.green),
+                    onPressed: quantity > 1
+                        ? () => onDecreaseQuantity(merchandise.id)
+                        : null,
+                    icon: const Icon(Icons.remove_circle_outline,
+                        color: Colors.green),
                     iconSize: 22,
                     tooltip: 'Kurangi jumlah',
                   ),
                   Text(
                     quantity.toString(),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green),
                   ),
                   IconButton(
-                    onPressed: merchandise.jumlah > quantity ? () => onIncreaseQuantity(merchandise.id) : null,
-                    icon: const Icon(Icons.add_circle_outline, color: Colors.green),
+                    onPressed: merchandise.jumlah > quantity
+                        ? () => onIncreaseQuantity(merchandise.id)
+                        : null,
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.green),
                     iconSize: 22,
                     tooltip: 'Tambah jumlah',
                   ),
@@ -508,13 +642,24 @@ class MerchandiseCard extends StatelessWidget {
               )
             else
               ElevatedButton(
-                onPressed: canClaim ? () => onClaimSingle(merchandise) : null,
+                onPressed: canClaimSingle && merchandise.jumlah > 0
+                    ? () => onClaimSingle(merchandise)
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: canClaim ? Colors.green : Colors.grey,
+                  backgroundColor: canClaimSingle && merchandise.jumlah > 0
+                      ? Colors.green
+                      : Colors.grey,
+                  foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(36),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
                 ),
-                child: const Text('Klaim'),
+                child: Text(
+                  merchandise.jumlah > 0
+                      ? (canClaimSingle ? 'Klaim' : 'Poin Kurang')
+                      : 'Stok Habis',
+                  style: const TextStyle(fontSize: 12),
+                ),
               ),
           ],
         ),
