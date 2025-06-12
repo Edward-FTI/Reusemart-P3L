@@ -183,7 +183,7 @@ Route::middleware('auth:api')->group(function () {
 
     // ======================= Owner =======================
     Route::get('/owner', [OwnerController::class, 'indexOwner']);
-    // Route::get('/penjualan-bulanan', [OwnerController::class, 'PenjualanBulanan']);
+    Route::get('/penjualan-bulanan', [OwnerController::class, 'PenjualanBulanan']);
 
 
     // ======================= Cart =======================

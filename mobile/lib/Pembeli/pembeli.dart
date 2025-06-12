@@ -4,6 +4,7 @@ import 'package:mobile/Pembeli/history_pembeli.dart';
 import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 import 'package:mobile/data/models/pembeli/ModelPembeli.dart';
 import 'package:mobile/data/datasource/pembeli/pembeli_data_source.dart';
+import 'package:mobile/screen/merchandise_screen.dart';
 
 class ProfilePembeliPage extends StatefulWidget {
   const ProfilePembeliPage({super.key});
@@ -119,6 +120,28 @@ class _ProfilePembeliPageState extends State<ProfilePembeliPage> {
             buildInfoRow("Point", pembeli!.point.toString()),
 
             const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return MerchandiseScreen();
+                  },
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                "Tukar Point",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(

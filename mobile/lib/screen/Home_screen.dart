@@ -7,6 +7,12 @@ import 'package:mobile/screen/barang_detail_modal.dart';
 import 'package:mobile/login/login.dart';
 import 'package:mobile/Pembeli/pembeli.dart';
 
+import 'package:mobile/Pembeli/pembeli.dart' as pembeli;
+import 'package:mobile/Penitip/penitip.dart' as penitip;
+import 'package:mobile/Hunter/hunter.dart' as hunter;
+import 'package:mobile/Kurir/kurir.dart' as kurir;
+import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -314,6 +320,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _currentIndex = 0; // Tambahkan ini di atas dalam _HomeScreenState
 
+  // ...existing code...
+
   BottomNavigationBar _buildBottomNavBar() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
@@ -321,19 +329,46 @@ class _HomeScreenState extends State<HomeScreen> {
       unselectedItemColor: Colors.grey,
       showUnselectedLabels: true,
       currentIndex: _currentIndex,
-      onTap: (index) {
+      onTap: (index) async {
         setState(() {
           _currentIndex = index;
         });
 
         if (index == 3) {
-          // Navigasi ke halaman profil/akun
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfilePembeliPage()),
-          );
-        }
+          // Ambil data user dari local storage
+          final authData = await AuthLocalDatasource().getUserData();
+          final role = authData?.user?.role;
 
+          Widget? profilePage;
+          switch (role) {
+            case 'Pembeli':
+              profilePage = pembeli.ProfilePembeliPage();
+              break;
+            case 'Penitip':
+              profilePage = penitip.ProfilePenitipPage();
+              break;
+            case 'Hunter':
+              profilePage = hunter.ProfileHunterPage();
+              break;
+            case 'Kurir':
+              profilePage = kurir.ProfileKurirPage();
+              break;
+            default:
+              profilePage = null;
+          }
+
+          if (profilePage != null && mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => profilePage!),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Anda belum login atau role tidak dikenali.')),
+            );
+          }
+        }
         // Tambahkan navigasi lain jika diperlukan untuk index 1 dan 2
       },
       items: const [

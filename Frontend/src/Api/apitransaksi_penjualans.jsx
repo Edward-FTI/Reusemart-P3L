@@ -79,3 +79,18 @@ export const cetakPdf = async () => {
     throw error.response.data;
   }
 };
+
+export const getAlltransaksiPenjualan = async () => {
+  try {
+    const respose = await useAxios.get('/penjualan-bulanan', {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return respose.data.data;
+  }
+  catch (error) {
+    throw error.respone.data;
+  }
+}

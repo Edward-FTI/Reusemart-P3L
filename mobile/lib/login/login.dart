@@ -46,9 +46,9 @@ class _LoginPageState extends State<LoginPage> {
         Widget? nextPage;
         switch (role) {
           case 'Pembeli':
-            // nextPage = HomeScreen();
+            nextPage = HomeScreen();
             // nextPage = ProfilePembeliPage();
-            nextPage = MerchandiseScreen();
+            // nextPage = MerchandiseScreen();
             break;
           case 'Penitip':
             nextPage = ProfilePenitipPage();
