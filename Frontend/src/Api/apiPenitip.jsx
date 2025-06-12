@@ -114,3 +114,16 @@ export const DeletePenitip = async (id) => {
         throw error.response?.data || error;
     }
 };
+
+export const GetPenitipIdAll = async () => {
+  try {
+    const response = await useAxios.get("/penitip-id", {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return response.data.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};

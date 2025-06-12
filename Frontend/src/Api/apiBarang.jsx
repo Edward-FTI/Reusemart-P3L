@@ -97,3 +97,17 @@ export const BarangOwner = async () => {
     throw error.response.data;
   }
 };
+
+export const GetBarangByPenitipAndMonth = async (payload) => {
+  try {
+    const response = await useAxios.post("/indexOwner-p", payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return response.data.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};

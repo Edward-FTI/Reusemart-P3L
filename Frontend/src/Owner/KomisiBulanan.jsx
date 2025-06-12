@@ -6,6 +6,20 @@ import { toast } from "sonner";
 
 export default function KomisiBulanan() {
     const [transaksiList, setTransaksiList] = useState([]);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // default ke bulan sekarang
+
+    const filteredTransaksi = transaksiList.filter(item => {
+        const tglMasuk = new Date(item.barang.tgl_penitipan);
+        return tglMasuk.getMonth() === selectedMonth;
+    });
+
+
+
+    const bulanList = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+
 
     const fetchTransaksi = async () => {
         try {
@@ -53,7 +67,7 @@ export default function KomisiBulanan() {
         let totalKomisiHunter = 0;
         let totalBonusPenitip = 0;
 
-        const bodyData = transaksiList.map(item => {
+        const bodyData = filteredTransaksi.map(item => {
             const hargaJual = item.barang.harga_barang;
             const tglMasuk = new Date(item.barang.tgl_penitipan);
             const tglLaku = new Date(item.transaksi.tgl_transaksi);
@@ -124,15 +138,32 @@ export default function KomisiBulanan() {
     return (
         <div className="container mt-5 bg-white p-4 rounded shadow">
             <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
-                <h2>Laporan Komisi Bulanan</h2>
+                <div>
+                    <h2>Laporan Komisi Bulanan</h2>
+                    <select
+                        className="form-select mt-2"
+                        style={{ width: "200px" }}
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                    >
+                        {bulanList.map((bulan, index) => (
+                            <option key={index} value={index}>{bulan}</option>
+                        ))}
+                    </select>
+                </div>
                 <button
                     className="btn btn-success fs-5"
                     onClick={handleDownload}
                 >
-                    <img src="https://img.icons8.com/?size=100&id=83159&format=png&color=FFFFFF" style={{ width: "30px" }} alt="Download" />
+                    <img
+                        src="https://img.icons8.com/?size=100&id=83159&format=png&color=FFFFFF"
+                        style={{ width: "30px" }}
+                        alt="Download"
+                    />
                     Unduh Laporan
                 </button>
             </div>
+
             <table className="table table-bordered">
                 <thead>
                     <tr>
@@ -149,28 +180,34 @@ export default function KomisiBulanan() {
                     </tr>
                 </thead>
                 <tbody>
-                    {transaksiList.length > 0 ? transaksiList.map((item, index) => {
+                    {filteredTransaksi.length > 0 ? filteredTransaksi.map((item, index) => {
                         const hargaJual = item.barang.harga_barang;
                         const tglMasuk = new Date(item.barang.tgl_penitipan);
                         const tglLaku = new Date(item.transaksi.tgl_transaksi);
                         const selisihHari = Math.floor((tglLaku - tglMasuk) / (1000 * 60 * 60 * 24));
 
-                        let persenKomisi = 20;
-                        if (item.barang.penambahan_durasi > 0) {
-                            persenKomisi = 30;
-                        }
-                        let komisiReuseMart = (persenKomisi / 100) * hargaJual;
-
+                        let persenKomisi = 0;
+                        let komisiReusemart = 0;
                         let komisiHunter = 0;
-                        if (item.barang.id_hunter) {
-                            komisiHunter = (5 / 100) * hargaJual;
-                        }
-
                         let bonusPenitip = 0;
-                        if (selisihHari < 7) {
-                            bonusPenitip = (10 / 100) * ((20 / 100) * hargaJual);
+
+                        if (item.barang.penambahan_durasi > 0) {
+                            persenKomisi = 30 / 100;
                         }
-                        komisiReuseMart -= bonusPenitip;
+                        else {
+                            persenKomisi = 20 / 100;
+                        }
+                        komisiReusemart = persenKomisi * hargaJual;
+
+                        if (item.barang.id_hunter) {
+                            komisiHunter = komisiReusemart * (5 / 100);
+                        }
+                        komisiReusemart = komisiReusemart - komisiHunter;
+
+                        if (selisihHari < 7) {
+                            bonusPenitip = komisiReusemart * (10 / 100);
+                        }
+                        komisiReusemart = komisiReusemart - bonusPenitip;
 
                         return (
                             <tr key={item.id}>
@@ -182,7 +219,7 @@ export default function KomisiBulanan() {
                                 <td>{tglLaku.toLocaleDateString('id-ID')}</td>
                                 <td>{item.barang.hunter?.nama || '-'}</td>
                                 <td>{komisiHunter.toLocaleString('id-ID')}</td>
-                                <td>{komisiReuseMart.toLocaleString('id-ID')}</td>
+                                <td>{komisiReusemart.toLocaleString('id-ID')}</td>
                                 <td>{bonusPenitip.toLocaleString('id-ID')}</td>
                             </tr>
                         );

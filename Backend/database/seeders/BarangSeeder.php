@@ -134,7 +134,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 50,
                 'deskripsi' => 'Kayu Jati',
                 'status_garansi' => now()->copy()->addDays(12),
-                'status_barang' => 'Tersedia',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/meja.jpeg',
                 'gambar_dua' => 'images/barang/meja.jpeg',
@@ -155,6 +155,7 @@ class BarangSeeder extends Seeder
                 'deskripsi' => 'Halaman Lebih Banyak',
                 'status_garansi' => null,
                 'status_barang' => 'terjual',
+//                 'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/buku.jpeg',
                 'gambar_dua' => 'images/barang/buku.jpeg',
@@ -341,6 +342,71 @@ class BarangSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
+            // untuk laporan
+            [
+                'id_penitip' => 1,
+                'id_kategori' => 1,
+                'id_pegawai' => 10,
+                'id_hunter' => 15,
+                'tgl_penitipan' => now()->subDays(30),
+                'masa_penitipan' => now(),
+                'penambahan_durasi' => 0,
+                'nama_barang' => 'Laptop Acer',
+                'harga_barang' => 2500000,
+                'berat_barang' => 1,
+                'deskripsi' => 'Barang oke',
+                'status_garansi' => null,
+                'status_barang' => 'Dijual',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/laptop.jpeg',
+                'gambar_dua' => 'images/barang/laptop1.jpeg',
+                'created_at' => now()->subDays(30),
+                'updated_at' => now()->subDays(30),
+            ],
+
+            [
+                'id_penitip' => 3,
+                'id_kategori' => 5,
+                'id_pegawai' => 10,
+                'id_hunter' => 14,
+                'tgl_penitipan' => now()->subDays(30),
+                'masa_penitipan' => now(),
+                'penambahan_durasi' => 0,
+                'nama_barang' => 'Mainan Anak Kecil Bos',
+                'harga_barang' => 17000,
+                'berat_barang' => 1,
+                'deskripsi' => 'Barang oke',
+                'status_garansi' => null,
+                'status_barang' => 'Dijual',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/mainan.jpeg',
+                'gambar_dua' => 'images/barang/mobil.jpeg',
+                'created_at' => now()->subDays(30),
+                'updated_at' => now()->subDays(30),
+            ],
+
+            [
+                'id_penitip' => 3,
+                'id_kategori' => 7,
+                'id_pegawai' => 10,
+                'id_hunter' => 14,
+                'tgl_penitipan' => now()->subDays(30),
+                'masa_penitipan' => now(),
+                'penambahan_durasi' => 0,
+                'nama_barang' => 'Mobil Avanza',
+                'harga_barang' => 5000000,
+                'berat_barang' => 1,
+                'deskripsi' => 'Barang oke',
+                'status_garansi' => null,
+                'status_barang' => 'Dijual',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/kijang.jpeg',
+                'gambar_dua' => 'images/barang/mobil.jpeg',
+                'created_at' => now()->subDays(25),
+                'updated_at' => now()->subDays(25),
+            ],
+
         ]);
 
         $staticData = [
@@ -383,7 +449,7 @@ class BarangSeeder extends Seeder
 
     protected function generateDummyData($jumlah = 200)
     {
-        $statusList = ['barang untuk donasi', 'Dijual', 'penitip habis', 'terjual'];
+        $statusList = ['barang untuk donasi', 'Dijual', 'penitip habis', 'Sold Out'];
         $pegawaiList = [3, 6, 9];
         $gambarList = [
             'images/barang/buku.jpeg',

@@ -56,6 +56,7 @@ import KomisiBulanan from "../Owner/KomisiBulanan";
 import StokGudang from "../Owner/StokGudang";
 import MasaPenitipan from "../Owner/MasaPenitipan";
 import KategoriBarang from "../Owner/KategoriBarang";
+import DonasiBarang from "../Owner/DonasiBarang";
 
 // Detail Barang
 import DetailBarang from "../Components/DetailBarang";
@@ -73,6 +74,8 @@ import TransaksiCS from "../Customer_Service/VerifikasiPembayaran";
 // import BarangHariIni from "../Pegawai_Gudang/barangHariIni";
 
 import Barang_Donasi from "../Test2/TampilkanDonasi";
+import ReqDonasi from "../Owner/ReqDonasi";
+import LapPenitip from "../Owner/LapPenitip";
 
 const router = createBrowserRouter([
   {
@@ -109,7 +112,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/barang-donasi",
-    element: <Barang_Donasi />
+    element: <Barang_Donasi />,
   },
   {
     path: "/alamat",
@@ -361,7 +364,22 @@ const router = createBrowserRouter([
       {
         path: "kategori-barang",
         element: <KategoriBarang />,
-      }
+      },
+      {
+        path: "donasi-barang",
+        element: <DonasiBarang />,
+        // element: <KategoriBarang />
+      },
+      {
+        path: "request/donasi",
+        element: <ReqDonasi />,
+        // element: <KategoriBarang />
+      },
+      {
+        path: "laporan-penitip",
+        element: <LapPenitip />,
+        // element: <KategoriBarang />
+      },
     ],
   },
 
@@ -370,7 +388,6 @@ const router = createBrowserRouter([
     path: "/detail/:id",
     element: <DetailBarang />,
   },
-
 ]);
 
 const AppRouter = () => {

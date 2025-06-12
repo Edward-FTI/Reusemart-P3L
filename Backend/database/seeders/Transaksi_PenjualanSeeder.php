@@ -81,6 +81,37 @@ class Transaksi_PenjualanSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
+
+            // untuk laporan
+            [
+                'id_pembeli' => 6,
+                'total_harga_pembelian' => 2517000,
+                'alamat_pengiriman' => 'Jl. Malioboro No. 1, Kota Yogyakarta',
+                'ongkir' => 0,
+                'bukti_pembayaran' => 'bukti5.jpg',
+                'status_pengiriman' => 'selesai',
+                'metode_pengiriman' => 'diambil',
+                'status_pembelian' => 'selesai',
+                'verifikasi_pembayaran' => 'terverifikasi',
+                'tgl_transaksi' => Carbon::now()->subDays(20),
+                'created_at' => Carbon::now()->subDays(20),
+                'updated_at' => Carbon::now()->subDays(20),
+            ],
+
+            [
+                'id_pembeli' => 7,
+                'total_harga_pembelian' => 5000000,
+                'alamat_pengiriman' => 'Corongan',
+                'ongkir' => 0,
+                'bukti_pembayaran' => 'bukti6.jpg',
+                'status_pengiriman' => 'selesai',
+                'metode_pengiriman' => 'diambil',
+                'status_pembelian' => 'selesai',
+                'verifikasi_pembayaran' => 'terverifikasi',
+                'tgl_transaksi' => Carbon::now()->subDays(27),
+                'created_at' => Carbon::now()->subDays(20),
+                'updated_at' => Carbon::now()->subDays(20),
+            ],
         ]);
     }
 }
