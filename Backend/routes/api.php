@@ -72,6 +72,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/barang/{id}', [BarangController::class, 'updatePublic']);
     Route::patch('/barang/{id}/status', [BarangController::class, 'updateStatus']);
     Route::get('indexOwner', [BarangController::class, 'indexOwner']);
+    Route::post('/indexOwner-p', [BarangController::class, 'getBarangByPenitipAndMonth']);
 
 
     // ======================= Kategori Barang =======================
@@ -86,6 +87,8 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/penitip/{id}', [PenitipController::class, 'destroy']);
     Route::get('/penitip/search/{name}', [PenitipController::class, 'searchByName']);
     Route::get('/penitip/{id}', [PenitipController::class, 'searchById']);
+    Route::get('/penitip-id', [PenitipController::class, 'getAllPenitipIds']);
+
 
 
     // ======================= Organisasi =======================
