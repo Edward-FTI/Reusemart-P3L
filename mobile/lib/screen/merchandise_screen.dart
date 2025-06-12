@@ -1,7 +1,9 @@
+// lib/screens/rewards/merchandise_screen.dart
 import 'package:flutter/material.dart';
 import 'package:mobile/data/models/merchandise/merchandise.dart';
 import 'package:mobile/data/models/merchandise/penukaran_merchandise.dart';
-import 'package:mobile/data/models/pembeli/ModelPembeli.dart';
+import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
+import 'package:mobile/data/models/pembeli/ModelPembeli.dart'; // Menggunakan model Pembeli yang konsisten
 import 'package:mobile/data/service/reward_service.dart';
 import 'package:intl/intl.dart';
 
@@ -14,11 +16,15 @@ class MerchandiseScreen extends StatefulWidget {
 
 class _MerchandiseScreenState extends State<MerchandiseScreen> {
   late Future<List<Merchandise>> _merchandiseCatalogFuture;
-  late Future<PembeliModel> _pembeliProfileFuture;
+  late Future<PembeliModel> _pembeliProfileFuture; // Menggunakan model Pembeli
   final RewardService _rewardService = RewardService();
 
-  int _currentPembeliPoints = PembeliModel().point ?? 0;
-  final Map<int, int> _itemsToClaim = {}; // merchandiseId -> quantity
+  bool _isRefreshing = false; // Flag untuk menampilkan loading state
+  int _currentPembeliPoints = 0;
+  final Map<int, int> _itemsToClaim = {}; // {merchandiseId: quantity}
+
+  List<Merchandise> _cachedMerchandiseCatalog =
+      []; // Cache untuk akses item berdasarkan ID
 
   @override
   void initState() {
@@ -32,9 +38,20 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
       _pembeliProfileFuture = _rewardService.fetchCurrentPembeliProfile();
     });
 
+    // Handle catalog data to cache it
+    _merchandiseCatalogFuture.then((catalog) {
+      setState(() {
+        _cachedMerchandiseCatalog = catalog;
+      });
+    }).catchError((error) {
+      print('Error caching merchandise catalog: $error');
+      // Tidak perlu SnackBar di sini, error sudah ditangani oleh FutureBuilder
+    });
+
     _pembeliProfileFuture.then((pembeliData) {
       setState(() {
-        _currentPembeliPoints = pembeliData.point ?? 0;
+        _currentPembeliPoints =
+            pembeliData.point ?? 0; // Akses properti 'point'
       });
     }).catchError((error) {
       print('Error fetching pembeli data: $error');
@@ -47,34 +64,54 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
         _currentPembeliPoints = 0;
       });
     });
+    setState(() {
+      _isRefreshing = false;
+    });
   }
 
+// Fungsi untuk toggle (memilih/membatalkan pilihan) item untuk klaim multi-item
   void _toggleItemClaim(Merchandise merchandise) {
     setState(() {
       if (_itemsToClaim.containsKey(merchandise.id)) {
         _itemsToClaim.remove(merchandise.id);
       } else {
-        _itemsToClaim[merchandise.id] = 1;
+        _itemsToClaim[merchandise.id] =
+            1; // Default kuantitas 1 saat pertama kali dipilih
       }
     });
   }
 
+// Fungsi untuk menambah kuantitas item yang dipilih
   void _increaseQuantity(int merchId) {
     setState(() {
-      _itemsToClaim.update(merchId, (value) => value + 1);
-    });
-  }
-
-  void _decreaseQuantity(int merchId) {
-    setState(() {
-      if (_itemsToClaim[merchId]! > 1) {
-        _itemsToClaim.update(merchId, (value) => value - 1);
+      final currentQty = _itemsToClaim[merchId] ?? 0;
+      final merchandise =
+          _cachedMerchandiseCatalog.firstWhere((m) => m.id == merchId);
+      if (currentQty < merchandise.jumlah) {
+        // Cek agar tidak melebihi stok
+        _itemsToClaim.update(merchId, (value) => value + 1);
       } else {
-        _itemsToClaim.remove(merchId);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'Tidak bisa menambahkan lebih banyak, stok tidak cukup.')),
+        );
       }
     });
   }
 
+// Fungsi untuk mengurangi kuantitas item yang dipilih
+  void _decreaseQuantity(int merchId) {
+    setState(() {
+      if ((_itemsToClaim[merchId] ?? 0) > 1) {
+        _itemsToClaim.update(merchId, (value) => value - 1);
+      } else {
+        _itemsToClaim.remove(merchId); // Hapus jika kuantitas jadi 0
+      }
+    });
+  }
+
+// Fungsi untuk klaim merchandise tunggal (dipanggil dari tombol 'Klaim' di card)
   Future<void> _claimSingleMerchandise(Merchandise merchandise) async {
     if (_currentPembeliPoints < merchandise.nilaiPoint) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -89,7 +126,6 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
       );
       return;
     }
-
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -99,12 +135,12 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
             text: TextSpan(
               style: Theme.of(context).textTheme.bodyMedium,
               children: [
-                TextSpan(text: 'Anda akan menukarkan '),
+                const TextSpan(text: 'Anda akan menukarkan '),
                 TextSpan(
                   text: '${merchandise.namaMerchandise}',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                TextSpan(text: ' dengan '),
+                const TextSpan(text: ' dengan '),
                 TextSpan(
                   text: '${merchandise.nilaiPoint} Poin',
                   style: const TextStyle(
@@ -113,7 +149,7 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                 TextSpan(
                     text:
                         '.\n\nPoin Anda saat ini: ${NumberFormat('#,###').format(_currentPembeliPoints)}'),
-                TextSpan(
+                const TextSpan(
                     text: '\nApakah Anda yakin ingin melanjutkan klaim ini?'),
               ],
             ),
@@ -132,24 +168,59 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
       },
     );
 
+    // if (confirm == true) {
+    //   try {
+    //     final currentPembeliProfile = await _pembeliProfileFuture;
+    //     await _rewardService.claimMerchandise([
+    //       {
+    //         'id_merchandise': merchandise.id,
+    //         'jumlah': 1,
+    //         'id_pembeli': currentPembeliProfile.id
+    //       }
+    //     ]);
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Klaim merchandise berhasil!')),
+    //     );
+    //     _loadData();
+    //   } catch (e) {
+    //     print('Error claiming single merchandise: $e');
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Gagal klaim merchandise: ${e.toString()}')),
+    //     );
+    //   }
+    // }
+
     if (confirm == true) {
       try {
+        final currentPembeliProfile = await _pembeliProfileFuture;
         await _rewardService.claimMerchandise([
-          {'id_merchandise': merchandise.id, 'jumlah': 1}
+          {
+            'id_merchandise': merchandise.id,
+            'jumlah': 1,
+            'id_pembeli': currentPembeliProfile.id
+          }
         ]);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Klaim merchandise berhasil!')),
         );
         _loadData();
       } catch (e) {
-        print('Error claiming merchandise: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal klaim merchandise: $e')),
-        );
+        if (e.toString().contains('Semua item berhasil ditukarkan')) {
+          // Jangan tampilkan error jika ini pesan dari backend
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Klaim merchandise berhasil!')),
+          );
+        } else {
+          print('Error claiming single merchandise: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal klaim merchandise: ${e.toString()}')),
+          );
+        }
       }
     }
   }
 
+  // Fungsi untuk klaim semua item yang dipilih di keranjang
   Future<void> _claimAllSelectedMerchandise() async {
     if (_itemsToClaim.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -162,24 +233,13 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
 
     int totalPointsNeeded = 0;
     List<Map<String, dynamic>> itemsPayload = [];
-    List<Merchandise> selectedMerchandiseDetails = [];
 
-    try {
-      List<Merchandise> catalog = await _merchandiseCatalogFuture;
-      _itemsToClaim.forEach((merchId, quantity) {
-        final merch = catalog.firstWhere((m) => m.id == merchId);
-        totalPointsNeeded += merch.nilaiPoint * quantity;
-        itemsPayload.add({'id_merchandise': merchId, 'jumlah': quantity});
-        selectedMerchandiseDetails.add(merch);
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content:
-                Text('Gagal mendapatkan detail merchandise untuk klaim: $e')),
-      );
-      return;
-    }
+    _itemsToClaim.forEach((merchId, quantity) {
+      final merch =
+          _cachedMerchandiseCatalog.firstWhere((m) => m.id == merchId);
+      totalPointsNeeded += merch.nilaiPoint * quantity;
+      itemsPayload.add({'id_merchandise': merchId, 'jumlah': quantity});
+    });
 
     if (_currentPembeliPoints < totalPointsNeeded) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -188,6 +248,15 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
       );
       return;
     }
+
+    // Bangun daftar detail klaim untuk dialog konfirmasi
+    List<Widget> confirmationDetails = [];
+    _itemsToClaim.forEach((merchId, quantity) {
+      final merch =
+          _cachedMerchandiseCatalog.firstWhere((m) => m.id == merchId);
+      confirmationDetails.add(Text(
+          '- ${merch.namaMerchandise} x $quantity (${merch.nilaiPoint * quantity} Poin)'));
+    });
 
     bool? confirm = await showDialog<bool>(
       context: context,
@@ -208,11 +277,7 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                   const Text('Detail Klaim:',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 6),
-                  ...selectedMerchandiseDetails.map((merch) {
-                    final qty = _itemsToClaim[merch.id] ?? 1;
-                    return Text(
-                        '- ${merch.namaMerchandise} x $qty (${merch.nilaiPoint * qty} Poin)');
-                  }),
+                  ...confirmationDetails, // Detail item yang diklaim
                   const SizedBox(height: 12),
                   const Text('Apakah Anda yakin ingin melanjutkan klaim ini?'),
                 ],
@@ -231,9 +296,44 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
       },
     );
 
+    // if (confirm == true) {
+    //   try {
+    //     final currentPembeliProfile = await _pembeliProfileFuture;
+    //     final finalItemsPayload = itemsPayload
+    //         .map((item) => {
+    //               ...item,
+    //               'id_pembeli': currentPembeliProfile
+    //                   .id, // Tambahkan id_pembeli ke setiap item
+    //             })
+    //         .toList();
+
+    //     await _rewardService.claimMerchandise(finalItemsPayload);
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Klaim merchandise berhasil!')),
+    //     );
+    //     setState(() {
+    //       _itemsToClaim.clear();
+    //     });
+    //     _loadData();
+    //   } catch (e) {
+    //     print('Error claiming all merchandise: $e');
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Gagal klaim merchandise: ${e.toString()}')),
+    //     );
+    //   }
+    // }
+
     if (confirm == true) {
       try {
-        await _rewardService.claimMerchandise(itemsPayload);
+        final currentPembeliProfile = await _pembeliProfileFuture;
+        final finalItemsPayload = itemsPayload
+            .map((item) => {
+                  ...item,
+                  'id_pembeli': currentPembeliProfile.id,
+                })
+            .toList();
+
+        await _rewardService.claimMerchandise(finalItemsPayload);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Klaim merchandise berhasil!')),
         );
@@ -242,10 +342,16 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
         });
         _loadData();
       } catch (e) {
-        print('Error claiming merchandise: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal klaim merchandise: $e')),
-        );
+        if (e.toString().contains('Semua item berhasil ditukarkan')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Klaim merchandise berhasil!')),
+          );
+        } else {
+          print('Error claiming all merchandise: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal klaim merchandise: ${e.toString()}')),
+          );
+        }
       }
     }
   }
@@ -259,13 +365,8 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const MyClaimsHistoryScreen()),
-              );
-            },
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadData,
           ),
         ],
       ),
@@ -300,7 +401,7 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
                           ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -365,29 +466,19 @@ class _MerchandiseScreenState extends State<MerchandiseScreen> {
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.card_giftcard),
                 onPressed: _claimAllSelectedMerchandise,
-                label: Builder(builder: (context) {
-                  final pointsTotal = _itemsToClaim.entries.fold<int>(
+                label: Text(
+                  'Klaim ${_itemsToClaim.length} Item Terpilih (Total Poin: ${NumberFormat('#,###').format(_itemsToClaim.entries.fold<int>(
                     0,
                     (sum, entry) {
-                      final merchId = entry.key;
-                      final qty = entry.value;
-                      // cari poin merchandise dari katalog cached
-                      // Note: kita pastikan Future sudah complete saat ini, jadi pake FutureBuilder utk data katalog di atas
-                      // Jadi di sini kita dapat akses snapshot data katalog?
-                      // Sebagai solusi, kita gunakan snapshot.data dari builder di atas,
-                      // tapi kita di luar builder sehingga kita perlu simpan data katalog di state.
-                      // Untuk kesederhanaan, kita hitung total poin di widget MerchandiseCard & setState di _itemsToClaim.
-                      // Jadi untuk button ini, hitung ulang poin di sini dari _itemsToClaim dan data katalog.
-                      return sum; // sementara, hitung ulang di sini nanti
+                      final merch = _cachedMerchandiseCatalog
+                          .firstWhere((m) => m.id == entry.key);
+                      return sum + (merch.nilaiPoint * entry.value);
                     },
-                  );
-
-                  // Jadi untuk simplifikasi: hitung ulang total poin dengan cara memanggil Future secara sync? Tidak bisa.
-                  // Solusi praktis: kita simpan catalog di state saat Future selesai di load.
-                  return Text('Klaim ${_itemsToClaim.length} Item Terpilih');
-                }),
+                  ))})',
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[700],
+                  foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
@@ -424,7 +515,7 @@ class MerchandiseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canClaim = merchandise.jumlah > 0 &&
+    final canClaimSingle = merchandise.jumlah > 0 &&
         currentPembeliPoints >= merchandise.nilaiPoint;
 
     return GestureDetector(
@@ -513,7 +604,7 @@ class MerchandiseCard extends StatelessWidget {
               '${NumberFormat('#,###').format(merchandise.nilaiPoint)} Poin',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: canClaim ? Colors.green[700] : Colors.grey[600],
+                color: canClaimSingle ? Colors.green[700] : Colors.grey[600],
                 fontSize: 13,
               ),
             ),
@@ -551,14 +642,24 @@ class MerchandiseCard extends StatelessWidget {
               )
             else
               ElevatedButton(
-                onPressed: canClaim ? () => onClaimSingle(merchandise) : null,
+                onPressed: canClaimSingle && merchandise.jumlah > 0
+                    ? () => onClaimSingle(merchandise)
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: canClaim ? Colors.green : Colors.grey,
+                  backgroundColor: canClaimSingle && merchandise.jumlah > 0
+                      ? Colors.green
+                      : Colors.grey,
+                  foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(36),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6)),
                 ),
-                child: const Text('Klaim'),
+                child: Text(
+                  merchandise.jumlah > 0
+                      ? (canClaimSingle ? 'Klaim' : 'Poin Kurang')
+                      : 'Stok Habis',
+                  style: const TextStyle(fontSize: 12),
+                ),
               ),
           ],
         ),

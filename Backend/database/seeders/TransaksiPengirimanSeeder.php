@@ -51,7 +51,7 @@ class TransaksiPengirimanSeeder extends Seeder
             ],
             [
                 'id_transaksi_penjualan' => $transaksiIds[3],
-                'id_pegawai' => 0,
+                'id_pegawai' => null,
                 'tgl_pengiriman' => null,
                 'status_pengiriman' => 'Proses',
                 'biaya_pengiriman' => 24000,
@@ -59,7 +59,7 @@ class TransaksiPengirimanSeeder extends Seeder
             ],
             [
                 'id_transaksi_penjualan' => $transaksiIds[4],
-                'id_pegawai' => 0,
+                'id_pegawai' => null,
                 'tgl_pengiriman' => null,
                 'status_pengiriman' => 'Proses',
                 'biaya_pengiriman' => 26000,

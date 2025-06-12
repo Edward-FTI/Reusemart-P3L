@@ -12,35 +12,64 @@ class RequestDonasiSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        // Request Donasi untuk Organisasi A (id = 1)
-        DB::table('request__donasis')->insert([
+        // ✅ Tambahan request sesuai transaksi donasi (status = 'selesai')
+        DB::table('request_donasis')->insert([
             [
-                'id_organisasi' => 1,
-                'request' => 'Permintaan bantuan sembako untuk warga terdampak banjir',
-                'created_at' => $now,
-                'updated_at' => $now,
+                'id_organisasi' => 1, // Organisasi A
+                'request'       => 'Permintaan donasi tas sekolah untuk anak-anak kurang mampu',
+                'status'        => 'selesai',
+                'created_at'    => $now,
+                'updated_at'    => $now,
             ],
             [
-                'id_organisasi' => 1,
-                'request' => 'Permintaan donasi buku untuk anak-anak kurang mampu',
-                'created_at' => $now,
-                'updated_at' => $now,
+                'id_organisasi' => 2, // Organisasi B
+                'request'       => 'Permintaan jaket hangat untuk anak yatim piatu',
+                'status'        => 'selesai',
+                'created_at'    => $now,
+                'updated_at'    => $now,
             ],
             [
-                'id_organisasi' => 1,
-                'request' => 'Permintaan alat medis untuk puskesmas desa',
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'id_organisasi' => 1,
-                'request' => 'Permintaan makanan siap saji untuk korban kebakaran',
-                'created_at' => $now,
-                'updated_at' => $now,
+                'id_organisasi' => 3, // Organisasi C
+                'request'       => 'Permintaan buku cerita anak untuk taman baca masyarakat',
+                'status'        => 'selesai',
+                'created_at'    => $now,
+                'updated_at'    => $now,
             ],
         ]);
 
-        // Request Donasi untuk Organisasi lainnya (id 2 sampai 10)
+        // ✅ Tetap insert semua request lama dengan status = 'pending'
+        DB::table('request_donasis')->insert([
+            [
+                'id_organisasi' => 1,
+                'request'       => 'Permintaan bantuan sembako untuk warga terdampak banjir',
+                'status'        => 'pending',
+                'created_at'    => $now,
+                'updated_at'    => $now,
+            ],
+            [
+                'id_organisasi' => 1,
+                'request'       => 'Permintaan donasi buku untuk anak-anak kurang mampu',
+                'status'        => 'pending',
+                'created_at'    => $now,
+                'updated_at'    => $now,
+            ],
+            [
+                'id_organisasi' => 1,
+                'request'       => 'Permintaan alat medis untuk puskesmas desa',
+                'status'        => 'pending',
+                'created_at'    => $now,
+                'updated_at'    => $now,
+            ],
+            [
+                'id_organisasi' => 1,
+                'request'       => 'Permintaan makanan siap saji untuk korban kebakaran',
+                'status'        => 'pending',
+                'created_at'    => $now,
+                'updated_at'    => $now,
+            ],
+        ]);
+
+        // ✅ Request Donasi untuk Organisasi lainnya (id 2 sampai 10) → status 'pending'
         $requests = [
             [2, 'Permintaan seragam sekolah untuk siswa kurang mampu'],
             [3, 'Permintaan perlengkapan ibadah untuk musala setempat'],
@@ -54,11 +83,12 @@ class RequestDonasiSeeder extends Seeder
         ];
 
         foreach ($requests as [$id_organisasi, $request]) {
-            DB::table('request__donasis')->insert([
+            DB::table('request_donasis')->insert([
                 'id_organisasi' => $id_organisasi,
-                'request' => $request,
-                'created_at' => $now,
-                'updated_at' => $now,
+                'request'       => $request,
+                'status'        => 'pending',
+                'created_at'    => $now,
+                'updated_at'    => $now,
             ]);
         }
     }
