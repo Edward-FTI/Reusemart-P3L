@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+
 class PenitipController extends Controller
 {
 
@@ -340,6 +341,32 @@ class PenitipController extends Controller
             return response()->json(['message' => 'Gagal mengambil data penitip', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function getAllPenitipIds()
+    {
+        try {
+            $penitips = Penitip::select('id', 'nama_penitip')->get();
+
+            if ($penitips->isEmpty()) {
+                return response()->json([
+                    'message' => 'Tidak ada data penitip',
+                    'data' => []
+                ], 404);
+            }
+
+            return response()->json([
+                'message' => 'Berhasil mengambil seluruh data penitip',
+                'data' => $penitips
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal mengambil data penitip',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
 
     // Menampilkan data penitip berdasarkan ID
 }

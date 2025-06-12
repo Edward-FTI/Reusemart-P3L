@@ -30,16 +30,25 @@ class Barang extends Model
         'gambar_dua',
     ];
 
-    public function penitip(): BelongsTo {
+    public function penitip(): BelongsTo
+    {
         return $this->belongsTo(Penitip::class, 'id_penitip');
     }
-    public function kategori_barang(): BelongsTo {
+    public function kategori_barang(): BelongsTo
+    {
         return $this->belongsTo(KategoriBarang::class, 'id_kategori');
     }
-    public function pegawai(): BelongsTo {
+    public function pegawai(): BelongsTo
+    {
         return $this->belongsTo(Pegawai::class, 'id_pegawai');
     }
-    public function hunter(): BelongsTo {
+    public function hunter(): BelongsTo
+    {
         return $this->belongsTo(Pegawai::class, 'id_hunter');
+    }
+
+    public function detail_transaksi_penjualan()
+    {
+        return $this->hasMany(Detail_transaksi_penjualan::class, 'id_barang');
     }
 }

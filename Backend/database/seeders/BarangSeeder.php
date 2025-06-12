@@ -134,7 +134,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 50,
                 'deskripsi' => 'Kayu Jati',
                 'status_garansi' => now()->copy()->addDays(12),
-                'status_barang' => 'Tersedia',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/meja.jpeg',
                 'gambar_dua' => 'images/barang/meja.jpeg',
@@ -154,7 +154,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 1,
                 'deskripsi' => 'Halaman Lebih Banyak',
                 'status_garansi' => null,
-                'status_barang' => 'Tersedia',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/buku.jpeg',
                 'gambar_dua' => 'images/barang/buku.jpeg',
@@ -383,7 +383,7 @@ class BarangSeeder extends Seeder
 
     protected function generateDummyData($jumlah = 200)
     {
-        $statusList = ['barang untuk donasi', 'Dijual', 'penitip habis', 'terjual'];
+        $statusList = ['barang untuk donasi', 'Dijual', 'penitip habis', 'Sold Out'];
         $pegawaiList = [3, 6, 9];
         $gambarList = [
             'images/barang/buku.jpeg',

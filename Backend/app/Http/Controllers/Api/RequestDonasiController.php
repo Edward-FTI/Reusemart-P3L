@@ -194,7 +194,7 @@ class RequestDonasiController extends Controller
         }
 
         $requests = Request_Donasi::with('organisasi')
-            ->where('status', 'selesai')
+            ->where('status', 'pending')
             ->get();
 
         $data = $requests->map(function ($request) {

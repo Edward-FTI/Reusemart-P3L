@@ -564,4 +564,66 @@ class BarangController extends Controller
         }
     }
 
+
+    public function getBarangByPenitipAndMonth(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || strtolower($user->role) !== 'owner') {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'id_penitip' => 'required|exists:penitips,id',
+            'bulan' => 'required|integer|min:1|max:12'
+        ]);
+
+        $idPenitip = $request->id_penitip;
+        $bulan = $request->bulan;
+
+        $barang = Barang::with([
+            'penitip',
+            'kategori_barang',
+            'pegawai',
+            'hunter',
+            'detail_transaksi_penjualan.transaksi'
+        ])
+            ->where('id_penitip', $idPenitip)
+            ->where('status_barang', 'Sold Out')
+            ->get()
+            ->filter(function ($item) use ($bulan) {
+                $tglTransaksi = optional($item->detail_transaksi_penjualan->first()->transaksi)->tgl_transaksi;
+                return $tglTransaksi && Carbon::parse($tglTransaksi)->month == $bulan;
+            })
+            ->map(function ($item) {
+                $tglPenitipan = Carbon::parse($item->tgl_penitipan);
+                $tglTransaksi = optional($item->detail_transaksi_penjualan->first()->transaksi)->tgl_transaksi;
+
+                $hargaBarang = $item->harga_barang;
+                $lamaLaku = $tglPenitipan->diffInDays(Carbon::parse($tglTransaksi));
+
+                $komisiReusemartPersen = $item->penambahan_durasi ? 30 : 20;
+                $komisiHunter = $item->id_hunter ? $hargaBarang * 0.05 : 0;
+                $komisiReusemart = ($hargaBarang * ($komisiReusemartPersen / 100)) - $komisiHunter;
+                $bonus = $lamaLaku <= 7 ? $hargaBarang * 0.1 : 0;
+                $hargaJualBersih = $hargaBarang - ($komisiReusemart + $komisiHunter);
+                $pendapatanPenitip = $hargaJualBersih + $bonus;
+
+                return [
+                    'Kode Produk' => strtoupper(substr($item->nama_barang, 0, 1)) . $item->id,
+                    'Nama Produk' => $item->nama_barang,
+                    'Tanggal Masuk' => $tglPenitipan->format('Y-m-d'),
+                    'Tanggal Laku' => $tglTransaksi,
+                    'Harga Jual Bersih' => $hargaJualBersih,
+                    'Bonus Terjual Cepat' => $bonus,
+                    'Pendapatan Penitip' => $pendapatanPenitip,
+                ];
+            })
+            ->values();
+
+
+        return response()->json([
+            'message' => 'Berhasil mengambil data barang terjual',
+            'data' => $barang,
+        ]);
+    }
 }
