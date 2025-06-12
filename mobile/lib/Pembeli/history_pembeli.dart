@@ -14,6 +14,10 @@ class HistoryPembeli extends StatefulWidget {
 
 class _HistoryPembeliState extends State<HistoryPembeli> {
   List<HistoryPembeliModel>? historyList;
+  List<HistoryPembeliModel>? filteredList;
+
+  DateTime? startDate;
+  DateTime? endDate;
 
   @override
   void initState() {
@@ -28,9 +32,50 @@ class _HistoryPembeliState extends State<HistoryPembeli> {
       log("History pembelian berhasil dimuat: ${response.toJson()}");
       setState(() {
         historyList = response.data;
+        filteredList = response.data;
       });
     } else {
       log("History == null, tidak bisa dimuat");
+    }
+  }
+
+  void filterByDate() {
+    if (historyList == null) return;
+
+    if (startDate == null || endDate == null) {
+      // Tidak ada tanggal dipilih, tampilkan semua
+      setState(() {
+        filteredList = historyList;
+      });
+    } else {
+      // Filter berdasarkan rentang tanggal
+      setState(() {
+        filteredList = historyList!.where((item) {
+          if (item.tglTransaksi == null) return false;
+          final transaksiDate = DateTime.parse(item.tglTransaksi!);
+          return transaksiDate
+                  .isAfter(startDate!.subtract(const Duration(days: 1))) &&
+              transaksiDate.isBefore(endDate!.add(const Duration(days: 1)));
+        }).toList();
+      });
+    }
+  }
+
+  Future<void> selectDate(BuildContext context, bool isStart) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2023),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        if (isStart) {
+          startDate = picked;
+        } else {
+          endDate = picked;
+        }
+      });
     }
   }
 
@@ -52,99 +97,151 @@ class _HistoryPembeliState extends State<HistoryPembeli> {
         centerTitle: true,
         backgroundColor: Colors.blue,
       ),
-      body: historyList == null
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressIndicator(),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    "Memuat data history pembelian...",
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
-                  )
-                ],
-              ),
-            )
-          : historyList!.isEmpty
-              ? const Center(
-                  child: Text(
-                    "Tidak ada data pembelian.",
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: historyList!.length,
-                  padding: const EdgeInsets.all(12),
-                  itemBuilder: (context, index) {
-                    final item = historyList![index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () => selectDate(context, true),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      elevation: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Tanggal:${formatTanggal(item.tglTransaksi)}",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Total Harga: Rp${item.totalHargaPembelian}",
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              "Metode Pengiriman: ${item.metodePengiriman}",
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (context) => SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.6,
-                                      child: DetailTransaksiWidget(
-                                        detailTransaksi:
-                                            item.detailTransaksi ?? [],
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: const Text("Detail"),
-                              ),
-                            )
-                          ],
-                        ),
+                      child: Text(
+                        startDate != null
+                            ? DateFormat("dd-MM-yyyy").format(startDate!)
+                            : "Tanggal Awal",
+                        style: const TextStyle(fontSize: 14),
                       ),
-                    );
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: InkWell(
+                    onTap: () => selectDate(context, false),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        endDate != null
+                            ? DateFormat("dd-MM-yyyy").format(endDate!)
+                            : "Tanggal Akhir",
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.filter_alt),
+                  tooltip: "Terapkan Filter",
+                  onPressed: () {
+                    if (startDate != null && endDate != null) {
+                      filterByDate();
+                    }
                   },
                 ),
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  tooltip: "Reset Filter",
+                  onPressed: () {
+                    setState(() {
+                      startDate = null;
+                      endDate = null;
+                      filteredList = historyList;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: filteredList == null
+                ? const Center(child: CircularProgressIndicator())
+                : filteredList!.isEmpty
+                    ? const Center(child: Text("Tidak ada data pembelian."))
+                    : ListView.builder(
+                        itemCount: filteredList!.length,
+                        padding: const EdgeInsets.all(12),
+                        itemBuilder: (context, index) {
+                          final item = filteredList![index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Tanggal: ${formatTanggal(item.tglTransaksi)}",
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Total Harga: Rp${item.totalHargaPembelian}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "Metode Pengiriman: ${item.metodePengiriman}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) => SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.6,
+                                            child: DetailTransaksiWidget(
+                                              detailTransaksi:
+                                                  item.detailTransaksi ?? [],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text("Detail"),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+          ),
+        ],
+      ),
     );
   }
 }
