@@ -144,7 +144,7 @@ class TransaksiPenjualanController extends Controller
 
             DB::table('transaksi_pengiriman')->insert([
                 'id_transaksi_penjualan' => $transaksi->id,
-                'id_pegawai' => 0,
+                'id_pegawai' => null,
                 'tgl_pengiriman' => null,
                 'status_pengiriman' => $transaksi->status_pengiriman,
                 'biaya_pengiriman' => $ongkir,
