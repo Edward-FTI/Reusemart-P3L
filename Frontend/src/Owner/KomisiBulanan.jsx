@@ -52,14 +52,23 @@ export default function KomisiBulanan() {
         doc.setFont(undefined, 'normal');
         doc.setFontSize(12);
 
-        const now = new Date();
-        const bulan = now.toLocaleString('id-ID', { month: 'long' });
-        const tahun = now.getFullYear();
-        const tanggalCetak = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        // const now = new Date();
+        // const bulan = now.toLocaleString('id-ID', { month: 'long' });
+        // const tahun = now.getFullYear();
+        // const tanggalCetak = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        // doc.text(`Bulan : ${bulan}`, 14, 44);
+        // doc.text(`Tahun : ${tahun}`, 14, 50);
+        // doc.text(`Tanggal cetak: ${tanggalCetak}`, 14, 56);
+
+        const bulan = bulanList[selectedMonth]; // Ambil dari dropdown
+        const tahun = new Date().getFullYear(); // Tahun tetap pakai sekarang
+        const tanggalCetak = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
         doc.text(`Bulan : ${bulan}`, 14, 44);
         doc.text(`Tahun : ${tahun}`, 14, 50);
         doc.text(`Tanggal cetak: ${tanggalCetak}`, 14, 56);
+
 
 
         let totalHargaJual = 0;
