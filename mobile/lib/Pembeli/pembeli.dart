@@ -163,6 +163,28 @@ class _ProfilePembeliPageState extends State<ProfilePembeliPage> {
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return MerchandiseScreen();
+                  },
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                "Penukaran Merchandise",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
             const SizedBox(height: 20),
           ],
         ),

@@ -17,7 +17,7 @@ class BarangSeeder extends Seeder
     {
         // ...
         DB::table('barangs')->insert([
-            // 
+            //
 
             [
                 'id_penitip' => 1,
@@ -32,7 +32,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 500,
                 'deskripsi' => 'Barang Oke',
                 'status_garansi' => now()->copy()->addDays(10),
-                'status_barang' => 'Dijual',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/smartphone.jpg',
                 'gambar_dua' => 'images/barang/smartphone.jpg',
@@ -54,7 +54,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 2,
                 'deskripsi' => 'Ukuran XL',
                 'status_garansi' => null,
-                'status_barang' => 'Dijual',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/pakaianPria.jpeg',
                 'gambar_dua' => 'images/barang/pakaianPria.jpeg',
@@ -74,7 +74,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 20,
                 'deskripsi' => 'Test Deskripsi',
                 'status_garansi' => null,
-                'status_barang' => 'Dijual',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/pakaianPria.jpeg',
                 'gambar_dua' => 'images/barang/pakaianPria.jpeg',
@@ -94,7 +94,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 2,
                 'deskripsi' => 'Ukuran XL',
                 'status_garansi' => null,
-                'status_barang' => 'Dijual',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/pakaianPria.jpeg',
                 'gambar_dua' => 'images/barang/pakaianPria.jpeg',
@@ -114,7 +114,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 20,
                 'deskripsi' => 'Test Deskripsi',
                 'status_garansi' => null,
-                'status_barang' => 'Dijual',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/pakaianPria.jpeg',
                 'gambar_dua' => 'images/barang/pakaianPria.jpeg',
@@ -174,7 +174,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 1,
                 'deskripsi' => 'Mainan Anak',
                 'status_garansi' => now()->copy()->addDays(6),
-                'status_barang' => 'Dijual',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/mainan.jpeg',
                 'gambar_dua' => 'images/barang/mainan.jpeg',
@@ -194,7 +194,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 10,
                 'deskripsi' => 'Untuk Balita',
                 'status_garansi' => now()->copy()->addDays(18),
-                'status_barang' => 'Dijual',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/keretabayi.jpeg',
                 'gambar_dua' => 'images/barang/keretabayi.jpeg',
@@ -214,7 +214,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 500,
                 'deskripsi' => 'Mesin Oke',
                 'status_garansi' => now()->copy()->addDays(19),
-                'status_barang' => 'Dijual',
+                'status_barang' => 'Sold Out',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/motor.jpeg',
                 'gambar_dua' => 'images/barang/motor.jpeg',
@@ -234,7 +234,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 5,
                 'deskripsi' => 'Untuk Berkebun',
                 'status_garansi' => null,
-                'status_barang' => 'Dijual',
+                'status_barang' => 'terjual',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/cangkul.jpeg',
                 'gambar_dua' => 'images/barang/cangkul.jpeg',
@@ -274,7 +274,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 1,
                 'deskripsi' => 'Wangi Tahan Lama',
                 'status_garansi' => null,
-                'status_barang' => 'Dijual',
+                'status_barang' => 'terjual',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/parfum.jpeg',
                 'gambar_dua' => 'images/barang/parfum.jpeg',
@@ -433,10 +433,10 @@ class BarangSeeder extends Seeder
         ];
 
         // Generate 200 data acak
-        // $dummyData = $this->generateDummyData(200);
+        $dummyData = $this->generateDummyData(200);
 
-        // DB::table('barangs')->insert(array_merge($staticData, $dummyData));
-        DB::table('barangs')->insert($staticData);
+        DB::table('barangs')->insert(array_merge($staticData, $dummyData));
+        // DB::table('barangs')->insert($staticData);
     }
 
     protected function randomDateThisYear()

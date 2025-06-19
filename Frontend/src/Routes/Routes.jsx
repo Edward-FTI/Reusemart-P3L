@@ -76,8 +76,10 @@ import TransaksiCS from "../Customer_Service/VerifikasiPembayaran";
 import Barang_Donasi from "../Test2/TampilkanDonasi";
 import ReqDonasi from "../Owner/ReqDonasi";
 import LapPenitip from "../Owner/LapPenitip";
-import responsi from "../Pegawai_Gudang/responsi";
 import Responsi from "../Pegawai_Gudang/responsi";
+
+import SelesaiPengiriman from "../Customer_Service/BarangKurir";
+
 
 const router = createBrowserRouter([
   {
@@ -115,6 +117,10 @@ const router = createBrowserRouter([
   {
     path: "/barang-donasi",
     element: <Barang_Donasi />,
+  },
+  {
+    path: "/kurir-barang",
+    element: <SelesaiPengiriman />,
   },
   {
     path: "/alamat",

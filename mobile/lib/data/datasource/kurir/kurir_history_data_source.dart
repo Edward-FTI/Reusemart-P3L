@@ -1,38 +1,37 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:http/http.dart' as http;
 import 'package:mobile/core/constants/variables.dart';
 import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
-import 'package:mobile/data/models/hunter/ModelHunter.dart';
-import 'package:http/http.dart' as http;
+import 'package:mobile/data/models/respons/kurir_history_respon_model.dart';
 
-class HunterDataSource {
-  Future<HunterModel?> getHunter() async {
+class KurirHistoryDataSource {
+  Future<KurirHistoryResponModel?> getKurirHistory() async {
     final authData = await AuthLocalDatasource().getUserData();
+
     final response = await http.get(
-      Uri.parse("${Variables.baseUrl}/api/pegawaiid"),
+      Uri.parse("${Variables.baseUrl}/api/pengiriman/selesai"),
       headers: {
         "Content-Type": "application/json",
-        'Authorization': 'Bearer ${authData?.accessToken}',
-        'Accept': 'application/json',
+        "Authorization": "Bearer ${authData?.accessToken}",
+        "Accept": "application/json",
       },
     );
 
-    log("status code: ${response.statusCode}");
-    log("body: ${response.body}");
+    log("Kurir History status code: ${response.statusCode}");
+    log("Kurir History body: ${response.body}");
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
-
       if (json is Map<String, dynamic>) {
-        return HunterModel.fromJson(json);
+        return KurirHistoryResponModel.fromJson(json);
       } else {
         log("Response bukan objek JSON yang valid");
         return null;
       }
     }
-    log("========= Gagal Ambil Data Hunter =========");
+
+    log("========= Gagal Ambil Data History Pengiriman =========");
     return null;
   }
 }
-
-

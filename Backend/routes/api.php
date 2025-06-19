@@ -49,6 +49,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
     Route::put('/pegawai/{id}', [PegawaiController::class, 'update']);
     Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy']);
+    Route::get('/pegawaiid', [PegawaiController::class, 'getPegawaiData']);
     Route::get('/pegawai/search/{name}', [PegawaiController::class, 'searchByName']);
     Route::get('/pegawai/jabatan/{jabatan}', [PegawaiController::class, 'searchByJabatan']);
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
@@ -198,10 +199,13 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pengiriman/selesai', [TransaksiPengirimanController::class, 'selesai']);
     Route::get('/pengiriman/proses', [TransaksiPengirimanController::class, 'proses']);
     Route::put('/pengiriman/{id}/selesai', [TransaksiPengirimanController::class, 'updateStatusSelesai']);
+    Route::get('/kurir-barang', [TransaksiPengirimanController::class, 'selesaiBarang']);
 
 
 
-
+    Route::get('/barangHunter', [BarangController::class, 'barangHunterLogin']);
+    Route::get('/hunter-history', [TransaksiPenjualanController::class, 'indexHunterHistory']);
+    // Route::get('/transaksi-public', [TransaksiPenjualanController::class, 'indexHunterHistory']);
 
     // ======================= Rating =======================
     Route::get('/rating', [RatingController::class, 'index']);
@@ -229,6 +233,9 @@ Route::get('/penukaran-merchandise/list-merchandise', [PenukaranMerchandiseContr
 // ======================= Merchandise =======================
 Route::get('/merchandise', [MerchandiseController::class, 'index']);
 Route::post('/merchandise', [MerchandiseController::class, 'show']);
+
+// Route::get('/transaksi-public', [TransaksiPenjualanController::class, 'publicIndex']);
+
 
 //Laporan
 // routes/api.php
