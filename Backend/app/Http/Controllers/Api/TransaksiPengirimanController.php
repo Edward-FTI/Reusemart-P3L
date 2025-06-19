@@ -17,6 +17,7 @@ use App\Models\Penitip;
 use App\Models\Pembeli;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class TransaksiPengirimanController extends Controller
 {
@@ -87,15 +88,30 @@ class TransaksiPengirimanController extends Controller
             ], 404);
         }
 
-        $pengiriman = TransaksiPengiriman::with(['barang', 'pegawai'])
+        $pengiriman = TransaksiPengiriman::with([
+            'barang',
+            'pegawai',
+            'transaksiPenjualan.pembeli'
+        ])
             ->where('id_pegawai', $pegawaiId)
             ->where('status_pengiriman', 'Selesai')
             ->get();
 
         if ($pengiriman->count() > 0) {
+            // Ambil data yang diformat sesuai kebutuhan
+            $data = $pengiriman->map(function ($item) {
+                return [
+                    'id_transaksi_pengiriman' => $item->id,
+                    'nama_pembeli' => optional($item->transaksiPenjualan->pembeli)->nama_pembeli,
+                    'alamat_pembeli' => $item->transaksiPenjualan->alamat_pengiriman,
+                    'biaya_pengiriman' => $item->biaya_pengiriman,
+                    'catatan' => $item->catatan,
+                ];
+            });
+
             return response([
                 'message' => 'Berhasil mengambil data pengiriman yang sudah selesai',
-                'data' => $pengiriman
+                'data' => $data
             ], 200);
         }
 
@@ -104,6 +120,68 @@ class TransaksiPengirimanController extends Controller
             'data' => []
         ], 200);
     }
+    // use Carbon\Carbon; // Removed, now imported at the top
+
+    public function selesaiBarang()
+    {
+        $pegawaiId = $this->getPegawaiId();
+
+        if (!$pegawaiId) {
+            return response([
+                'message' => 'Pegawai tidak ditemukan untuk user yang login'
+            ], 404);
+        }
+
+        $tanggalSekarang = Carbon::now();
+        $tanggalSebulanKeDepan = $tanggalSekarang->copy()->addMonth();
+
+
+        $pengiriman = TransaksiPengiriman::with([
+            'pegawai',
+            'transaksiPenjualan.detailTransaksi.barang'
+        ])
+            ->where('id_pegawai', 12)
+            // ->where('status_pengiriman', 'Selesai')
+            ->whereBetween('tgl_pengiriman', [$tanggalSekarang, $tanggalSebulanKeDepan])
+            ->get();
+
+        if ($pengiriman->count() > 0) {
+            $data = $pengiriman->map(function ($item) {
+                $barangList = [];
+
+                foreach ($item->transaksiPenjualan->detailTransaksi as $detail) {
+                    $barang = $detail->barang;
+                    if ($barang) {
+                        $barangList[] = [
+                            'nama_barang' => $barang->nama_barang,
+                            'status_barang' => $barang->status_barang,
+                        ];
+                    }
+                }
+
+                return [
+                    'id_transaksi_pengiriman' => $item->id,
+                    'tanggal_jadwal_kirim' => $item->tgl_pengiriman,
+                    'nama_kurir' => optional($item->pegawai)->nama,
+                    'biaya_pengiriman' => $item->biaya_pengiriman,
+                    'barang' => $barangList,
+                ];
+            });
+
+            return response([
+                'message' => 'Berhasil mengambil data pengiriman yang sudah selesai dalam 1 bulan terakhir',
+                'data' => $data
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Tidak ada pengiriman yang selesai dalam 1 bulan terakhir',
+            'data' => []
+        ], 200);
+    }
+
+
+
 
     // Menampilkan hanya pengiriman dengan status 'Proses'
     public function proses()
@@ -116,15 +194,29 @@ class TransaksiPengirimanController extends Controller
             ], 404);
         }
 
-        $pengiriman = TransaksiPengiriman::with(['barang', 'pegawai'])
+        $pengiriman = TransaksiPengiriman::with([
+            'barang',
+            'pegawai',
+            'transaksiPenjualan.pembeli'
+        ])
             ->where('id_pegawai', $pegawaiId)
             ->where('status_pengiriman', 'Proses')
             ->get();
 
         if ($pengiriman->count() > 0) {
+            $data = $pengiriman->map(function ($item) {
+                return [
+                    'id_transaksi_pengiriman' => $item->id,
+                    'nama_pembeli'     => optional($item->transaksiPenjualan->pembeli)->nama_pembeli,
+                    'alamat_pembeli'   => $item->transaksiPenjualan->alamat_pengiriman,
+                    'biaya_pengiriman' => $item->biaya_pengiriman,
+                    'tgl_pengiriman'          => $item->tgl_pengiriman,
+                ];
+            });
+
             return response([
                 'message' => 'Berhasil mengambil data pengiriman yang sedang diproses',
-                'data' => $pengiriman
+                'data' => $data
             ], 200);
         }
 
@@ -133,6 +225,7 @@ class TransaksiPengirimanController extends Controller
             'data' => []
         ], 200);
     }
+
 
 
 
