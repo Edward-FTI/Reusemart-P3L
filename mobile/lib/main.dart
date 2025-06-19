@@ -4,14 +4,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/data/datasource/remote/firebase_mesaging_remote_datasource.dart';
 import 'package:mobile/data/datasource/remote/user_remote_datasource.dart';
-import 'package:mobile/data/permission_helper.dart'; 
-import 'package:mobile/firebase_options.dart';
-import 'package:mobile/login/login.dart';
+import 'package:mobile/data/permission_helper.dart';
+// import 'package:mobile/firebase_options.dart';
+// import 'package:mobile/login/login.dart';
 
 import 'package:mobile/landing_page.dart';
-
 import 'package:mobile/screen/Home_screen.dart';
-
 
 final firebaseMessagingRemote = FirebaseMessangingRemoteDatasource();
 
@@ -32,11 +30,10 @@ Future<void> main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await firebaseMessagingRemote.initialize();
-  await FirebaseMessangingRemoteDatasource().initialize();
+  // await FirebaseMessangingRemoteDatasource().initialize();
 
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -77,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,

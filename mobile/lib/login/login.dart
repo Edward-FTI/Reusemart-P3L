@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:mobile/Hunter/hunter.dart';
 import 'package:mobile/Kurir/kurir.dart';
 import 'package:mobile/Pembeli/pembeli.dart';
+import 'package:mobile/screen/Home_screen.dart';
 // import 'package:mobile/data/service/reward_service.dart';
 import 'package:mobile/screen/merchandise_screen.dart';
 import 'package:mobile/Penitip/penitip.dart';
@@ -36,18 +37,17 @@ class _LoginPageState extends State<LoginPage> {
       if (result != null) {
         await AuthLocalDatasource().saveUserData(result);
 
-        
         final fcmToken = await FirebaseMessaging.instance.getToken();
         if (fcmToken != null) {
           await UserRemoteDatasource().updateFcmToken(fcmToken);
         }
 
-        
         String role = result.user!.role!;
         Widget? nextPage;
         switch (role) {
           case 'Pembeli':
-            nextPage = ProfilePembeliPage();
+            nextPage = HomeScreen();
+            // nextPage = ProfilePembeliPage();
             // nextPage = MerchandiseScreen();
             break;
           case 'Penitip':
@@ -117,7 +117,8 @@ class _LoginPageState extends State<LoginPage> {
                                 horizontal: 24.0, vertical: 16.0),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(50)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
                             ),
                           ),
                           validator: (value) {
@@ -139,7 +140,8 @@ class _LoginPageState extends State<LoginPage> {
                                 horizontal: 24.0, vertical: 16.0),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(50)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
                             ),
                           ),
                           validator: (value) {

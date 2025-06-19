@@ -49,6 +49,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
     Route::put('/pegawai/{id}', [PegawaiController::class, 'update']);
     Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy']);
+    Route::get('/pegawaiid', [PegawaiController::class, 'getPegawaiData']);
     Route::get('/pegawai/search/{name}', [PegawaiController::class, 'searchByName']);
     Route::get('/pegawai/jabatan/{jabatan}', [PegawaiController::class, 'searchByJabatan']);
     Route::put('/pegawai/reset-password/{id}', [PegawaiController::class, 'resetPassword']);
@@ -183,7 +184,7 @@ Route::middleware('auth:api')->group(function () {
 
     // ======================= Owner =======================
     Route::get('/owner', [OwnerController::class, 'indexOwner']);
-    // Route::get('/penjualan-bulanan', [OwnerController::class, 'PenjualanBulanan']);
+    Route::get('/penjualan-bulanan', [OwnerController::class, 'PenjualanBulanan']);
 
 
     // ======================= Cart =======================
@@ -202,7 +203,9 @@ Route::middleware('auth:api')->group(function () {
 
 
 
-
+    Route::get('/barangHunter', [BarangController::class, 'barangHunterLogin']);
+    Route::get('/hunter-history', [TransaksiPenjualanController::class, 'indexHunterHistory']);
+    // Route::get('/transaksi-public', [TransaksiPenjualanController::class, 'indexHunterHistory']);
 
     // ======================= Rating =======================
     Route::get('/rating', [RatingController::class, 'index']);
@@ -215,18 +218,24 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/penukaran-merchandise/{id}', [PenukaranMerchandiseController::class, 'show']);
         Route::delete('/penukaran-merchandise/{id}', [PenukaranMerchandiseController::class, 'destroy']);
     });
+    Route::get('/penukaran-merchandise', [PenukaranMerchandiseController::class, 'indexPublic']);
+    Route::put('penukaran/{id}/input-tanggal', [PenukaranMerchandiseController::class, 'updateTanggalPengambilan']);
 });
 Route::get('/barang', [BarangController::class, 'indexPublic']);
 Route::get('/barang/{id}', [BarangController::class, 'showPublic']);
 
+// Route::get('/penukaran-merchandise', [PenukaranMerchandiseController::class, 'indexPublic']);
 // Endpoint publik (tidak perlu login)
-Route::get('/penukaran-merchandise', [PenukaranMerchandiseController::class, 'indexPublic']);
 Route::get('/penukaran-merchandise/show-merchandise/{id}', [PenukaranMerchandiseController::class, 'showMerchandise']);
 Route::get('/penukaran-merchandise/list-merchandise', [PenukaranMerchandiseController::class, 'listMerchandise']);
+
 
 // ======================= Merchandise =======================
 Route::get('/merchandise', [MerchandiseController::class, 'index']);
 Route::post('/merchandise', [MerchandiseController::class, 'show']);
+
+// Route::get('/transaksi-public', [TransaksiPenjualanController::class, 'publicIndex']);
+
 
 //Laporan
 // routes/api.php

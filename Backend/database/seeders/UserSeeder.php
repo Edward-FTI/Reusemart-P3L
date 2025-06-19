@@ -123,6 +123,21 @@ class UserSeeder extends Seeder
                 'role' => 'Kurir',
                 'password' => 'password123',
             ],
+            [
+                'name' => 'Susanto',
+                'email' => 'susanto@example.com',
+                'role' => 'Hunter',
+                'password' => 'password123',
+            ],
+
+            [
+                'name' => 'Andi Suharto',
+                'email' => 'andi@example.com',
+                'role' => 'Hunter',
+                'password' => 'password123',
+            ],
+
+
 
         ];
 

@@ -17,7 +17,7 @@ class BarangSeeder extends Seeder
     {
         // ...
         DB::table('barangs')->insert([
-            // 
+            //
 
             [
                 'id_penitip' => 1,
@@ -234,7 +234,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 5,
                 'deskripsi' => 'Untuk Berkebun',
                 'status_garansi' => null,
-                'status_barang' => 'Dijual',
+                'status_barang' => 'terjual',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/cangkul.jpeg',
                 'gambar_dua' => 'images/barang/cangkul.jpeg',
@@ -274,7 +274,7 @@ class BarangSeeder extends Seeder
                 'berat_barang' => 1,
                 'deskripsi' => 'Wangi Tahan Lama',
                 'status_garansi' => null,
-                'status_barang' => 'Dijual',
+                'status_barang' => 'terjual',
                 'tgl_pengambilan' => null,
                 'gambar' => 'images/barang/parfum.jpeg',
                 'gambar_dua' => 'images/barang/parfum.jpeg',
@@ -341,6 +341,71 @@ class BarangSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
+            // untuk laporan
+            [
+                'id_penitip' => 1,
+                'id_kategori' => 1,
+                'id_pegawai' => 10,
+                'id_hunter' => 15,
+                'tgl_penitipan' => now()->subDays(30),
+                'masa_penitipan' => now(),
+                'penambahan_durasi' => 0,
+                'nama_barang' => 'Laptop Acer',
+                'harga_barang' => 2500000,
+                'berat_barang' => 1,
+                'deskripsi' => 'Barang oke',
+                'status_garansi' => null,
+                'status_barang' => 'Dijual',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/laptop.jpeg',
+                'gambar_dua' => 'images/barang/laptop1.jpeg',
+                'created_at' => now()->subDays(30),
+                'updated_at' => now()->subDays(30),
+            ],
+
+            [
+                'id_penitip' => 3,
+                'id_kategori' => 5,
+                'id_pegawai' => 10,
+                'id_hunter' => 14,
+                'tgl_penitipan' => now()->subDays(30),
+                'masa_penitipan' => now(),
+                'penambahan_durasi' => 0,
+                'nama_barang' => 'Mainan Anak Kecil Bos',
+                'harga_barang' => 17000,
+                'berat_barang' => 1,
+                'deskripsi' => 'Barang oke',
+                'status_garansi' => null,
+                'status_barang' => 'Dijual',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/mainan.jpeg',
+                'gambar_dua' => 'images/barang/mobil.jpeg',
+                'created_at' => now()->subDays(30),
+                'updated_at' => now()->subDays(30),
+            ],
+
+            [
+                'id_penitip' => 3,
+                'id_kategori' => 7,
+                'id_pegawai' => 10,
+                'id_hunter' => 14,
+                'tgl_penitipan' => now()->subDays(30),
+                'masa_penitipan' => now(),
+                'penambahan_durasi' => 0,
+                'nama_barang' => 'Mobil Avanza',
+                'harga_barang' => 5000000,
+                'berat_barang' => 1,
+                'deskripsi' => 'Barang oke',
+                'status_garansi' => null,
+                'status_barang' => 'Dijual',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/kijang.jpeg',
+                'gambar_dua' => 'images/barang/mobil.jpeg',
+                'created_at' => now()->subDays(25),
+                'updated_at' => now()->subDays(25),
+            ],
+
         ]);
 
         $staticData = [
@@ -368,10 +433,10 @@ class BarangSeeder extends Seeder
         ];
 
         // Generate 200 data acak
-        // $dummyData = $this->generateDummyData(200);
+        $dummyData = $this->generateDummyData(200);
 
-        // DB::table('barangs')->insert(array_merge($staticData, $dummyData));
-        DB::table('barangs')->insert($staticData);
+        DB::table('barangs')->insert(array_merge($staticData, $dummyData));
+        // DB::table('barangs')->insert($staticData);
     }
 
     protected function randomDateThisYear()

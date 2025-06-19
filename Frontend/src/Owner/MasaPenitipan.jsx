@@ -14,21 +14,21 @@ const MasaPenitipan = () => {
     fetchBarang();
   }, []);
 
-  const getKodeKategori = (id_kategori) => {
-    const kodeMap = {
-      1: "K", // Makanan
-      2: "P", // Pakaian
-      3: "A", // Alat rumah
-      4: "E", // Elektronik
-      5: "S", // Sepatu
-      6: "B", // Buku
-      7: "D", // Dekorasi
-      8: "T", // Tanaman
-      9: "M", // Mainan
-      10: "O", // Otomotif
-    };
-    return kodeMap[id_kategori] || "X"; // Default: "X" jika id tidak dikenali
-  };
+  // const getKodeKategori = (id_kategori) => {
+  //   const kodeMap = {
+  //     1: "K", // Makanan
+  //     2: "P", // Pakaian
+  //     3: "A", // Alat rumah
+  //     4: "E", // Elektronik
+  //     5: "S", // Sepatu
+  //     6: "B", // Buku
+  //     7: "D", // Dekorasi
+  //     8: "T", // Tanaman
+  //     9: "M", // Mainan
+  //     10: "O", // Otomotif
+  //   };
+  //   return kodeMap[id_kategori] || "X"; // Default: "X" jika id tidak dikenali
+  // };
 
   const fetchPenitip = async () => {
     try {
@@ -60,6 +60,18 @@ const MasaPenitipan = () => {
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  };
+
+  const formatTanggalSampul = (date) => {
+    if (!date) return "-";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "-";
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const year = d.getFullYear();
+    return `${day} ${new Date(date).toLocaleString("id-ID", {
+      month: "long",
+    })} ${year}`;
   };
 
   const filteredData = data.filter((barang) => {
@@ -111,7 +123,7 @@ const MasaPenitipan = () => {
     // Tanggal cetak
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(10);
-    pdf.text(`Tanggal cetak: ${formatTanggal(new Date())}`, marginX, 43);
+    pdf.text(`Tanggal cetak: ${formatTanggalSampul(new Date())}`, marginX, 43);
 
     // Border kotak header
     pdf.setDrawColor(0, 0, 0);
@@ -135,7 +147,8 @@ const MasaPenitipan = () => {
       batasAmbilDate.setDate(batasAmbilDate.getDate() + 7);
 
       return [
-        `${getKodeKategori(barang.id_kategori)}${barang.id || "-"}`,
+        // `${getKodeKategori(barang.id_kategori)}${barang.id || "-"}`,
+        `${barang.nama_barang.charAt(0).toUpperCase() || ''}${barang.id}`,
         barang.nama_barang || "-",
         `T${barang.id_penitip}`,
         barang.penitip?.nama_penitip || "-",
@@ -189,7 +202,7 @@ const MasaPenitipan = () => {
       <p>ReUse Mart</p>
       <p>Jl. Green Eco Park No. 456 Yogyakarta</p>
       <p className="mb-4 text-sm text-gray-600">
-        Tanggal cetak: {formatTanggal(new Date())}
+        Tanggal cetak: {formatTanggalSampul(new Date())}
       </p>
 
       <div className="d-flex justify-content-end mt-3">
@@ -215,9 +228,7 @@ const MasaPenitipan = () => {
             {filteredData.length > 0 ? (
               filteredData.map((barang, index) => (
                 <tr key={index}>
-                  <td>{`${getKodeKategori(barang.id_kategori)}${
-                    barang.id || "-"
-                  }`}</td>
+                  <td>{`${barang.nama_barang.charAt(0).toUpperCase() || ''}${barang.id}`}</td>
                   <td>{barang.nama_barang || "-"}</td>
                   <td>{`T${barang.id_penitip}`}</td>
                   {/* Correctly display Nama Penitip */}
