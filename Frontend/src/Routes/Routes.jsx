@@ -81,6 +81,8 @@ import Responsi from "../Pegawai_Gudang/responsi";
 import SelesaiPengiriman from "../Customer_Service/BarangKurir";
 
 
+import Hunter from "../Hunter/Hunter";
+
 const router = createBrowserRouter([
   {
     path: "*",
@@ -119,6 +121,8 @@ const router = createBrowserRouter([
     element: <Barang_Donasi />,
   },
   {
+//       path: "/Hunter",
+//       element: <Hunter />,
     path: "/kurir-barang",
     element: <SelesaiPengiriman />,
   },
