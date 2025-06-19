@@ -204,6 +204,11 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/barangHunter', [BarangController::class, 'barangHunterLogin']);
     Route::get('/hunter-history', [TransaksiPenjualanController::class, 'indexHunterHistory']);
+    // Route untuk hunter yang login dan ingin melihat history transaksinya
+Route::get('/transaksi/hunter/history', [TransaksiPenjualanController::class, 'indexHunterHistory']);
+
+// Route untuk pegawai dengan jabatan ID = 5
+Route::get('/transaksi/jabatan-5', [TransaksiPenjualanController::class, 'getTransaksiByJabatan5']);
     // Route::get('/transaksi-public', [TransaksiPenjualanController::class, 'indexHunterHistory']);
 
     // ======================= Rating =======================

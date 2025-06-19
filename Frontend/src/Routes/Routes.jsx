@@ -77,6 +77,8 @@ import Barang_Donasi from "../Test2/TampilkanDonasi";
 import ReqDonasi from "../Owner/ReqDonasi";
 import LapPenitip from "../Owner/LapPenitip";
 
+import Hunter from "../Hunter/Hunter";
+
 const router = createBrowserRouter([
   {
     path: "*",
@@ -113,6 +115,10 @@ const router = createBrowserRouter([
   {
     path: "/barang-donasi",
     element: <Barang_Donasi />,
+  },
+  {
+      path: "/Hunter",
+      element: <Hunter />,
   },
   {
     path: "/alamat",

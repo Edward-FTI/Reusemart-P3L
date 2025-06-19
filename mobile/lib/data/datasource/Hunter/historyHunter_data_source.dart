@@ -6,8 +6,40 @@ import 'package:mobile/core/constants/variables.dart';
 import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
 import 'package:mobile/data/models/hunter/HistoryHunterModel.dart';
 
-class HunterDataSource {
-  static Future<HistoryHunterModel?> getHistoryHunteran() async {
+class HunterHistoryDataSource {
+static Future<List<Datum>?> getHistoryHunteran() async {
+  try {
+    final authData = await AuthLocalDatasource().getUserData();
+
+    final headers = {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      if (authData?.accessToken != null)
+        "Authorization": "Bearer ${authData!.accessToken}"
+    };
+
+    final response = await http.get(
+      Uri.parse("${Variables.baseUrl}/api/hunter-history"),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final List<dynamic> data = json['data'];
+
+      return data.map((item) => Datum.fromJson(item)).toList();
+    } else {
+      log("Gagal memuat history hunter: ${response.statusCode}");
+      return null;
+    }
+  } catch (e) {
+    log("Error saat getHistoryHunteran: $e");
+    return null;
+  }
+}
+
+
+  static Future<http.Response?> getBarangHunter() async {
     try {
       final authData = await AuthLocalDatasource().getUserData();
 
@@ -19,19 +51,18 @@ class HunterDataSource {
       };
 
       final response = await http.get(
-        Uri.parse("${Variables.baseUrl}/api/hunter-history"),
+        Uri.parse("${Variables.baseUrl}/api/barangHunter"),
         headers: headers,
       );
 
       if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        return HistoryHunterModel.fromJson(json);
+        return response;
       } else {
-        log("Gagal memuat history hunter: ${response.statusCode}");
+        log("Gagal memuat barang hunter: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      log("Error saat getHistoryHunteran: $e");
+      log("Error saat getBarangHunter: $e");
       return null;
     }
   }

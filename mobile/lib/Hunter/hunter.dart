@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-// import 'package:mobile/Hunter/history_hunter.dart';
+import 'package:mobile/Hunter/history_hunter.dart';
 import 'package:mobile/data/datasource/Hunter/hunter_data_source.dart';
-// import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
-// import 'package:mobile/data/datasource/Hunter/historyHunter_data_source.dart';
+import 'package:mobile/data/datasource/local/auth_local_datasource.dart';
+import 'package:mobile/data/datasource/Hunter/historyHunter_data_source.dart';
 import 'package:mobile/data/models/hunter/ModelHunter.dart';
 import 'package:mobile/screen/Home_screen.dart';
 
@@ -100,14 +100,14 @@ class _ProfileHunterPageState extends State<ProfileHunterPage> {
             buildInfoRow("Email", hunter!.email ?? '-'),
             buildInfoRow("Tanggal Lahir", hunter!.tglLahir ?? '-'),
             buildInfoRow("Jabatan", hunter!.jabatan ?? '-'),
-            buildInfoRow("Gaji", "Rp${hunter!.gaji ?? 0}"),
+            buildInfoRow("Komisi", "Rp${hunter!.gaji ?? 0}"),
 
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  // builder: (context) => HistoryHunter()
-                  builder: (context) => const HomeScreen()
+                  builder: (context) => const HistoryHunter()
+                  // builder: (context) => const HomeScreen()
                 ),
               ),
               style: ElevatedButton.styleFrom(
