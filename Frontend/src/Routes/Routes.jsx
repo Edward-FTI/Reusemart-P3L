@@ -76,6 +76,10 @@ import TransaksiCS from "../Customer_Service/VerifikasiPembayaran";
 import Barang_Donasi from "../Test2/TampilkanDonasi";
 import ReqDonasi from "../Owner/ReqDonasi";
 import LapPenitip from "../Owner/LapPenitip";
+import Responsi from "../Pegawai_Gudang/responsi";
+
+import SelesaiPengiriman from "../Customer_Service/BarangKurir";
+
 
 import Hunter from "../Hunter/Hunter";
 
@@ -117,8 +121,10 @@ const router = createBrowserRouter([
     element: <Barang_Donasi />,
   },
   {
-      path: "/Hunter",
-      element: <Hunter />,
+//       path: "/Hunter",
+//       element: <Hunter />,
+    path: "/kurir-barang",
+    element: <SelesaiPengiriman />,
   },
   {
     path: "/alamat",
@@ -258,6 +264,10 @@ const router = createBrowserRouter([
         path: "/gudang/pengiriman/penitip",
         element: <CRUDPengirimanPenitip />,
       },
+      {
+        path: "/gudang/responsi",
+        element: <Responsi />
+      }
     ],
   },
 

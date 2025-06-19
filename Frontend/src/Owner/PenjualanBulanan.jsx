@@ -182,7 +182,7 @@ export default function PenjualanBulanan() {
                         yAxis={[
                             {
                                 min: 0,
-                                max: 10000000,
+                                max: 30000000,
                                 tickInterval: 2000000,
                                 valueFormatter: (value) => {
                                     if (value >= 1000000) {

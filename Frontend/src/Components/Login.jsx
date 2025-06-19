@@ -54,7 +54,7 @@ const LoginForm = () => {
               navigate("/owner/request-donasi"); // Ensure this route exists
               break;
             case "Kurir":
-              navigate("/"); // Ensure this route exists
+              navigate("/kurir-barang"); // Ensure this route exists
               break;
             case "Hunter":
               navigate("/Hunter"); // Ensure this route exists
