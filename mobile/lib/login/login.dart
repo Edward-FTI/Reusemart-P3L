@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
             nextPage = ProfileHunterPage();
             break;
           case 'Kurir':
-            nextPage = ProfileKurirPage();
+            nextPage = MainKurirPage();
             break;
           default:
             ScaffoldMessenger.of(context).showSnackBar(
