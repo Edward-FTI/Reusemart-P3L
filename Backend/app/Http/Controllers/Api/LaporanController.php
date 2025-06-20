@@ -16,8 +16,8 @@ class LaporanController extends Controller
 
             return [
                 'nama_kategori' => $kategori->nama_kategori,
-                'terjual' => $barangList->filter(function ($b) {
-                    return strtolower($b->status_barang) === 'terjual';
+                'Sold out' => $barangList->filter(function ($b) {
+                    return strtolower($b->status_barang) === 'sold out';
                 })->count(),
                 'gagal' => $barangList->filter(function ($b) {
                     return strtolower($b->status_barang) === 'barang untuk donasi';
