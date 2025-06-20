@@ -385,7 +385,7 @@ class TransaksiPenjualanController extends Controller
             // Ambil semua barang yang dibuat oleh hunter ini berdasarkan id pegawai
             $barangIds = DB::table('barangs')
                 ->where('id_hunter', $pegawai->id)
-                ->where('status_barang', 'terjual') // hanya barang yang terjual
+                ->where('status_barang', 'Sold Out') // hanya barang yang terjual
                 ->pluck('id');
 
             if ($barangIds->isEmpty()) {

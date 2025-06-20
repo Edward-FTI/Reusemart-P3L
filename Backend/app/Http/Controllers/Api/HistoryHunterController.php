@@ -90,7 +90,7 @@ class TransaksiPenjualanController extends Controller
             }
 
             $barangIds = Barang::where('id_hunter', $pegawai->id)
-                ->where('status_barang', 'terjual')
+                ->where('status_barang', 'Sold Out')
                 ->pluck('id');
 
             if ($barangIds->isEmpty()) {

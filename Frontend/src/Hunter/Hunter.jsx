@@ -31,7 +31,7 @@ const KomisiHunter = () => {
 
 
   const totalKomisi = barangList.reduce((total, barang) => {
-    if (barang.status_barang.toLowerCase() === "terjual") {
+    if (barang.status_barang.toLowerCase() === "Sold Out") {
       return total + barang.harga_barang * 0.2 * 0.1;
     }
     return total;
