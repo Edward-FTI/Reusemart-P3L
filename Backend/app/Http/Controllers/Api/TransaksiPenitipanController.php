@@ -128,7 +128,7 @@ class TransaksiPenitipanController extends Controller
             'masa_penitipan' => 'nullable|date',
             'penambahan_durasi' => 'nullable|integer',
             'tgl_pengambilan' => 'nullable|date',
-            'status_barang' => 'nullable|string|in:Dijual,Diambil,Ditunggu, diambil kembali',
+            'status_barang' => 'nullable|string|in:Dijual,Diambil,Ditunggu,diambil kembali,Sold Out',
         ]);
 
         if ($validator->fails()) {

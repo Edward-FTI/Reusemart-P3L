@@ -101,13 +101,73 @@ class BarangSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+             [
+                'id_penitip' => 2,
+                'id_kategori' => 2,
+                'id_pegawai' => 3,
+                'id_hunter' => null,
+                'tgl_penitipan' => now(),
+                'masa_penitipan' => now()->copy()->addDays(1),
+                'penambahan_durasi' => 1,
+                'nama_barang' => 'Pakaian Wanita',
+                'harga_barang' => 500000,
+                'berat_barang' => 2,
+                'deskripsi' => 'Ukuran XL',
+                'status_garansi' => null,
+                'status_barang' => 'Sold Out',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/pakaianPria.jpeg',
+                'gambar_dua' => 'images/barang/pakaianPria.jpeg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+             [
+                'id_penitip' => 2,
+                'id_kategori' => 2,
+                'id_pegawai' => 3,
+                'id_hunter' => null,
+                'tgl_penitipan' => now(),
+                'masa_penitipan' => now()->copy()->addDays(-2),
+                'penambahan_durasi' => 1,
+                'nama_barang' => 'Pakaian Wanita',
+                'harga_barang' => 500000,
+                'berat_barang' => 2,
+                'deskripsi' => 'Ukuran XL',
+                'status_garansi' => null,
+                'status_barang' => 'Sold Out',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/pakaianPria.jpeg',
+                'gambar_dua' => 'images/barang/pakaianPria.jpeg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+             [
+                'id_penitip' => 2,
+                'id_kategori' => 2,
+                'id_pegawai' => 3,
+                'id_hunter' => null,
+                'tgl_penitipan' => now(),
+                'masa_penitipan' => now()->copy()->addDays(0),
+                'penambahan_durasi' => 1,
+                'nama_barang' => 'Pakaian Wanita',
+                'harga_barang' => 500000,
+                'berat_barang' => 2,
+                'deskripsi' => 'Ukuran XL',
+                'status_garansi' => null,
+                'status_barang' => 'Sold Out',
+                'tgl_pengambilan' => null,
+                'gambar' => 'images/barang/pakaianPria.jpeg',
+                'gambar_dua' => 'images/barang/pakaianPria.jpeg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
             [
                 'id_penitip' => 2,
                 'id_kategori' => 3,
                 'id_pegawai' => 3,
                 'id_hunter' => 14,
                 'tgl_penitipan' => now(),
-                'masa_penitipan' => now()->copy()->addDays(0),
+                'masa_penitipan' => now()->copy()->addDays(-2),
                 'penambahan_durasi' => 0,
                 'nama_barang' => 'Pakain Anak',
                 'harga_barang' => 100000,
@@ -433,10 +493,10 @@ class BarangSeeder extends Seeder
         ];
 
         // Generate 200 data acak
-        $dummyData = $this->generateDummyData(200);
+        // $dummyData = $this->generateDummyData(200);
 
-        DB::table('barangs')->insert(array_merge($staticData, $dummyData));
-        // DB::table('barangs')->insert($staticData);
+        // DB::table('barangs')->insert(array_merge($staticData, $dummyData));
+        DB::table('barangs')->insert($staticData);
     }
 
     protected function randomDateThisYear()
