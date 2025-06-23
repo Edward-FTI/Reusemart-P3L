@@ -50,7 +50,8 @@ const Transaksi_penitip = () => {
 
       // Filter barang yang status_barang-nya bukan "barang untuk Donasi"
       const filteredData = data.filter(
-        (item) => item.status_barang !== "barang untuk Donasi"
+        // (item) => item.status_barang !== "barang untuk Donasi"
+        (item) => item.penambahan_durasi !== 0
       );
 
       setBarangList(filteredData);
@@ -168,10 +169,10 @@ const Transaksi_penitip = () => {
     );
     const sisaHari = sisaHariStr == "Kadaluarsa" ? 0 : parseInt(sisaHariStr);
 
-    // Jika masa penitipan habis dan belum pernah diperpanjang (null atau 0)
+    // Jika masa penitipan habis dan belum pernah diperpanjang (null atau 1)
     if (
       sisaHari <= 0 &&
-      (barang.penambahan_durasi == 0)
+      (barang.penambahan_durasi == 1)
     ) {
       try {
         const newMasaPenitipan = new Date(barang.masa_penitipan);
@@ -180,11 +181,11 @@ const Transaksi_penitip = () => {
         await UpdatetTransaksi_Penitipan(barang.id, {
           ...barang,
           masa_penitipan: newMasaPenitipan.toISOString().split("T")[0],
-          penambahan_durasi: 1,
+          penambahan_durasi: 2,
           tgl_pengambilan: null, // Reset tanggal pengambilan
         });
 
-        toast.success("Berhasil menambah 30 hari masa penitipan");
+        toast.success("Berhasil menambah 30 hari masa penitipan Lanjutan.");
         fetchBarang();
       } catch (error) {
         toast.error("Gagal memperbarui masa penitipan");
@@ -213,7 +214,7 @@ const Transaksi_penitip = () => {
     modal.show();
   };
 
-   const durasiBarang = (penambahan_durasi) => {
+  const durasiBarang = (penambahan_durasi) => {
     if (penambahan_durasi === 1) {
       return "Sudah Pernah";
     } else if(penambahan_durasi === 2) {
@@ -221,11 +222,12 @@ const Transaksi_penitip = () => {
     }
   };
 
+
   return (
     <div className="container mt-5 bg-white p-4 rounded shadow">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <h2>Data Barang</h2>
+          <h2>Data Barang Perpanjangan Lanjut</h2>
           <form
             className="d-flex"
             onSubmit={(e) => {
@@ -254,13 +256,13 @@ const Transaksi_penitip = () => {
           <tr>
             <th>No</th>
             {/* <th>Nama Penitip</th> */}
-            <th>Kategori Barang</th>
-            <th>Tanggal Penitipan</th>
-            <th>Masa Penitipan</th>
-            <th>Sisa Masa penitipan</th>
+            <th>ID</th>
             <th>Nama Barang</th>
+            <th>Tanggal Penitipan</th>
+            <th>Tanggal Akhir Penitipan</th>
+            <th>Sisa Masa penitipan</th>
+            <th>Status Perpanjangan</th>
             <th>Harga Barang</th>
-            <th>Status Pengambilan</th>
             <th>Status Barang</th>
             <th>Tanggal Pengambilan</th>
             <th>Aksi</th>
@@ -273,18 +275,15 @@ const Transaksi_penitip = () => {
               <tr key={b.id}>
                 <td>{index + 1}</td>
                 {/* <td>{b.penitip?.nama_penitip}</td> */}
-                <td>
-                  {b.kategori_barang?.nama_kategori ||
-                    "Kategori tidak ditemukan"}
-                </td>
+                <td>{b.id}</td>
+                <td>{b.nama_barang}</td>
                 <td>{b.tgl_penitipan}</td>
                 <td>{b.masa_penitipan}</td>
                 <td>
                   {getSisaWaktuPenitipan(b.tgl_penitipan, b.masa_penitipan)}
                 </td>
-                <td>{b.nama_barang}</td>
-                <td>{b.harga_barang}</td>
                 <td>{durasiBarang(b.penambahan_durasi)}</td>
+                <td>{b.harga_barang}</td>
                 <td>{b.status_barang}</td>
                 <td>{b.tgl_pengambilan}</td>
                 <td>

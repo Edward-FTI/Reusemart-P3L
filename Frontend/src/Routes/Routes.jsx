@@ -43,6 +43,7 @@ import ShowProfilePenitip from "../Penitip/ShowProfilePenitip";
 import ShowHistoryPenitip from "../penitip/ShowHistoryPenitip";
 import CRUDPenitipan from "../penitip/CRUDPenitipan";
 import PengambilanBarangKembali from "../Penitip/PengambilanBarangKembali";
+import Penitip_lanjut from "../Penitip/Perpanjangan_lanjut";
 
 // ORGANISASI
 import CRUDTransaksiRequestDonasi from "../Organisasi/CRUDTransaksiRequestDonasi";
@@ -321,6 +322,10 @@ const router = createBrowserRouter([
       {
         path: "pengambilan",
         element: <PengambilanBarangKembali />,
+      },
+      {
+        path: "penitipan-lanjut",
+        element: <Penitip_lanjut />,
       },
       {
         path: "Profile",
