@@ -35,6 +35,17 @@ class TransaksiPengirimanController extends Controller
         return $pegawai->id;
     }
 
+    private function getPembeliId()
+    {
+        $userEmail = Auth::user()->email;
+        $pembeli = Pembeli::where('email', $userEmail)->first();
+
+        if (!$pembeli) {
+            return null;
+        }
+        return $pembeli->id;
+    }
+
     public function indexPublic()
     {
         $pengiriman = TransaksiPengiriman::with(['barang', 'pegawai'])->get();
@@ -339,6 +350,115 @@ class TransaksiPengirimanController extends Controller
             'data' => [
                 'pengiriman' => $pengiriman,
                 'penjualan' => $penjualan
+            ]
+        ], 200);
+    }
+
+
+    public function transaksiDisiapkanPembeli()
+    {
+        $userEmail = Auth::user()->email;
+        $pembeli = Pembeli::where('email', $userEmail)->first();
+
+        if (!$pembeli) {
+            return response([
+                'message' => 'Pembeli tidak ditemukan untuk user yang login',
+                'data' => []
+            ], 404);
+        }
+
+        $pengiriman = TransaksiPengiriman::with('transaksiPenjualan')
+            ->whereHas('transaksiPenjualan', function ($query) use ($pembeli) {
+                $query->where('id_pembeli', $pembeli->id);
+            })
+            ->where('status_pengiriman', 'disiapkan')
+            ->whereNull('tgl_pengiriman')
+            ->get();
+
+        if ($pengiriman->count() > 0) {
+            $data = $pengiriman->map(function ($item) {
+                return [
+                    'no_transaksi' => $item->id_transaksi_penjualan,
+                    'tanggal_transaksi' => optional($item->transaksiPenjualan)->tgl_transaksi,
+                    'total_transaksi' => optional($item->transaksiPenjualan)->total_harga_pembelian,
+                    'status_pengiriman' => $item->status_pengiriman,
+                ];
+            });
+
+            return response([
+                'message' => 'Berhasil mengambil data transaksi yang sedang disiapkan',
+                'data' => $data
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Tidak ada transaksi yang sedang disiapkan',
+            'data' => []
+        ], 200);
+    }
+
+    public function batalkanTransaksiDisiapkan($id)
+    {
+        $userEmail = Auth::user()->email;
+        $pembeli = Pembeli::where('email', $userEmail)->first();
+
+        if (!$pembeli) {
+            return response([
+                'message' => 'Pembeli tidak ditemukan untuk user yang login',
+            ], 404);
+        }
+
+        // Ambil pengiriman terkait
+        $pengiriman = TransaksiPengiriman::where('id_transaksi_penjualan', $id)
+            ->where('status_pengiriman', 'disiapkan')
+            ->whereNull('tgl_pengiriman')
+            ->first();
+
+        if (!$pengiriman) {
+            return response([
+                'message' => 'Transaksi tidak ditemukan atau tidak dalam status disiapkan',
+            ], 404);
+        }
+
+        $penjualan = $pengiriman->transaksiPenjualan;
+
+        // Validasi kepemilikan transaksi oleh pembeli
+        if ($penjualan->id_pembeli != $pembeli->id) {
+            return response([
+                'message' => 'Anda tidak memiliki akses ke transaksi ini',
+            ], 403);
+        }
+
+        // Ubah status transaksi penjualan dan pengiriman
+        $penjualan->status_pembelian = 'dibatalkan pembeli';
+        $penjualan->status_pengiriman = 'dibatalkan pembeli';
+        $penjualan->save();
+
+        $pengiriman->status_pengiriman = 'dibatalkan pembeli';
+        $pengiriman->save();
+
+        // Ubah status barang kembali ke "Dijual"
+        foreach ($penjualan->detailTransaksi as $detail) {
+            $barang = $detail->barang;
+            if ($barang) {
+                $barang->status_barang = 'Dijual';
+                $barang->save();
+            }
+        }
+
+        // Tambahkan poin ke pembeli (1 poin per 10.000)
+        $total = $penjualan->total_harga_pembelian;
+        $poinBaru = floor($total / 10000);
+
+        $pembeli->poin += $poinBaru;
+        $pembeli->save();
+
+        return response([
+            'message' => 'Transaksi berhasil dibatalkan dan poin dikembalikan',
+            'data' => [
+                'total_transaksi' => $total,
+                'poin_ditambahkan' => $poinBaru,
+                'total_poin_sekarang' => $pembeli->poin
             ]
         ], 200);
     }

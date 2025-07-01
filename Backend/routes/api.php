@@ -200,7 +200,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pengiriman/proses', [TransaksiPengirimanController::class, 'proses']);
     Route::put('/pengiriman/{id}/selesai', [TransaksiPengirimanController::class, 'updateStatusSelesai']);
     Route::get('/kurir-barang', [TransaksiPengirimanController::class, 'selesaiBarang']);
-
+    Route::get('/transaksi-proses', [TransaksiPengirimanController::class, 'transaksiDisiapkanPembeli']);
+    Route::post('transaksi-batal/{id}', [TransaksiPengirimanController::class, 'batalkanTransaksiDisiapkan']);
 
 
     Route::get('/barangHunter', [BarangController::class, 'barangHunterLogin']);
