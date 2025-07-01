@@ -83,6 +83,7 @@ import SelesaiPengiriman from "../Customer_Service/BarangKurir";
 
 
 import Hunter from "../Hunter/Hunter";
+import Disiapkan from "../pembeli/disiapkan";
 
 const router = createBrowserRouter([
   {
@@ -122,8 +123,8 @@ const router = createBrowserRouter([
     element: <Barang_Donasi />,
   },
   {
-//       path: "/Hunter",
-//       element: <Hunter />,
+    //       path: "/Hunter",
+    //       element: <Hunter />,
     path: "/kurir-barang",
     element: <SelesaiPengiriman />,
   },
@@ -148,6 +149,10 @@ const router = createBrowserRouter([
   {
     path: "/pembayaran",
     element: <OrderForm />,
+  },
+  {
+    path: "/batal-transaksi",
+    element: <Disiapkan />,
   },
 
   // ADMIN
@@ -267,8 +272,8 @@ const router = createBrowserRouter([
       },
       {
         path: "/gudang/responsi",
-        element: <Responsi />
-      }
+        element: <Responsi />,
+      },
     ],
   },
 
