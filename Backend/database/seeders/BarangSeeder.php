@@ -403,26 +403,7 @@ class BarangSeeder extends Seeder
             ],
 
             // untuk laporan
-            [
-                'id_penitip' => 1,
-                'id_kategori' => 1,
-                'id_pegawai' => 10,
-                'id_hunter' => 15,
-                'tgl_penitipan' => now()->subDays(30),
-                'masa_penitipan' => now(),
-                'penambahan_durasi' => 0,
-                'nama_barang' => 'Laptop Acer',
-                'harga_barang' => 2500000,
-                'berat_barang' => 1,
-                'deskripsi' => 'Barang oke',
-                'status_garansi' => null,
-                'status_barang' => 'Dijual',
-                'tgl_pengambilan' => null,
-                'gambar' => 'images/barang/laptop.jpeg',
-                'gambar_dua' => 'images/barang/laptop1.jpeg',
-                'created_at' => now()->subDays(30),
-                'updated_at' => now()->subDays(30),
-            ],
+
 
             [
                 'id_penitip' => 3,
@@ -493,9 +474,9 @@ class BarangSeeder extends Seeder
         ];
 
         // Generate 200 data acak
-        // $dummyData = $this->generateDummyData(200);
+        $dummyData = $this->generateDummyData(200);
 
-        // DB::table('barangs')->insert(array_merge($staticData, $dummyData));
+        DB::table('barangs')->insert(array_merge($staticData, $dummyData));
         DB::table('barangs')->insert($staticData);
     }
 
