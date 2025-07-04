@@ -19,6 +19,7 @@ class Penitip extends Model
         'email',
         'password',
         'badge',
+        'nominalTarik',
     ];
 
     public function user()

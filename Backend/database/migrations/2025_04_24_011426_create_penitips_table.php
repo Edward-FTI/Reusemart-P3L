@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('badge')->default("-");
+            $table->double('nominalTarik')->default(0.0);
+            // $table->double('nominalTarik')->nullable()->default(500000);
             $table->timestamps();
         });
     }

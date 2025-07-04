@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
+    
     public function handle($request, Closure $next, ...$roles)
     {
         if (!Auth::check()) {
