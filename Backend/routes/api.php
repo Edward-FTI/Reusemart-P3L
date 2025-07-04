@@ -200,7 +200,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pengiriman/proses', [TransaksiPengirimanController::class, 'proses']);
     Route::put('/pengiriman/{id}/selesai', [TransaksiPengirimanController::class, 'updateStatusSelesai']);
     Route::get('/kurir-barang', [TransaksiPengirimanController::class, 'selesaiBarang']);
-
+    Route::get('/transaksi-proses', [TransaksiPengirimanController::class, 'transaksiDisiapkanPembeli']);
+    Route::post('transaksi-batal/{id}', [TransaksiPengirimanController::class, 'batalkanTransaksiDisiapkan']);
 
     // Tarik saldo penitip=======================================
     Route::patch('/penitip/tarik-saldo/{id}', [PenitipController::class, 'tarikSaldo']);
@@ -211,6 +212,11 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/barangHunter', [BarangController::class, 'barangHunterLogin']);
     Route::get('/hunter-history', [TransaksiPenjualanController::class, 'indexHunterHistory']);
+    // Route untuk hunter yang login dan ingin melihat history transaksinya
+Route::get('/transaksi/hunter/history', [TransaksiPenjualanController::class, 'indexHunterHistory']);
+
+// Route untuk pegawai dengan jabatan ID = 5
+Route::get('/transaksi/jabatan-5', [TransaksiPenjualanController::class, 'getTransaksiByJabatan5']);
     // Route::get('/transaksi-public', [TransaksiPenjualanController::class, 'indexHunterHistory']);
 
     // ======================= Rating =======================

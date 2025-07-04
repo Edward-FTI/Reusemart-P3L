@@ -91,6 +91,7 @@ const LinkSidebar = () => {
             Data Barang
           </Link>
 
+
           <Link
             to="/penitip/saldo/"
             className="d-flex align-items-center gap-2 text-white link-side"
@@ -102,6 +103,12 @@ const LinkSidebar = () => {
               className="d-inline-block"
             />
             Tarik Saldo
+          </Link>
+
+          <Link 
+          to="/penitip/penitipan-lanjut/"
+          className="d-flex align-items-center gap-2 text-white link-side">
+            Penitipan Lanjut
           </Link>
 
         </>

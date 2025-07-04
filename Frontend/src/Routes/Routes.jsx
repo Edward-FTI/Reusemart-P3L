@@ -43,6 +43,7 @@ import ShowProfilePenitip from "../Penitip/ShowProfilePenitip";
 import ShowHistoryPenitip from "../penitip/ShowHistoryPenitip";
 import CRUDPenitipan from "../penitip/CRUDPenitipan";
 import PengambilanBarangKembali from "../Penitip/PengambilanBarangKembali";
+import Penitip_lanjut from "../Penitip/Perpanjangan_lanjut";
 
 // ORGANISASI
 import CRUDTransaksiRequestDonasi from "../Organisasi/CRUDTransaksiRequestDonasi";
@@ -82,6 +83,9 @@ import SelesaiPengiriman from "../Customer_Service/BarangKurir";
 import TarikSaldo from "../Penitip/tarikSaldo";
 
 
+import Hunter from "../Hunter/Hunter";
+import Disiapkan from "../pembeli/disiapkan";
+
 const router = createBrowserRouter([
   {
     path: "*",
@@ -120,6 +124,8 @@ const router = createBrowserRouter([
     element: <Barang_Donasi />,
   },
   {
+    //       path: "/Hunter",
+    //       element: <Hunter />,
     path: "/kurir-barang",
     element: <SelesaiPengiriman />,
   },
@@ -144,6 +150,10 @@ const router = createBrowserRouter([
   {
     path: "/pembayaran",
     element: <OrderForm />,
+  },
+  {
+    path: "/batal-transaksi",
+    element: <Disiapkan />,
   },
 
   // ADMIN
@@ -263,8 +273,8 @@ const router = createBrowserRouter([
       },
       {
         path: "/gudang/responsi",
-        element: <Responsi />
-      }
+        element: <Responsi />,
+      },
     ],
   },
 
@@ -318,6 +328,10 @@ const router = createBrowserRouter([
       {
         path: "pengambilan",
         element: <PengambilanBarangKembali />,
+      },
+      {
+        path: "penitipan-lanjut",
+        element: <Penitip_lanjut />,
       },
       {
         path: "Profile",

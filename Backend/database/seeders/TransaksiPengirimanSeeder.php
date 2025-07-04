@@ -28,10 +28,10 @@ class TransaksiPengirimanSeeder extends Seeder
             [
                 'id_transaksi_penjualan' => $transaksiIds[0],
                 'id_pegawai' => 13,
-                'tgl_pengiriman' => now(),
-                'status_pengiriman' => 'Proses',
+                'tgl_pengiriman' => null,
+                'status_pengiriman' => 'disiapkan',
                 'biaya_pengiriman' => 100000,
-                'catatan' => 'Menunggu konfirmasi pengiriman.',
+                'catatan' => '-',
             ],
             [
                 'id_transaksi_penjualan' => $transaksiIds[1],
@@ -52,18 +52,18 @@ class TransaksiPengirimanSeeder extends Seeder
             [
                 'id_transaksi_penjualan' => $transaksiIds[3],
                 'id_pegawai' => 13,
-                'tgl_pengiriman' => now(),
-                'status_pengiriman' => 'Proses',
+                'tgl_pengiriman' => null,
+                'status_pengiriman' => 'disiapkan',
                 'biaya_pengiriman' => 0,
-                'catatan' => 'Belum ditugaskan ke pegawai.',
+                'catatan' => '-',
             ],
             [
                 'id_transaksi_penjualan' => $transaksiIds[4],
                 'id_pegawai' => 12,
-                'tgl_pengiriman' => now(),
-                'status_pengiriman' => 'Proses',
+                'tgl_pengiriman' => null,
+                'status_pengiriman' => 'disiapkan',
                 'biaya_pengiriman' => 0,
-                'catatan' => 'Dalam perjalanan.',
+                'catatan' => '-',
             ],
         ];
 
