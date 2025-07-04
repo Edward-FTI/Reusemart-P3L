@@ -202,6 +202,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/kurir-barang', [TransaksiPengirimanController::class, 'selesaiBarang']);
 
 
+    // Tarik saldo penitip=======================================
+    Route::patch('/penitip/tarik-saldo/{id}', [PenitipController::class, 'tarikSaldo']);
+
+
+
+
 
     Route::get('/barangHunter', [BarangController::class, 'barangHunterLogin']);
     Route::get('/hunter-history', [TransaksiPenjualanController::class, 'indexHunterHistory']);

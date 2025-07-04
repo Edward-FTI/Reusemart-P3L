@@ -91,6 +91,7 @@ class PenitipController extends Controller
             $gambarFile->move(public_path('images/penitip'), $namaGambar);
             $data['gambar_ktp'] = $pathGambar;
         }
+        $data['nominalTarik'] = 500000;
 
         // Encrypt password
         $data['password'] = Hash::make($data['password']);
@@ -113,73 +114,6 @@ class PenitipController extends Controller
             'data' => $penitip,
         ], 201);
     }
-
-    // public function store(Request $request)
-    // {
-    //     try {
-    //         // Validasi input
-    //         $validator = Validator::make($request->all(), [
-    //             'nama_penitip' => 'required|string|max:255',
-    //             'no_ktp' => 'required|string|min:16|max:20|unique:penitips,no_ktp',
-    //             'gambar_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-    //             'email' => 'required|email|unique:penitips,email|unique:users,email',
-    //             'password' => 'required|string|min:6',
-    //             'badge' => 'required|string',
-    //             'point' => 'required|integer',
-    //             'saldo' => 'nullable|numeric',
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             return response()->json([
-    //                 'message' => 'Validasi gagal',
-    //                 'errors' => $validator->errors()
-    //             ], 422);
-    //         }
-
-    //         // Simpan gambar KTP
-    //         $pathGambar = null;
-    //         if ($request->hasFile('gambar_ktp')) {
-    //             $namaGambar = time() . '.' . $request->file('gambar_ktp')->extension();
-    //             $pathGambar = 'images/penitip/' . $namaGambar;
-    //             $request->file('gambar_ktp')->move(public_path('images/penitip'), $namaGambar);
-    //         }
-
-    //         // Simpan ke tabel penitip
-    //         $penitip = Penitip::create([
-    //             'nama_penitip' => $request->nama_penitip,
-    //             'no_ktp' => $request->no_ktp,
-    //             'gambar_ktp' => $pathGambar,
-    //             'email' => $request->email,
-    //             'password' => Hash::make($request->password),
-    //             'badge' => $request->badge ?? '',
-    //             'point' => $request->point ?? 0,
-    //             'saldo' => $request->saldo ?? 0,
-    //         ]);
-
-    //         // Simpan juga ke tabel user
-    //         $user = User::create([
-    //             'name' => $request->nama_penitip,
-    //             'email' => $request->email,
-    //             'password' => Hash::make($request->password),
-    //             'role' => 'Penitip',
-    //             'email_verified_at' => now(),
-    //             'remember_token' => Str::random(60),
-    //         ]);
-
-    //         return response()->json([
-    //             'message' => 'Berhasil menambahkan data penitip',
-    //             'data' => $penitip
-    //         ], 201);
-
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => 'Gagal menambahkan data penitip',
-    //             'error' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
-
 
 
     public function update(Request $request, $id)
@@ -365,6 +299,58 @@ class PenitipController extends Controller
             ], 500);
         }
     }
+
+
+    public function tarikSaldo(Request $request, $id)
+    {
+        $request->validate([
+            'jumlah' => 'required|numeric|min:1',
+        ]);
+
+        $penitip = Penitip::findOrFail($id);
+
+        if ($request->jumlah > $penitip->saldo) {
+            return response()->json(['message' => 'Saldo tidak mencukupi'], 400);
+        }
+
+        $penitip->saldo -= $request->jumlah;
+        $penitip->save();
+
+        return response()->json([
+            'message' => 'Saldo berhasil ditarik',
+            'data' => $penitip
+        ]);
+    }
+
+    // public function tarikSaldo(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'jumlah' => 'required|numeric|min:1',
+    //     ]);
+
+    //     $penitip = Penitip::findOrFail($id);
+    //     $jumlah = $request->jumlah;
+    //     $biaya = $jumlah * 0.05;
+    //     $total = $jumlah + $biaya;
+
+    //     if ($jumlah < $penitip->nominalTarik) {
+    //         return response()->json(['message' => 'Jumlah kurang dari nominal penarikan minimal'], 400);
+    //     }
+
+    //     if ($total > $penitip->saldo) {
+    //         return response()->json(['message' => 'Saldo tidak mencukupi'], 400);
+    //     }
+
+    //     $penitip->saldo -= $total;
+    //     $penitip->save();
+
+    //     return response()->json([
+    //         'message' => "Berhasil menarik Rp $jumlah + Rp $biaya (biaya 5%)",
+    //         'data' => $penitip
+    //     ]);
+    // }
+
+
 
 
 
