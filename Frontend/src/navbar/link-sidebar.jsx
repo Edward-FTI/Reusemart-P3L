@@ -90,6 +90,20 @@ const LinkSidebar = () => {
             />
             Data Barang
           </Link>
+
+          <Link
+            to="/penitip/saldo/"
+            className="d-flex align-items-center gap-2 text-white link-side"
+          >
+            <img
+              src="https://img.icons8.com/?size=100&id=13042&format=png&color=000000"
+              alt=""
+              width="30"
+              className="d-inline-block"
+            />
+            Tarik Saldo
+          </Link>
+
         </>
       )}
 
@@ -132,6 +146,19 @@ const LinkSidebar = () => {
               className="d-inline-block"
             />
             Merchandise
+          </Link>
+
+          <Link
+            to="verifikasi/"
+            className="d-flex align-items-center gap-2 text-white link-side"
+          >
+            <img
+              src="https://img.icons8.com/?size=100&id=UIlTiRUlZuzZ&format=png&color=000000"
+              alt=""
+              width="30"
+              className="d-inline-block"
+            />
+            Verifikasi Pembayaran
           </Link>
         </>
       )}
