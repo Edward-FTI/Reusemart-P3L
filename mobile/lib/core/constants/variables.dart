@@ -1,6 +1,5 @@
 class Variables {
-
-  static const String baseUrl = 'http://192.168.1.10:8000';
+  static const String baseUrl = 'https://www.p3l.reusemart.fun';
 
   // static const String baseUrl = 'http://192.168.100.11:8000';
 
@@ -9,6 +8,7 @@ class Variables {
 
 // kosomb100
   // static const String baseUrl = 'http://192.168.18.8:8000';
+
 
 //HP Adji
   // static const String baseUrl = 'http://192.168.240.53:8000';
@@ -21,6 +21,9 @@ class Variables {
   //ATMA
 //   static const String baseUrl = 'http://10.53.2.29:8000';
   // Hotspot Edward
+
+  // static const String baseUrl = 'http://192.168.249.121:8000';
+
 //   static const String baseUrl = 'http://192.168.249.121:8000';
 
 }

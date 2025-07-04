@@ -80,6 +80,7 @@ import LapPenitip from "../Owner/LapPenitip";
 import Responsi from "../Pegawai_Gudang/responsi";
 
 import SelesaiPengiriman from "../Customer_Service/BarangKurir";
+import TarikSaldo from "../Penitip/tarikSaldo";
 
 
 import Hunter from "../Hunter/Hunter";
@@ -336,6 +337,10 @@ const router = createBrowserRouter([
         path: "Profile",
         element: <ShowProfilePenitip />,
       },
+      {
+        path: "saldo",
+        element: <TarikSaldo/>
+      }
     ],
   },
 
